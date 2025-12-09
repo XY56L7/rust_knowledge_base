@@ -40,5 +40,109 @@
       ],
       "difficulty": "medium"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-29-1",
+      "title": "Simple Blockchain Explorer",
+      "description": "Build a basic blockchain explorer that displays blocks and their relationships. Practice with structs, vectors, and blockchain concepts.",
+      "difficulty": "medium",
+      "estimatedTime": 4,
+      "requirements": [
+        "Create Block and Blockchain structs",
+        "Implement genesis block creation",
+        "Add function to create new blocks",
+        "Display blockchain information (height, blocks)",
+        "Show block details (index, hash, previous_hash)",
+        "Validate block chain integrity"
+      ],
+      "hints": [
+        "Use Vec<Block> to store blocks",
+        "Genesis block has index 0 and previous_hash \"0\"",
+        "Each new block links to previous block's hash",
+        "Create display functions for blocks"
+      ],
+      "extensions": [
+        "Add transaction support to blocks",
+        "Implement block validation",
+        "Add search by block index or hash",
+        "Create a simple CLI interface",
+        "Add statistics (total blocks, chain length)"
+      ],
+      "learningOutcomes": [
+        "Understand blockchain structure",
+        "Practice with structs and collections",
+        "Learn block linking mechanism",
+        "Implement basic validation logic"
+      ]
+    },
+    {
+      "id": "project-29-2",
+      "title": "Blockchain Simulator",
+      "description": "Create a simulator that demonstrates how blocks are added to a blockchain. Show the chain growing over time with visual output.",
+      "difficulty": "medium",
+      "estimatedTime": 3,
+      "requirements": [
+        "Create a blockchain with genesis block",
+        "Simulate adding blocks over time",
+        "Display each block addition",
+        "Show chain structure visually",
+        "Track blockchain height",
+        "Verify chain integrity after each addition"
+      ],
+      "hints": [
+        "Use a loop to simulate block creation",
+        "Generate simple hashes for blocks",
+        "Display block information in a readable format",
+        "Check that each block links correctly"
+      ],
+      "extensions": [
+        "Add timestamps to blocks",
+        "Simulate multiple miners",
+        "Add difficulty adjustment",
+        "Create a simple visualization",
+        "Export blockchain to JSON"
+      ],
+      "learningOutcomes": [
+        "Understand blockchain growth",
+        "Practice with loops and iteration",
+        "Learn block validation",
+        "Work with timestamps"
+      ]
+    },
+    {
+      "id": "project-29-3",
+      "title": "Blockchain Data Validator",
+      "description": "Build a tool that validates blockchain data integrity. Check that all blocks are properly linked and no data has been tampered with.",
+      "difficulty": "hard",
+      "estimatedTime": 5,
+      "requirements": [
+        "Create functions to validate block structure",
+        "Check that previous_hash matches previous block",
+        "Verify block indices are sequential",
+        "Detect any chain breaks or invalid links",
+        "Report validation results",
+        "Handle edge cases (empty chain, single block)"
+      ],
+      "hints": [
+        "Iterate through blocks and check each one",
+        "Compare current.previous_hash with previous.hash",
+        "Check index increments by 1",
+        "Return detailed error messages"
+      ],
+      "extensions": [
+        "Add hash verification (if you implement hashing)",
+        "Check for duplicate blocks",
+        "Validate block timestamps",
+        "Create detailed validation report",
+        "Support partial chain validation"
+      ],
+      "learningOutcomes": [
+        "Master blockchain validation",
+        "Practice error handling",
+        "Learn defensive programming",
+        "Understand blockchain security"
+      ]
+    }
   ]
 }

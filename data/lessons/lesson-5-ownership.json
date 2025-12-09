@@ -56,5 +56,75 @@
       ],
       "difficulty": "medium"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-5-1",
+      "title": "Transaction Processor with Ownership",
+      "description": "Build a transaction processor that demonstrates ownership. Process transactions by moving them, ensuring each transaction is only processed once.",
+      "difficulty": "medium",
+      "estimatedTime": 4,
+      "requirements": [
+        "Create Transaction struct",
+        "Function that takes ownership of transaction",
+        "Process transaction (consume it)",
+        "Prevent double-processing using ownership",
+        "Handle multiple transactions",
+        "Demonstrate move semantics"
+      ],
+      "hints": [
+        "Use move semantics to consume transactions",
+        "Once processed, transaction can't be used again",
+        "Use Vec and drain to process batches",
+        "Show ownership transfer clearly"
+      ],
+      "extensions": [
+        "Add transaction queue",
+        "Implement transaction prioritization",
+        "Add rollback mechanism",
+        "Support transaction batching",
+        "Add ownership tracking"
+      ],
+      "learningOutcomes": [
+        "Master ownership system",
+        "Understand move semantics",
+        "Learn to prevent double-processing",
+        "Practice with ownership in real scenarios"
+      ]
+    },
+    {
+      "id": "project-5-2",
+      "title": "Blockchain State Manager",
+      "description": "Create a state manager that demonstrates ownership of blockchain state. Transfer ownership of state between functions safely.",
+      "difficulty": "medium",
+      "estimatedTime": 4,
+      "requirements": [
+        "Create BlockchainState struct",
+        "Functions that take ownership of state",
+        "Functions that return ownership",
+        "Demonstrate state transitions",
+        "Show scope and ownership",
+        "Handle state updates"
+      ],
+      "hints": [
+        "State should be moved between functions",
+        "Return state after modifications",
+        "Use ownership to ensure single state",
+        "Demonstrate scope-based cleanup"
+      ],
+      "extensions": [
+        "Add state validation",
+        "Implement state snapshots",
+        "Add state history",
+        "Support state rollback",
+        "Create state persistence"
+      ],
+      "learningOutcomes": [
+        "Understand ownership in state management",
+        "Learn safe state transitions",
+        "Practice with ownership patterns",
+        "Master Rust's memory safety"
+      ]
+    }
   ]
 }

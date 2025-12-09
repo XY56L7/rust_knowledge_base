@@ -55,5 +55,109 @@
       ],
       "difficulty": "medium"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-23-1",
+      "title": "Parallel Blockchain Validator",
+      "description": "Build a blockchain validator that uses multiple threads to validate blocks in parallel. Each thread validates a different block simultaneously.",
+      "difficulty": "hard",
+      "estimatedTime": 8,
+      "requirements": [
+        "Create a thread pool for validation",
+        "Distribute blocks across threads",
+        "Validate blocks in parallel",
+        "Collect validation results",
+        "Handle thread synchronization",
+        "Report validation statistics"
+      ],
+      "hints": [
+        "Use Vec<JoinHandle> to manage threads",
+        "Split blocks into chunks for each thread",
+        "Use channels to collect results",
+        "Join all threads before proceeding"
+      ],
+      "extensions": [
+        "Add thread pool with configurable size",
+        "Implement work stealing",
+        "Add progress tracking",
+        "Support cancellation",
+        "Add performance metrics"
+      ],
+      "learningOutcomes": [
+        "Master thread-based concurrency",
+        "Learn parallel processing",
+        "Understand thread synchronization",
+        "Practice with thread pools"
+      ]
+    },
+    {
+      "id": "project-23-2",
+      "title": "Multi-Threaded Transaction Processor",
+      "description": "Create a transaction processor that uses threads to process multiple transactions concurrently. Each thread handles a batch of transactions.",
+      "difficulty": "medium",
+      "estimatedTime": 6,
+      "requirements": [
+        "Create worker threads for transaction processing",
+        "Use channels to distribute transactions",
+        "Process transactions in parallel",
+        "Collect results from all threads",
+        "Handle errors gracefully",
+        "Display processing statistics"
+      ],
+      "hints": [
+        "Use mpsc channels for work distribution",
+        "Create multiple worker threads",
+        "Send transactions to workers",
+        "Collect results with another channel"
+      ],
+      "extensions": [
+        "Add transaction prioritization",
+        "Implement load balancing",
+        "Add retry mechanism",
+        "Support dynamic thread count",
+        "Add transaction batching"
+      ],
+      "learningOutcomes": [
+        "Understand worker thread pattern",
+        "Learn channel-based communication",
+        "Practice with concurrent processing",
+        "Master thread coordination"
+      ]
+    },
+    {
+      "id": "project-23-3",
+      "title": "Parallel Block Miner",
+      "description": "Build a block miner that uses multiple threads to search for valid nonces in parallel. Each thread searches a different nonce range.",
+      "difficulty": "hard",
+      "estimatedTime": 10,
+      "requirements": [
+        "Split nonce search space across threads",
+        "Each thread searches its assigned range",
+        "Stop all threads when solution found",
+        "Use atomic operations for coordination",
+        "Report which thread found the solution",
+        "Measure mining performance"
+      ],
+      "hints": [
+        "Use Arc<AtomicBool> for cancellation",
+        "Divide nonce range by thread count",
+        "Use atomic operations to signal completion",
+        "Join threads and check results"
+      ],
+      "extensions": [
+        "Add difficulty adjustment",
+        "Implement mining statistics",
+        "Support multiple mining algorithms",
+        "Add GPU acceleration hints",
+        "Create mining pool simulation"
+      ],
+      "learningOutcomes": [
+        "Master parallel algorithms",
+        "Learn atomic operations",
+        "Understand thread cancellation",
+        "Practice with performance optimization"
+      ]
+    }
   ]
 }

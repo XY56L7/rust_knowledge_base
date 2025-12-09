@@ -73,22 +73,35 @@
       ]
     },
     {
-      "id": "chapter-7-blockchain-basics",
-      "title": "7. Blockchain Fundamentals",
-      "description": "Understanding blockchain architecture and core concepts",
+      "id": "chapter-7-advanced-rust",
+      "title": "7. Advanced Rust for Blockchain",
+      "description": "Advanced Rust features essential for complex blockchain development",
       "order": 7,
+      "lessons": [
+        "lesson-20-generics",
+        "lesson-21-traits",
+        "lesson-22-trait-bounds",
+        "lesson-65-advanced-traits"
+      ]
+    },
+    {
+      "id": "chapter-8-blockchain-basics",
+      "title": "8. Blockchain Fundamentals",
+      "description": "Understanding blockchain architecture and core concepts",
+      "order": 8,
       "lessons": [
         "lesson-29-blockchain-intro",
         "lesson-30-blocks-transactions",
         "lesson-31-hash-functions",
-        "lesson-32-merkle-trees"
+        "lesson-32-merkle-trees",
+        "lesson-74-merkle-patricia-trees"
       ]
     },
     {
-      "id": "chapter-8-cryptography",
-      "title": "8. Cryptography for Blockchain",
+      "id": "chapter-9-cryptography",
+      "title": "9. Cryptography for Blockchain",
       "description": "Cryptographic primitives essential for blockchain security",
-      "order": 8,
+      "order": 9,
       "lessons": [
         "lesson-33-cryptographic-hashes",
         "lesson-34-digital-signatures",
@@ -97,32 +110,37 @@
       ]
     },
     {
-      "id": "chapter-9-consensus",
-      "title": "9. Consensus Mechanisms",
+      "id": "chapter-10-consensus",
+      "title": "10. Consensus Mechanisms",
       "description": "Implementing consensus algorithms in Rust",
-      "order": 9,
+      "order": 10,
       "lessons": [
         "lesson-37-proof-of-work",
         "lesson-38-proof-of-stake",
-        "lesson-39-consensus-implementation"
+        "lesson-39-consensus-implementation",
+        "lesson-68-advanced-consensus"
       ]
     },
     {
-      "id": "chapter-10-smart-contracts",
-      "title": "10. Smart Contracts & WebAssembly",
+      "id": "chapter-11-smart-contracts",
+      "title": "11. Smart Contracts & WebAssembly",
       "description": "Building and deploying smart contracts with Rust",
-      "order": 10,
+      "order": 11,
       "lessons": [
+        "lesson-39-smart-contract-fundamentals",
         "lesson-40-wasm-basics",
         "lesson-41-smart-contract-structure",
-        "lesson-42-contract-testing"
+        "lesson-42-contract-testing",
+        "lesson-83-smart-contract-deployment",
+        "lesson-84-smart-contract-security",
+        "lesson-85-smart-contract-events"
       ]
     },
     {
-      "id": "chapter-11-networking",
-      "title": "11. P2P Networking",
+      "id": "chapter-12-networking",
+      "title": "12. P2P Networking",
       "description": "Building peer-to-peer networks for blockchain",
-      "order": 11,
+      "order": 12,
       "lessons": [
         "lesson-43-p2p-networking",
         "lesson-44-message-protocols",
@@ -130,10 +148,10 @@
       ]
     },
     {
-      "id": "chapter-12-advanced",
-      "title": "12. Advanced Blockchain Topics",
+      "id": "chapter-13-advanced",
+      "title": "13. Advanced Blockchain Topics",
       "description": "Advanced patterns and optimization for blockchain development",
-      "order": 12,
+      "order": 13,
       "lessons": [
         "lesson-46-state-management",
         "lesson-47-transaction-pool",
@@ -141,14 +159,45 @@
         "lesson-49-building-blockchain",
         "lesson-50-blockchain-libraries",
         "lesson-51-wallet-implementation",
-        "lesson-52-dex-implementation"
+        "lesson-52-dex-implementation",
+        "lesson-66-zero-knowledge-proofs",
+        "lesson-67-layer2-solutions",
+        "lesson-72-advanced-testing",
+        "lesson-73-substrate-framework",
+        "lesson-75-gas-mechanisms",
+        "lesson-76-solana-programming",
+        "lesson-77-oracle-integration",
+        "lesson-78-dao-governance",
+        "lesson-79-mev-protection",
+        "lesson-80-advanced-defi",
+        "lesson-81-nft-marketplace",
+        "lesson-82-advanced-cryptography"
       ]
     },
     {
-      "id": "chapter-13-deployment",
-      "title": "13. Deployment & Operations",
+      "id": "chapter-14-defi-tokens",
+      "title": "14. DeFi and Token Standards",
+      "description": "Building DeFi protocols and implementing token standards",
+      "order": 14,
+      "lessons": [
+        "lesson-69-token-standards",
+        "lesson-70-defi-protocols"
+      ]
+    },
+    {
+      "id": "chapter-15-cross-chain",
+      "title": "15. Cross-Chain Interoperability",
+      "description": "Building bridges and enabling cross-chain communication",
+      "order": 15,
+      "lessons": [
+        "lesson-71-cross-chain"
+      ]
+    },
+    {
+      "id": "chapter-16-deployment",
+      "title": "16. Deployment & Operations",
       "description": "Deploying and operating Rust blockchain applications in production",
-      "order": 13,
+      "order": 16,
       "lessons": [
         "lesson-53-deployment-basics",
         "lesson-54-docker-deployment",
@@ -159,10 +208,10 @@
       ]
     },
     {
-      "id": "chapter-14-architecture",
-      "title": "14. Project Architecture & Structure",
+      "id": "chapter-17-architecture",
+      "title": "17. Project Architecture & Structure",
       "description": "Best practices for organizing Rust projects and common architecture patterns",
-      "order": 14,
+      "order": 17,
       "lessons": [
         "lesson-59-rust-project-structure",
         "lesson-60-layered-architecture",
@@ -170,6 +219,24 @@
         "lesson-62-api-architecture",
         "lesson-63-microservices-architecture",
         "lesson-64-frontend-integration"
+      ]
+    },
+    {
+      "id": "chapter-18-rust-tooling",
+      "title": "18. Rust Tooling Ecosystem",
+      "description": "Master Rust's development tools: Cargo, Rustfmt, Clippy, documentation, testing, and CI/CD",
+      "order": 18,
+      "lessons": [
+        "lesson-83-rust-tooling-ecosystem"
+      ]
+    },
+    {
+      "id": "chapter-19-interview-preparation",
+      "title": "19. Interview Preparation",
+      "description": "Common interview questions and answers for Rust blockchain developers at junior and medior levels",
+      "order": 19,
+      "lessons": [
+        "lesson-86-rust-blockchain-interview"
       ]
     }
   ]

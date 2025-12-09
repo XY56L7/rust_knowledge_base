@@ -47,5 +47,74 @@
       ],
       "difficulty": "easy"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-3-1",
+      "title": "Blockchain Data Type Converter",
+      "description": "Create a utility that converts between different blockchain data representations. Convert between wei and ETH, handle addresses, and format block numbers.",
+      "difficulty": "easy",
+      "estimatedTime": 2,
+      "requirements": [
+        "Convert wei to ETH and vice versa",
+        "Format blockchain addresses",
+        "Display block numbers with formatting",
+        "Handle different integer types (u64, u128)",
+        "Convert between hex and decimal",
+        "Validate address formats"
+      ],
+      "hints": [
+        "1 ETH = 1e18 wei",
+        "Use string formatting for addresses",
+        "Use type casting for conversions",
+        "Create helper functions for each conversion"
+      ],
+      "extensions": [
+        "Support multiple cryptocurrencies",
+        "Add unit tests",
+        "Create a CLI interface",
+        "Add error handling",
+        "Support batch conversions"
+      ],
+      "learningOutcomes": [
+        "Practice with different data types",
+        "Learn type conversions",
+        "Understand blockchain data formats",
+        "Work with large numbers"
+      ]
+    },
+    {
+      "id": "project-3-2",
+      "title": "Transaction Data Structure",
+      "description": "Build a program that creates and displays transaction data using appropriate Rust types. Practice with structs, tuples, and type annotations.",
+      "difficulty": "easy",
+      "estimatedTime": 2,
+      "requirements": [
+        "Create transaction data using appropriate types",
+        "Use u64 for amounts and fees",
+        "Use String for addresses",
+        "Use bool for validation flags",
+        "Display formatted transaction information",
+        "Create multiple sample transactions"
+      ],
+      "hints": [
+        "Use tuples or prepare for structs",
+        "Format output nicely",
+        "Use appropriate types for each field",
+        "Practice with type annotations"
+      ],
+      "extensions": [
+        "Add transaction validation",
+        "Calculate total transaction value",
+        "Support multiple transaction types",
+        "Add transaction status tracking"
+      ],
+      "learningOutcomes": [
+        "Understand type selection",
+        "Practice with compound types",
+        "Learn data modeling",
+        "Work with blockchain data structures"
+      ]
+    }
   ]
 }

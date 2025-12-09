@@ -1,0 +1,108 @@
+{
+  "id": "lesson-85-smart-contract-events",
+  "title": "Smart Contract Events & Logging",
+  "description": "Implementing events and logging in smart contracts for transparency and off-chain monitoring.",
+  "content": "# Smart Contract Events & Logging\n\nEvents allow smart contracts to communicate with off-chain applications. They're essential for transparency and monitoring.\n\n## Why Events?\n\n- **Transparency**: Log all important actions\n- **Off-chain Integration**: DApps can listen to events\n- **Indexing**: Easy to query historical data\n- **Debugging**: Track contract execution\n- **Analytics**: Monitor contract usage\n\n## Event Structure\n\n```rust\n#[derive(Serialize, Deserialize, Debug, Clone)]\npub struct Event {\n    pub event_type: String,\n    pub contract_address: String,\n    pub data: EventData,\n    pub block_height: u64,\n    pub tx_hash: String,\n    pub timestamp: u64,\n}\n\n#[derive(Serialize, Deserialize, Debug, Clone)]\npub enum EventData {\n    Transfer {\n        from: String,\n        to: String,\n        amount: u64,\n    },\n    Approval {\n        owner: String,\n        spender: String,\n        amount: u64,\n    },\n    Mint {\n        to: String,\n        amount: u64,\n    },\n    Burn {\n        from: String,\n        amount: u64,\n    },\n}\n```\n\n## Event Emitter\n\n```rust\nstruct EventEmitter {\n    events: Vec<Event>,\n}\n\nimpl EventEmitter {\n    fn new() -> Self {\n        EventEmitter {\n            events: Vec::new(),\n        }\n    }\n    \n    fn emit(\n        &mut self,\n        event_type: String,\n        contract_address: String,\n        data: EventData,\n        block_height: u64,\n        tx_hash: String,\n    ) {\n        let event = Event {\n            event_type,\n            contract_address,\n            data,\n            block_height,\n            tx_hash,\n            timestamp: current_timestamp(),\n        };\n        \n        self.events.push(event);\n    }\n    \n    fn get_events(&self, event_type: Option<&str>) -> Vec<&Event> {\n        if let Some(et) = event_type {\n            self.events.iter()\n                .filter(|e| e.event_type == et)\n                .collect()\n        } else {\n            self.events.iter().collect()\n        }\n    }\n}\n```\n\n## Token Contract with Events\n\n```rust\nstruct TokenContract {\n    name: String,\n    symbol: String,\n    total_supply: u64,\n    balances: HashMap<String, u64>,\n    event_emitter: EventEmitter,\n    contract_address: String,\n}\n\nimpl TokenContract {\n    fn transfer(\n        &mut self,\n        from: String,\n        to: String,\n        amount: u64,\n        tx_hash: String,\n        block_height: u64,\n    ) -> Result<(), String> {\n        // Validate and transfer\n        let balance = self.balances.get(&from).copied().unwrap_or(0);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        *self.balances.entry(from.clone()).or_insert(0) -= amount;\n        *self.balances.entry(to.clone()).or_insert(0) += amount;\n        \n        // Emit Transfer event\n        self.event_emitter.emit(\n            String::from(\"Transfer\"),\n            self.contract_address.clone(),\n            EventData::Transfer {\n                from,\n                to,\n                amount,\n            },\n            block_height,\n            tx_hash,\n        );\n        \n        Ok(())\n    }\n    \n    fn mint(\n        &mut self,\n        to: String,\n        amount: u64,\n        tx_hash: String,\n        block_height: u64,\n    ) {\n        *self.balances.entry(to.clone()).or_insert(0) += amount;\n        self.total_supply += amount;\n        \n        // Emit Mint event\n        self.event_emitter.emit(\n            String::from(\"Mint\"),\n            self.contract_address.clone(),\n            EventData::Mint { to, amount },\n            block_height,\n            tx_hash,\n        );\n    }\n}\n```\n\n## Event Indexing\n\n```rust\nstruct EventIndex {\n    by_type: HashMap<String, Vec<usize>>,\n    by_contract: HashMap<String, Vec<usize>>,\n    by_address: HashMap<String, Vec<usize>>,\n}\n\nimpl EventIndex {\n    fn new() -> Self {\n        EventIndex {\n            by_type: HashMap::new(),\n            by_contract: HashMap::new(),\n            by_address: HashMap::new(),\n        }\n    }\n    \n    fn index_event(&mut self, event: &Event, index: usize) {\n        // Index by type\n        self.by_type\n            .entry(event.event_type.clone())\n            .or_insert_with(Vec::new)\n            .push(index);\n        \n        // Index by contract\n        self.by_contract\n            .entry(event.contract_address.clone())\n            .or_insert_with(Vec::new)\n            .push(index);\n        \n        // Index by address (from Transfer events)\n        if let EventData::Transfer { from, to, .. } = &event.data {\n            self.by_address\n                .entry(from.clone())\n                .or_insert_with(Vec::new)\n                .push(index);\n            self.by_address\n                .entry(to.clone())\n                .or_insert_with(Vec::new)\n                .push(index);\n        }\n    }\n    \n    fn query_by_type(&self, event_type: &str) -> Vec<usize> {\n        self.by_type.get(event_type).cloned().unwrap_or_default()\n    }\n    \n    fn query_by_contract(&self, contract: &str) -> Vec<usize> {\n        self.by_contract.get(contract).cloned().unwrap_or_default()\n    }\n    \n    fn query_by_address(&self, address: &str) -> Vec<usize> {\n        self.by_address.get(address).cloned().unwrap_or_default()\n    }\n}\n```\n\n## Event Query Interface\n\n```rust\nstruct EventQuery {\n    events: Vec<Event>,\n    index: EventIndex,\n}\n\nimpl EventQuery {\n    fn new() -> Self {\n        EventQuery {\n            events: Vec::new(),\n            index: EventIndex::new(),\n        }\n    }\n    \n    fn add_event(&mut self, event: Event) {\n        let index = self.events.len();\n        self.events.push(event.clone());\n        self.index.index_event(&event, index);\n    }\n    \n    fn get_transfers(&self, address: &str) -> Vec<&Event> {\n        let indices = self.index.query_by_address(address);\n        indices.iter()\n            .filter_map(|&i| self.events.get(i))\n            .filter(|e| matches!(e.data, EventData::Transfer { .. }))\n            .collect()\n    }\n    \n    fn get_contract_events(&self, contract: &str, event_type: Option<&str>) -> Vec<&Event> {\n        let indices = self.index.query_by_contract(contract);\n        indices.iter()\n            .filter_map(|&i| self.events.get(i))\n            .filter(|e| {\n                if let Some(et) = event_type {\n                    e.event_type == et\n                } else {\n                    true\n                }\n            })\n            .collect()\n    }\n}\n```\n\n## Best Practices\n\n1. **Emit for All State Changes**: Log important actions\n2. **Include Relevant Data**: All data needed for off-chain processing\n3. **Use Consistent Naming**: Standard event names\n4. **Index Events**: For efficient querying\n5. **Gas Consideration**: Events cost gas, but are worth it\n6. **Event Standards**: Follow platform-specific standards\n\n## Event Standards\n\n### ERC-20 Events\n\n```rust\n// Transfer event\nEventData::Transfer {\n    from: String,\n    to: String,\n    amount: u64,\n}\n\n// Approval event\nEventData::Approval {\n    owner: String,\n    spender: String,\n    amount: u64,\n}\n```\n\n### ERC-721 Events\n\n```rust\n// Transfer event\nEventData::Transfer {\n    from: String,\n    to: String,\n    token_id: u64,\n}\n\n// Approval event\nEventData::Approval {\n    owner: String,\n    approved: String,\n    token_id: u64,\n}\n```\n\n## Event Monitoring\n\n```rust\nstruct EventMonitor {\n    subscribers: HashMap<String, Vec<Box<dyn Fn(&Event)>>>,\n}\n\nimpl EventMonitor {\n    fn new() -> Self {\n        EventMonitor {\n            subscribers: HashMap::new(),\n        }\n    }\n    \n    fn subscribe(&mut self, event_type: String, callback: Box<dyn Fn(&Event)>) {\n        self.subscribers\n            .entry(event_type)\n            .or_insert_with(Vec::new)\n            .push(callback);\n    }\n    \n    fn notify(&self, event: &Event) {\n        if let Some(callbacks) = self.subscribers.get(&event.event_type) {\n            for callback in callbacks {\n                callback(event);\n            }\n        }\n    }\n}\n```\n\n## Use Cases\n\n- **DApp Integration**: Frontend listens to events\n- **Analytics**: Track contract usage\n- **Notifications**: Alert users of important events\n- **Indexing**: Build searchable event databases\n- **Compliance**: Audit trail of all actions",
+  "difficulty": "advanced",
+  "estimatedTime": 50,
+  "prerequisites": [
+    "lesson-41-smart-contract-structure"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-85-1-event-emission",
+      "title": "Event Emission",
+      "description": "Emitting events from a contract",
+      "code": "use std::collections::HashMap;\n\n#[derive(Clone, Debug)]\nstruct Event {\n    event_type: String,\n    data: String,\n    block_height: u64,\n}\n\nstruct EventEmitter {\n    events: Vec<Event>,\n}\n\nimpl EventEmitter {\n    fn new() -> Self {\n        EventEmitter { events: Vec::new() }\n    }\n    \n    fn emit(&mut self, event_type: String, data: String, block_height: u64) {\n        self.events.push(Event {\n            event_type,\n            data,\n            block_height,\n        });\n    }\n    \n    fn get_events(&self, event_type: Option<&str>) -> Vec<&Event> {\n        if let Some(et) = event_type {\n            self.events.iter()\n                .filter(|e| e.event_type == et)\n                .collect()\n        } else {\n            self.events.iter().collect()\n        }\n    }\n}\n\nstruct TokenContract {\n    balances: HashMap<String, u64>,\n    emitter: EventEmitter,\n}\n\nimpl TokenContract {\n    fn new() -> Self {\n        TokenContract {\n            balances: HashMap::new(),\n            emitter: EventEmitter::new(),\n        }\n    }\n    \n    fn transfer(\n        &mut self,\n        from: String,\n        to: String,\n        amount: u64,\n        block_height: u64,\n    ) -> Result<(), String> {\n        let balance = self.balances.get(&from).copied().unwrap_or(0);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        *self.balances.entry(from.clone()).or_insert(0) -= amount;\n        *self.balances.entry(to.clone()).or_insert(0) += amount;\n        \n        // Emit Transfer event\n        let event_data = format!(\"from: {}, to: {}, amount: {}\", from, to, amount);\n        self.emitter.emit(\n            String::from(\"Transfer\"),\n            event_data,\n            block_height,\n        );\n        \n        Ok(())\n    }\n    \n    fn get_transfer_events(&self) -> Vec<&Event> {\n        self.emitter.get_events(Some(\"Transfer\"))\n    }\n}\n\nfn main() {\n    let mut contract = TokenContract::new();\n    contract.balances.insert(String::from(\"alice\"), 1000);\n    \n    contract.transfer(\n        String::from(\"alice\"),\n        String::from(\"bob\"),\n        500,\n        100,\n    ).unwrap();\n    \n    for event in contract.get_transfer_events() {\n        println!(\"Event: {} - {}\", event.event_type, event.data);\n    }\n}",
+      "explanation": "Events are emitted when important actions occur. They provide a log of all contract activities that can be queried off-chain.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-85-1",
+      "title": "Add Events to Contract",
+      "description": "Add event emission to a contract function!",
+      "starterCode": "struct Contract {\n    value: u64,\n    events: Vec<String>,\n}\n\nimpl Contract {\n    fn set_value(&mut self, new_value: u64) {\n        self.value = new_value;\n        // Emit event here\n    }\n}\n\nfn main() {\n    let mut contract = Contract {\n        value: 0,\n        events: Vec::new(),\n    };\n    \n    contract.set_value(100);\n    println!(\"Events: {:?}\", contract.events);\n}",
+      "solution": "struct Contract {\n    value: u64,\n    events: Vec<String>,\n}\n\nimpl Contract {\n    fn set_value(&mut self, new_value: u64) {\n        self.value = new_value;\n        \n        // Emit ValueChanged event\n        let event = format!(\"ValueChanged: {}\", new_value);\n        self.events.push(event);\n    }\n}\n\nfn main() {\n    let mut contract = Contract {\n        value: 0,\n        events: Vec::new(),\n    };\n    \n    contract.set_value(100);\n    println!(\"Events: {:?}\", contract.events);\n}",
+      "hints": [
+        "Create event string",
+        "Push to events vector",
+        "Include relevant data in event"
+      ],
+      "difficulty": "easy"
+    }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-85-1",
+      "title": "Event Indexer and Query System",
+      "description": "Build a system that indexes contract events and provides querying capabilities. Support filtering by type, contract, address, and time range.",
+      "difficulty": "hard",
+      "estimatedTime": 12,
+      "requirements": [
+        "Event storage system",
+        "Event indexing by multiple fields",
+        "Query interface",
+        "Filter by event type",
+        "Filter by contract address",
+        "Filter by user address",
+        "Time range queries"
+      ],
+      "hints": [
+        "Use HashMap for indexing",
+        "Store events in chronological order",
+        "Support multiple index types",
+        "Implement efficient queries"
+      ],
+      "extensions": [
+        "Add event search",
+        "Implement event aggregation",
+        "Add real-time event streaming",
+        "Create event analytics",
+        "Support event export"
+      ],
+      "learningOutcomes": [
+        "Master event indexing",
+        "Learn query optimization",
+        "Understand event patterns",
+        "Practice with data structures"
+      ]
+    },
+    {
+      "id": "project-85-2",
+      "title": "Event-Driven DApp Backend",
+      "description": "Create a backend service that listens to contract events and processes them. Support webhooks, notifications, and event-driven workflows.",
+      "difficulty": "hard",
+      "estimatedTime": 15,
+      "requirements": [
+        "Event listener service",
+        "Event processing pipeline",
+        "Webhook support",
+        "Notification system",
+        "Event filtering",
+        "Error handling"
+      ],
+      "hints": [
+        "Use async for event listening",
+        "Implement event queue",
+        "Support multiple subscribers",
+        "Handle event failures gracefully"
+      ],
+      "extensions": [
+        "Add event transformation",
+        "Implement event batching",
+        "Add retry mechanism",
+        "Create event dashboard",
+        "Support event replay"
+      ],
+      "learningOutcomes": [
+        "Master event-driven architecture",
+        "Learn async event processing",
+        "Understand webhook patterns",
+        "Practice with backend services"
+      ]
+    }
+  ]
+}
+

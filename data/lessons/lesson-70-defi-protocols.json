@@ -1,0 +1,189 @@
+{
+  "id": "lesson-70-defi-protocols",
+  "title": "DeFi Protocols: Lending, AMM, and Staking",
+  "description": "Building decentralized finance protocols: lending platforms, automated market makers, and staking systems.",
+  "content": "# DeFi Protocols: Lending, AMM, and Staking\n\nDecentralized Finance (DeFi) protocols enable financial services without intermediaries.\n\n## DeFi Building Blocks\n\n### 1. Lending Protocols\n\n**Lending protocols** allow users to lend and borrow assets with interest.\n\n#### Key Components\n\n- **Liquidity Pools**: Users deposit assets\n- **Interest Rates**: Algorithmic based on supply/demand\n- **Collateralization**: Borrowers must over-collateralize\n- **Liquidation**: Under-collateralized positions are liquidated\n\n#### Example: Compound/Aave Model\n\n```rust\nstruct LendingPool {\n    assets: HashMap<String, AssetPool>,\n    interest_rate_model: InterestRateModel,\n}\n\nstruct AssetPool {\n    total_supply: u64,\n    total_borrowed: u64,\n    reserve_factor: u8, // Percentage kept as reserve\n    liquidity_index: f64, // Tracks interest accrual\n}\n\nimpl LendingPool {\n    fn supply(&mut self, asset: &str, amount: u64) -> Result<(), String> {\n        // Add to pool, mint interest-bearing tokens\n    }\n    \n    fn borrow(&mut self, asset: &str, amount: u64, collateral: &str) -> Result<(), String> {\n        // Check collateralization ratio\n        // Transfer borrowed asset\n        // Track debt with interest\n    }\n    \n    fn calculate_interest(&mut self, asset: &str) {\n        // Update liquidity index based on utilization\n    }\n}\n```\n\n### 2. Automated Market Makers (AMM)\n\n**AMMs** enable token swaps without order books using liquidity pools.\n\n#### Constant Product Formula (Uniswap)\n\n`x * y = k`\n\n- `x`: Amount of token A\n- `y`: Amount of token B\n- `k`: Constant (invariant)\n\n#### Implementation\n\n```rust\nstruct AMMPool {\n    token_a: String,\n    token_b: String,\n    reserve_a: u64,\n    reserve_b: u64,\n    total_supply: u64, // LP tokens\n}\n\nimpl AMMPool {\n    fn swap_a_for_b(&mut self, amount_a: u64) -> Result<u64, String> {\n        let k = self.reserve_a * self.reserve_b;\n        \n        let new_reserve_a = self.reserve_a + amount_a;\n        let new_reserve_b = k / new_reserve_a;\n        \n        let amount_b = self.reserve_b - new_reserve_b;\n        \n        if amount_b == 0 {\n            return Err(String::from(\"Insufficient liquidity\"));\n        }\n        \n        self.reserve_a = new_reserve_a;\n        self.reserve_b = new_reserve_b;\n        \n        Ok(amount_b)\n    }\n    \n    fn add_liquidity(&mut self, amount_a: u64, amount_b: u64) -> u64 {\n        // Calculate LP tokens to mint\n        let lp_tokens = if self.total_supply == 0 {\n            (amount_a * amount_b).sqrt() // Geometric mean\n        } else {\n            let share_a = (amount_a * self.total_supply) / self.reserve_a;\n            let share_b = (amount_b * self.total_supply) / self.reserve_b;\n            share_a.min(share_b)\n        };\n        \n        self.reserve_a += amount_a;\n        self.reserve_b += amount_b;\n        self.total_supply += lp_tokens;\n        \n        lp_tokens\n    }\n}\n```\n\n### 3. Staking Protocols\n\n**Staking** allows users to lock tokens to earn rewards.\n\n#### Features\n\n- **Lock Periods**: Optional time locks for higher rewards\n- **Reward Distribution**: Based on stake amount and duration\n- **Slashing**: Penalties for misbehavior\n- **Delegation**: Stake through validators\n\n```rust\nstruct StakingPool {\n    total_staked: u64,\n    stakers: HashMap<String, StakeInfo>,\n    reward_rate: u64, // Rewards per block\n    lock_periods: HashMap<u64, u64>, // Duration -> multiplier\n}\n\nstruct StakeInfo {\n    amount: u64,\n    lock_until: Option<u64>,\n    rewards_earned: u64,\n}\n\nimpl StakingPool {\n    fn stake(&mut self, staker: &str, amount: u64, lock_duration: Option<u64>) {\n        let lock_until = lock_duration.map(|d| current_block() + d);\n        \n        let mut info = self.stakers.entry(staker.to_string()).or_insert(StakeInfo {\n            amount: 0,\n            lock_until: None,\n            rewards_earned: 0,\n        });\n        \n        info.amount += amount;\n        info.lock_until = lock_until;\n        self.total_staked += amount;\n    }\n    \n    fn calculate_rewards(&mut self, staker: &str) -> u64 {\n        let info = self.stakers.get(staker).unwrap();\n        let multiplier = if let Some(lock) = info.lock_until {\n            if current_block() < lock { 2 } else { 1 } // 2x for locked\n        } else {\n            1\n        };\n        \n        let share = (info.amount * self.reward_rate) / self.total_staked;\n        share * multiplier\n    }\n}\n```\n\n## Security Considerations\n\n### Reentrancy\n\n- Use checks-effects-interactions pattern\n- Reentrancy guards\n\n### Oracle Attacks\n\n- Use multiple price oracles\n- Time-weighted average prices\n\n### Flash Loan Attacks\n\n- Validate state before and after operations\n- Limit flash loan usage\n\n### Integer Overflow\n\n- Use checked arithmetic\n- Safe math libraries\n\n## Real-World Examples\n\n- **Lending**: Compound, Aave, MakerDAO\n- **AMM**: Uniswap, SushiSwap, Curve\n- **Staking**: Ethereum 2.0, Cosmos, Polkadot\n\n## Gas Optimization\n\n- Batch operations\n- Storage optimization\n- Efficient data structures\n- Minimal external calls",
+  "difficulty": "advanced",
+  "estimatedTime": 60,
+  "prerequisites": [
+    "lesson-69-token-standards",
+    "lesson-49-building-blockchain"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-70-1-amm-pool",
+      "title": "AMM Pool",
+      "description": "Automated Market Maker with constant product formula",
+      "code": "use std::collections::HashMap;\n\nstruct AMMPool {\n    token_a: String,\n    token_b: String,\n    reserve_a: u64,\n    reserve_b: u64,\n    lp_tokens: HashMap<String, u64>,\n    total_lp_supply: u64,\n}\n\nimpl AMMPool {\n    fn new(token_a: String, token_b: String, initial_a: u64, initial_b: u64) -> Self {\n        AMMPool {\n            token_a,\n            token_b,\n            reserve_a: initial_a,\n            reserve_b: initial_b,\n            lp_tokens: HashMap::new(),\n            total_lp_supply: 0,\n        }\n    }\n    \n    fn swap_a_for_b(&mut self, amount_a: u64) -> Result<u64, String> {\n        if amount_a == 0 {\n            return Err(String::from(\"Amount must be greater than 0\"));\n        }\n        \n        // Constant product: x * y = k\n        let k = self.reserve_a * self.reserve_b;\n        let new_reserve_a = self.reserve_a + amount_a;\n        \n        if new_reserve_a == 0 {\n            return Err(String::from(\"Division by zero\"));\n        }\n        \n        let new_reserve_b = k / new_reserve_a;\n        \n        if new_reserve_b >= self.reserve_b {\n            return Err(String::from(\"Insufficient liquidity\"));\n        }\n        \n        let amount_b = self.reserve_b - new_reserve_b;\n        \n        // Update reserves\n        self.reserve_a = new_reserve_a;\n        self.reserve_b = new_reserve_b;\n        \n        Ok(amount_b)\n    }\n    \n    fn add_liquidity(&mut self, provider: &str, amount_a: u64, amount_b: u64) -> Result<u64, String> {\n        // Calculate LP tokens to mint\n        let lp_tokens = if self.total_lp_supply == 0 {\n            // First liquidity: sqrt(amount_a * amount_b)\n            ((amount_a as f64 * amount_b as f64).sqrt()) as u64\n        } else {\n            // Proportional to existing reserves\n            let share_a = (amount_a * self.total_lp_supply) / self.reserve_a;\n            let share_b = (amount_b * self.total_lp_supply) / self.reserve_b;\n            share_a.min(share_b)\n        };\n        \n        if lp_tokens == 0 {\n            return Err(String::from(\"Insufficient liquidity\"));\n        }\n        \n        // Update reserves\n        self.reserve_a += amount_a;\n        self.reserve_b += amount_b;\n        \n        // Mint LP tokens\n        *self.lp_tokens.entry(provider.to_string()).or_insert(0) += lp_tokens;\n        self.total_lp_supply += lp_tokens;\n        \n        Ok(lp_tokens)\n    }\n    \n    fn get_price(&self) -> f64 {\n        if self.reserve_b == 0 {\n            return 0.0;\n        }\n        self.reserve_a as f64 / self.reserve_b as f64\n    }\n}\n\nfn main() {\n    let mut pool = AMMPool::new(\n        String::from(\"ETH\"),\n        String::from(\"USDC\"),\n        100, // 100 ETH\n        200000, // 200,000 USDC\n    );\n    \n    println!(\"Initial price: {} USDC per ETH\", pool.get_price());\n    \n    // Add liquidity\n    let lp_tokens = pool.add_liquidity(\"alice\", 50, 100000).unwrap();\n    println!(\"Alice received {} LP tokens\", lp_tokens);\n    \n    // Swap ETH for USDC\n    match pool.swap_a_for_b(10) {\n        Ok(usdc_out) => {\n            println!(\"Swapped 10 ETH for {} USDC\", usdc_out);\n            println!(\"New price: {} USDC per ETH\", pool.get_price());\n        }\n        Err(e) => println!(\"Swap failed: {}\", e),\n    }\n}",
+      "explanation": "AMMs use the constant product formula (x * y = k) to determine swap prices. Adding liquidity mints LP tokens proportional to the contribution. Swaps maintain the constant product, automatically adjusting prices based on supply and demand.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-70-2-lending-pool",
+      "title": "Lending Pool",
+      "description": "Simple lending protocol with interest",
+      "code": "use std::collections::HashMap;\n\nstruct LendingPool {\n    total_supplied: u64,\n    total_borrowed: u64,\n    supplies: HashMap<String, u64>,\n    borrows: HashMap<String, u64>,\n    interest_rate: u64, // Basis points (100 = 1%)\n}\n\nimpl LendingPool {\n    fn new() -> Self {\n        LendingPool {\n            total_supplied: 0,\n            total_borrowed: 0,\n            supplies: HashMap::new(),\n            borrows: HashMap::new(),\n            interest_rate: 500, // 5%\n        }\n    }\n    \n    fn supply(&mut self, user: &str, amount: u64) {\n        *self.supplies.entry(user.to_string()).or_insert(0) += amount;\n        self.total_supplied += amount;\n        self.update_interest_rate();\n    }\n    \n    fn borrow(&mut self, user: &str, amount: u64) -> Result<(), String> {\n        // Check collateral (simplified: need 150% collateralization)\n        let collateral = self.supplies.get(user).copied().unwrap_or(0);\n        let existing_debt = self.borrows.get(user).copied().unwrap_or(0);\n        \n        if collateral * 100 < (existing_debt + amount) * 150 {\n            return Err(String::from(\"Insufficient collateral\"));\n        }\n        \n        if amount > self.total_supplied - self.total_borrowed {\n            return Err(String::from(\"Insufficient liquidity\"));\n        }\n        \n        *self.borrows.entry(user.to_string()).or_insert(0) += amount;\n        self.total_borrowed += amount;\n        self.update_interest_rate();\n        \n        Ok(())\n    }\n    \n    fn update_interest_rate(&mut self) {\n        // Simple model: higher utilization = higher rate\n        let utilization = if self.total_supplied > 0 {\n            (self.total_borrowed * 10000) / self.total_supplied\n        } else {\n            0\n        };\n        \n        // Base rate + utilization component\n        self.interest_rate = 300 + (utilization / 10); // 3% base + utilization\n    }\n    \n    fn calculate_interest(&self, principal: u64, blocks: u64) -> u64 {\n        (principal * self.interest_rate * blocks) / (10000 * 100) // Simplified\n    }\n}\n\nfn main() {\n    let mut pool = LendingPool::new();\n    \n    // Users supply assets\n    pool.supply(\"alice\", 10000);\n    pool.supply(\"bob\", 5000);\n    \n    println!(\"Total supplied: {}\", pool.total_supplied);\n    println!(\"Interest rate: {} basis points\", pool.interest_rate);\n    \n    // User borrows\n    match pool.borrow(\"alice\", 3000) {\n        Ok(_) => {\n            println!(\"Alice borrowed 3000\");\n            println!(\"Total borrowed: {}\", pool.total_borrowed);\n            println!(\"New interest rate: {} basis points\", pool.interest_rate);\n            \n            let interest = pool.calculate_interest(3000, 100);\n            println!(\"Interest after 100 blocks: {}\", interest);\n        }\n        Err(e) => println!(\"Borrow failed: {}\", e),\n    }\n}",
+      "explanation": "Lending pools allow users to supply assets (earning interest) and borrow assets (paying interest). Interest rates adjust based on utilization. Borrowers must maintain sufficient collateral to prevent defaults. This enables decentralized lending without banks.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-70-1",
+      "title": "Simple AMM",
+      "description": "Create a simple AMM swap function!",
+      "starterCode": "fn swap(reserve_a: u64, reserve_b: u64, amount_a: u64) -> u64 {\n    // Implement constant product formula\n    // x * y = k\n    0\n}\n\nfn main() {\n    let result = swap(100, 200, 10);\n    println!(\"Swapped 10 tokens A for {} tokens B\", result);\n}",
+      "solution": "fn swap(reserve_a: u64, reserve_b: u64, amount_a: u64) -> u64 {\n    // Constant product: x * y = k\n    let k = reserve_a * reserve_b;\n    let new_reserve_a = reserve_a + amount_a;\n    \n    if new_reserve_a == 0 {\n        return 0;\n    }\n    \n    let new_reserve_b = k / new_reserve_a;\n    \n    if new_reserve_b >= reserve_b {\n        return 0;\n    }\n    \n    reserve_b - new_reserve_b\n}\n\nfn main() {\n    let result = swap(100, 200, 10);\n    println!(\"Swapped 10 tokens A for {} tokens B\", result);\n}",
+      "hints": [
+        "Use constant product formula: k = reserve_a * reserve_b",
+        "Calculate new reserve_b after adding amount_a",
+        "Return the difference as output amount"
+      ],
+      "difficulty": "hard"
+    }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-70-1",
+      "title": "Complete DeFi Platform",
+      "description": "Build a full DeFi platform combining lending, AMM, and staking. Create a unified interface where users can supply liquidity, borrow, swap tokens, and stake.",
+      "difficulty": "hard",
+      "estimatedTime": 30,
+      "requirements": [
+        "Implement lending pool with interest calculation",
+        "Create AMM with multiple pools",
+        "Add staking functionality",
+        "Unified user interface",
+        "Cross-protocol interactions (e.g., stake LP tokens)",
+        "Portfolio tracking across all protocols"
+      ],
+      "hints": [
+        "Start with individual protocols, then integrate",
+        "Use shared token system",
+        "Create unified account system",
+        "Track user positions across protocols"
+      ],
+      "extensions": [
+        "Add yield farming (stake LP tokens for rewards)",
+        "Implement governance token",
+        "Add protocol fees and revenue sharing",
+        "Create analytics dashboard",
+        "Support multiple token types",
+        "Add flash loan functionality"
+      ],
+      "learningOutcomes": [
+        "Master DeFi protocol integration",
+        "Understand cross-protocol interactions",
+        "Learn complex state management",
+        "Practice with financial calculations",
+        "Build production-ready DeFi system"
+      ]
+    },
+    {
+      "id": "project-70-2",
+      "title": "Advanced AMM with Multiple Pools",
+      "description": "Create an advanced AMM supporting multiple token pairs, different fee tiers, and advanced features like concentrated liquidity.",
+      "difficulty": "hard",
+      "estimatedTime": 20,
+      "requirements": [
+        "Support multiple trading pairs",
+        "Different fee tiers (0.05%, 0.3%, 1%)",
+        "LP token tracking per pool",
+        "Price calculation and slippage",
+        "Add/remove liquidity with proper ratios",
+        "Pool statistics and analytics"
+      ],
+      "hints": [
+        "Use HashMap to track multiple pools",
+        "Store pool configuration (tokens, fee)",
+        "Calculate LP tokens based on contribution",
+        "Track fees collected per pool"
+      ],
+      "extensions": [
+        "Implement concentrated liquidity (like Uniswap V3)",
+        "Add price oracles from pools",
+        "Support multi-hop swaps",
+        "Add pool creation by users",
+        "Implement fee distribution to LPs",
+        "Add pool migration functionality"
+      ],
+      "learningOutcomes": [
+        "Master AMM mechanics",
+        "Understand liquidity provision",
+        "Learn price discovery",
+        "Practice with financial mathematics"
+      ]
+    },
+    {
+      "id": "project-70-3",
+      "title": "Yield Farming Protocol",
+      "description": "Build a yield farming system where users can stake tokens, LP tokens, or provide liquidity to earn rewards. Include multiple farms with different reward rates.",
+      "difficulty": "medium",
+      "estimatedTime": 12,
+      "requirements": [
+        "Multiple staking farms",
+        "Support different stake types (single token, LP tokens)",
+        "Reward calculation and distribution",
+        "Lock periods for higher rewards",
+        "Farm creation and management",
+        "User staking/unstaking"
+      ],
+      "hints": [
+        "Create Farm struct for each farm",
+        "Track stakers and their stakes",
+        "Calculate rewards based on time and amount",
+        "Support different reward tokens"
+      ],
+      "extensions": [
+        "Add compound rewards (auto-stake rewards)",
+        "Implement farm governance",
+        "Add referral system",
+        "Create farm analytics",
+        "Support farm migration",
+        "Add emergency pause functionality"
+      ],
+      "learningOutcomes": [
+        "Understand yield farming mechanics",
+        "Learn reward distribution",
+        "Practice with time-based calculations",
+        "Master staking systems"
+      ]
+    },
+    {
+      "id": "project-70-4",
+      "title": "Lending Protocol with Collateral",
+      "description": "Build a complete lending protocol with multiple collateral types, dynamic interest rates, and liquidation system.",
+      "difficulty": "hard",
+      "estimatedTime": 18,
+      "requirements": [
+        "Support multiple collateral assets",
+        "Dynamic interest rate calculation",
+        "Collateralization ratio checking",
+        "Liquidation system with bonuses",
+        "Borrow and repay functionality",
+        "Health factor calculation"
+      ],
+      "hints": [
+        "Track collateral per user per asset",
+        "Calculate total collateral value",
+        "Check health factor before operations",
+        "Implement liquidation with proper incentives"
+      ],
+      "extensions": [
+        "Add flash loans",
+        "Implement interest rate models",
+        "Add collateral factors (different assets have different LTV)",
+        "Support collateral swaps",
+        "Add borrowing limits",
+        "Implement governance for parameters"
+      ],
+      "learningOutcomes": [
+        "Master lending protocol mechanics",
+        "Understand collateral management",
+        "Learn liquidation systems",
+        "Practice with risk management"
+      ]
+    }
+  ]
+}
+

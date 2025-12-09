@@ -36,5 +36,64 @@
       ],
       "difficulty": "easy"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-1-1",
+      "title": "Blockchain Learning Tracker",
+      "description": "Create a simple CLI program that tracks your blockchain learning progress. Display welcome messages, track completed lessons, and show statistics.",
+      "difficulty": "easy",
+      "estimatedTime": 2,
+      "requirements": [
+        "Create a main function that prints welcome messages",
+        "Use variables to track lesson count",
+        "Display formatted output with println!",
+        "Add basic statistics (total lessons, completed lessons)"
+      ],
+      "hints": [
+        "Start with a simple struct to hold progress data",
+        "Use string formatting in println!",
+        "Keep it simple - focus on learning Rust basics"
+      ],
+      "extensions": [
+        "Save progress to a file",
+        "Add color to terminal output",
+        "Create a simple menu system"
+      ],
+      "learningOutcomes": [
+        "Understand Rust program structure",
+        "Practice with println! macro",
+        "Work with basic data types",
+        "Learn Rust project setup with Cargo"
+      ]
+    },
+    {
+      "id": "project-1-2",
+      "title": "Blockchain Terminology Dictionary",
+      "description": "Build a simple program that displays blockchain terminology and definitions. Practice with Rust's string handling and output formatting.",
+      "difficulty": "easy",
+      "estimatedTime": 1,
+      "requirements": [
+        "Create a program that displays blockchain terms",
+        "Use println! to show formatted definitions",
+        "Include at least 5 blockchain terms",
+        "Add a welcome message"
+      ],
+      "hints": [
+        "Use string literals for definitions",
+        "Format output nicely with println!",
+        "Consider using a simple data structure to store terms"
+      ],
+      "extensions": [
+        "Add search functionality",
+        "Read terms from a file",
+        "Add categories for terms"
+      ],
+      "learningOutcomes": [
+        "Practice Rust syntax",
+        "Work with strings",
+        "Understand program organization"
+      ]
+    }
   ]
 }

@@ -1,0 +1,46 @@
+{
+  "id": "lesson-66-zero-knowledge-proofs",
+  "title": "Zero-Knowledge Proofs and Privacy",
+  "description": "Implementing zero-knowledge proofs for privacy-preserving blockchain applications.",
+  "content": "# Zero-Knowledge Proofs and Privacy\n\nZero-knowledge proofs (ZKPs) allow proving knowledge of information without revealing the information itself.\n\n## What are Zero-Knowledge Proofs?\n\nA zero-knowledge proof allows a **prover** to convince a **verifier** that they know a secret without revealing the secret.\n\n### Properties\n\n1. **Completeness**: If the statement is true, an honest prover can convince an honest verifier\n2. **Soundness**: If the statement is false, no prover can convince an honest verifier\n3. **Zero-Knowledge**: The verifier learns nothing about the secret\n\n## Types of ZKPs\n\n### zk-SNARKs (Zero-Knowledge Succinct Non-Interactive Arguments of Knowledge)\n\n- **Succinct**: Proofs are small and fast to verify\n- **Non-Interactive**: No back-and-forth communication needed\n- Used in: Zcash, Tornado Cash, Layer 2 rollups\n\n### zk-STARKs (Zero-Knowledge Scalable Transparent Arguments of Knowledge)\n\n- **Scalable**: Verification time grows slowly with computation\n- **Transparent**: No trusted setup required\n- **Post-Quantum**: Resistant to quantum computers\n\n## Blockchain Applications\n\n### Privacy Coins\n\n- Hide transaction amounts and participants\n- Prove transaction validity without revealing details\n\n### Layer 2 Scaling\n\n- Rollups bundle transactions and prove correctness\n- Reduce on-chain data while maintaining security\n\n### Identity Verification\n\n- Prove age, citizenship, etc. without revealing personal data\n- Selective disclosure of credentials\n\n## Rust Libraries\n\n- **arkworks**: Advanced cryptographic library with ZKP support\n- **bellman**: zk-SNARK implementation\n- **bulletproofs**: Range proofs without trusted setup\n\n## Example: Simple Range Proof\n\n```rust\n// Proving a value is in a range without revealing the value\nstruct RangeProof {\n    commitment: Vec<u8>,\n    proof: Vec<u8>,\n}\n\nfn prove_range(value: u64, min: u64, max: u64) -> RangeProof {\n    // Generate commitment to value\n    // Create proof that value is in [min, max]\n    // Return proof\n}\n\nfn verify_range(proof: &RangeProof, min: u64, max: u64) -> bool {\n    // Verify proof without learning the value\n}\n```\n\n## Privacy Considerations\n\n- **Transaction Graph Analysis**: Even with ZKPs, patterns can leak information\n- **Timing Attacks**: When transactions occur can reveal relationships\n- **Amount Correlation**: Similar amounts might link transactions\n\n## Real-World Examples\n\n- **Zcash**: Uses zk-SNARKs for shielded transactions\n- **Tornado Cash**: Privacy mixer using ZKPs\n- **zkSync**: Layer 2 using zk-SNARKs for scaling\n- **StarkNet**: Layer 2 using zk-STARKs",
+  "difficulty": "advanced",
+  "estimatedTime": 60,
+  "prerequisites": [
+    "lesson-33-cryptographic-hashes",
+    "lesson-36-elliptic-curves"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-66-1-zkp-concept",
+      "title": "ZK Proof Concept",
+      "description": "Conceptual implementation of zero-knowledge proof",
+      "code": "// Simplified ZKP concept demonstration\nstruct SecretProof {\n    commitment: String,\n    proof_data: Vec<u8>,\n}\n\nstruct Prover {\n    secret: u64,\n}\n\nstruct Verifier;\n\nimpl Prover {\n    fn new(secret: u64) -> Self {\n        Prover { secret }\n    }\n    \n    fn create_proof(&self, public_value: u64) -> SecretProof {\n        // In real ZKP: create cryptographic proof that secret satisfies condition\n        // Here simplified: commitment = hash(secret)\n        let commitment = format!(\"commit_{}\", self.secret);\n        \n        // Proof that secret * 2 == public_value (without revealing secret)\n        let proof_data = if self.secret * 2 == public_value {\n            vec![1, 2, 3] // Simplified proof\n        } else {\n            vec![0]\n        };\n        \n        SecretProof {\n            commitment,\n            proof_data,\n        }\n    }\n}\n\nimpl Verifier {\n    fn verify(&self, proof: &SecretProof, public_value: u64) -> bool {\n        // Verify proof without learning the secret\n        // In real ZKP: verify cryptographic proof\n        !proof.proof_data.is_empty() && proof.proof_data[0] != 0\n    }\n}\n\nfn main() {\n    let prover = Prover::new(42);\n    let verifier = Verifier;\n    \n    let public_value = 84; // public_value = secret * 2\n    let proof = prover.create_proof(public_value);\n    \n    println!(\"Proof created with commitment: {}\", proof.commitment);\n    println!(\"Verification: {}\", verifier.verify(&proof, public_value));\n    println!(\"Note: Verifier never learned the secret (42)\");\n}",
+      "explanation": "This demonstrates the concept: the prover knows a secret (42), creates a proof that it satisfies a condition (secret * 2 = 84), and the verifier can verify this without learning the secret. Real ZKPs use advanced cryptography.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-66-2-privacy-transaction",
+      "title": "Privacy-Preserving Transaction",
+      "description": "Conceptual privacy transaction using ZKP",
+      "code": "// Simplified privacy transaction concept\nstruct PrivacyTx {\n    // Public: proof that transaction is valid\n    validity_proof: Vec<u8>,\n    // Hidden: actual amounts and addresses\n    encrypted_data: Vec<u8>,\n}\n\nstruct Account {\n    balance: u64,\n    address: String,\n}\n\nimpl Account {\n    fn create_private_transfer(\n        &self,\n        recipient: &str,\n        amount: u64,\n    ) -> Result<PrivacyTx, String> {\n        if self.balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        // In real implementation: create ZK proof that:\n        // 1. Sender has sufficient balance\n        // 2. Amounts balance (input = output + fee)\n        // 3. Transaction is properly signed\n        // Without revealing: sender address, recipient, amount\n        \n        let validity_proof = vec![1, 2, 3, 4, 5]; // Simplified\n        let encrypted_data = vec![0; 32]; // Encrypted transaction data\n        \n        Ok(PrivacyTx {\n            validity_proof,\n            encrypted_data,\n        })\n    }\n}\n\nfn verify_privacy_tx(tx: &PrivacyTx) -> bool {\n    // Verify ZK proof without decrypting transaction details\n    !tx.validity_proof.is_empty()\n}\n\nfn main() {\n    let account = Account {\n        balance: 1000,\n        address: String::from(\"0xAlice\"),\n    };\n    \n    match account.create_private_transfer(\"0xBob\", 100) {\n        Ok(tx) => {\n            println!(\"Private transaction created\");\n            println!(\"Verification: {}\", verify_privacy_tx(&tx));\n            println!(\"Transaction details are hidden but verified!\");\n        }\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "explanation": "Privacy transactions use ZKPs to prove validity without revealing transaction details. The blockchain can verify the transaction is valid (balances check out, properly signed) without knowing who sent to whom or how much.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-66-1",
+      "title": "Simple Proof System",
+      "description": "Create a simple proof system that proves knowledge without revealing!",
+      "starterCode": "struct Proof {\n    commitment: String,\n}\n\nfn main() {\n    // Create a proof for a secret number\n    // Verify the proof\n}",
+      "solution": "struct Proof {\n    commitment: String,\n}\n\nstruct Prover {\n    secret: u64,\n}\n\nimpl Prover {\n    fn create_proof(&self) -> Proof {\n        // Commitment: hash of secret (doesn't reveal secret)\n        Proof {\n            commitment: format!(\"commit_{:x}\", self.secret),\n        }\n    }\n}\n\nfn verify_proof(proof: &Proof, expected_pattern: &str) -> bool {\n    proof.commitment.starts_with(expected_pattern)\n}\n\nfn main() {\n    let prover = Prover { secret: 42 };\n    let proof = prover.create_proof();\n    \n    println!(\"Proof commitment: {}\", proof.commitment);\n    println!(\"Verification: {}\", verify_proof(&proof, \"commit_\"));\n    println!(\"Secret (42) was never revealed!\");\n}",
+      "hints": [
+        "Use a commitment scheme (hash) to hide the secret",
+        "The commitment proves knowledge without revealing",
+        "Verification checks the commitment format, not the secret"
+      ],
+      "difficulty": "hard"
+    }
+  ]
+}
+

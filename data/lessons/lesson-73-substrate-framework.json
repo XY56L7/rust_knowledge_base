@@ -1,0 +1,46 @@
+{
+  "id": "lesson-73-substrate-framework",
+  "title": "Substrate Framework: Building Blockchains with Polkadot",
+  "description": "Learn to build custom blockchains using Substrate, the framework powering Polkadot.",
+  "content": "# Substrate Framework: Building Blockchains with Polkadot\n\n**Substrate** is a blockchain framework written in Rust that enables building custom blockchains.\n\n## What is Substrate?\n\nSubstrate provides:\n\n- **Modular Architecture**: Mix and match components\n- **Runtime Logic**: Write in Rust, compile to WebAssembly\n- **Consensus**: Built-in or custom consensus mechanisms\n- **Networking**: P2P networking out of the box\n- **Forkless Upgrades**: Upgrade without hard forks\n\n## Key Concepts\n\n### Runtime\n\nThe **runtime** contains the business logic of your blockchain. It's compiled to WebAssembly for execution.\n\n```rust\n// Substrate runtime structure\n#[frame_support::pallet]\npub mod pallet_example {\n    use frame_support::pallet_prelude::*;\n    use frame_system::pallet_prelude::*;\n    \n    #[pallet::config]\n    pub trait Config: frame_system::Config {\n        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;\n    }\n    \n    #[pallet::pallet]\n    #[pallet::generate_store(pub(super) trait Store)]\n    pub struct Pallet<T>(_);\n    \n    #[pallet::storage]\n    pub type Value<T: Config> = StorageValue<_, u32>;\n    \n    #[pallet::event]\n    #[pallet::generate_deposit(pub(super) fn deposit_event)]\n    pub enum Event<T: Config> {\n        ValueStored(u32, T::AccountId),\n    }\n    \n    #[pallet::call]\n    impl<T: Config> Pallet<T> {\n        #[pallet::weight(10_000)]\n        pub fn set_value(origin: OriginFor<T>, value: u32) -> DispatchResult {\n            let who = ensure_signed(origin)?;\n            Value::<T>::put(value);\n            Self::deposit_event(Event::ValueStored(value, who));\n            Ok(())\n        }\n    }\n}\n```\n\n### Pallets\n\n**Pallets** are modules that provide specific functionality:\n\n- `pallet-balances`: Token balances\n- `pallet-timestamp`: Time tracking\n- `pallet-staking`: Staking functionality\n- `pallet-democracy`: Governance\n\n### Extrinsics\n\n**Extrinsics** are transactions or calls that modify state.\n\n### Events\n\n**Events** are emitted when state changes occur.\n\n## Building a Custom Chain\n\n### 1. Install Substrate\n\n```bash\ncurl https://getsubstrate.io -sSf | bash -s -- --fast\n```\n\n### 2. Create a Node\n\n```bash\nsubstrate-node-new my-blockchain alice\n```\n\n### 3. Create a Runtime Module\n\n```bash\nsubstrate-module-new my-pallet\n```\n\n## Key Features\n\n### Forkless Upgrades\n\nSubstrate enables runtime upgrades without hard forks:\n\n```rust\n// Upgrade runtime via governance\npub fn set_code(new_code: Vec<u8>) -> DispatchResult {\n    // Code upgrade logic\n}\n```\n\n### Custom Consensus\n\nChoose from:\n- **Aura**: Block authoring\n- **BABE**: Block production\n- **GRANDPA**: Finality gadget\n- Custom consensus\n\n### Interoperability\n\nSubstrate chains can connect to Polkadot/Parachains:\n\n- **Parachains**: Connected to relay chain\n- **Bridges**: Connect to other chains\n\n## Real-World Examples\n\n- **Polkadot**: Relay chain built with Substrate\n- **Kusama**: Canary network\n- **Moonbeam**: Ethereum-compatible parachain\n- **Acala**: DeFi parachain\n\n## Advantages\n\n- **Fast Development**: Pre-built components\n- **Security**: Battle-tested code\n- **Flexibility**: Customize as needed\n- **Interoperability**: Connect to Polkadot ecosystem\n- **Upgradeability**: No hard forks needed",
+  "difficulty": "advanced",
+  "estimatedTime": 60,
+  "prerequisites": [
+    "lesson-49-building-blockchain",
+    "lesson-65-advanced-traits"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-73-1-substrate-pallet",
+      "title": "Simple Substrate Pallet",
+      "description": "Basic pallet structure",
+      "code": "// Simplified Substrate pallet concept\nuse std::collections::HashMap;\n\nstruct Pallet {\n    storage: HashMap<String, u64>,\n}\n\nimpl Pallet {\n    fn new() -> Self {\n        Pallet {\n            storage: HashMap::new(),\n        }\n    }\n    \n    fn set_value(&mut self, key: String, value: u64) -> Result<(), String> {\n        self.storage.insert(key, value);\n        Ok(())\n    }\n    \n    fn get_value(&self, key: &str) -> Option<u64> {\n        self.storage.get(key).copied()\n    }\n    \n    fn emit_event(&self, event: &str) {\n        println!(\"Event: {}\", event);\n    }\n}\n\nfn main() {\n    let mut pallet = Pallet::new();\n    \n    // Set value (extrinsic)\n    pallet.set_value(String::from(\"balance\"), 1000).unwrap();\n    \n    // Emit event\n    pallet.emit_event(\"ValueStored\");\n    \n    // Get value\n    if let Some(value) = pallet.get_value(\"balance\") {\n        println!(\"Balance: {}\", value);\n    }\n}",
+      "explanation": "Substrate pallets are modules that provide blockchain functionality. They have storage (state), extrinsics (transactions), and events (notifications). This simplified example shows the basic structure.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-73-2-runtime-upgrade",
+      "title": "Runtime Upgrade Concept",
+      "description": "Conceptual runtime upgrade mechanism",
+      "code": "// Simplified runtime upgrade concept\nstruct Runtime {\n    version: u32,\n    code: Vec<u8>,\n}\n\nimpl Runtime {\n    fn new() -> Self {\n        Runtime {\n            version: 1,\n            code: vec![1, 2, 3, 4],\n        }\n    }\n    \n    fn upgrade(&mut self, new_code: Vec<u8>) -> Result<(), String> {\n        // In Substrate: validate new code, set new runtime\n        self.code = new_code;\n        self.version += 1;\n        println!(\"Runtime upgraded to version {}\", self.version);\n        Ok(())\n    }\n    \n    fn execute(&self, call: &str) -> Result<String, String> {\n        // Execute runtime logic\n        Ok(format!(\"Executed: {}\", call))\n    }\n}\n\nfn main() {\n    let mut runtime = Runtime::new();\n    \n    println!(\"Current version: {}\", runtime.version);\n    \n    // Upgrade runtime (forkless!)\n    runtime.upgrade(vec![5, 6, 7, 8]).unwrap();\n    \n    // Execute with new runtime\n    println!(\"{}\", runtime.execute(\"set_value\").unwrap());\n}",
+      "explanation": "Substrate enables forkless upgrades by storing runtime code on-chain. The runtime can be upgraded via governance without requiring a hard fork. This is a key advantage of Substrate.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-73-1",
+      "title": "Simple Storage Pallet",
+      "description": "Create a simple storage pallet!",
+      "starterCode": "use std::collections::HashMap;\n\nstruct Pallet {\n    storage: HashMap<String, u64>,\n}\n\nfn main() {\n    // Create pallet\n    // Store a value\n    // Retrieve the value\n}",
+      "solution": "use std::collections::HashMap;\n\nstruct Pallet {\n    storage: HashMap<String, u64>,\n}\n\nimpl Pallet {\n    fn new() -> Self {\n        Pallet {\n            storage: HashMap::new(),\n        }\n    }\n    \n    fn set(&mut self, key: String, value: u64) {\n        self.storage.insert(key, value);\n    }\n    \n    fn get(&self, key: &str) -> Option<u64> {\n        self.storage.get(key).copied()\n    }\n}\n\nfn main() {\n    let mut pallet = Pallet::new();\n    \n    pallet.set(String::from(\"balance\"), 1000);\n    \n    if let Some(value) = pallet.get(\"balance\") {\n        println!(\"Balance: {}\", value);\n    }\n}",
+      "hints": [
+        "Use HashMap for storage",
+        "Implement set and get methods",
+        "Use Option for get return type"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

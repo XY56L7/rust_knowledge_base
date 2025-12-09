@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import ParticleBackground from "@/components/ParticleBackground";
+import ScrollToTop from "@/components/ScrollToTop";
+import ThemeScript from "@/components/ThemeScript";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -19,9 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="antialiased font-sans">
-        {children}
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
+      <body className="antialiased font-sans relative">
+        <ParticleBackground />
+        <div className="relative z-10">
+          {children}
+        </div>
+        <ScrollToTop />
       </body>
     </html>
   );

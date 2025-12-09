@@ -1,0 +1,116 @@
+{
+  "id": "lesson-83-smart-contract-deployment",
+  "title": "Smart Contract Deployment",
+  "description": "Deploying smart contracts to blockchain networks and managing contract instances.",
+  "content": "# Smart Contract Deployment\n\nDeploying smart contracts involves compiling Rust code to WASM, uploading it to the blockchain, and creating contract instances.\n\n## Deployment Process\n\n### 1. Compile to WASM\n\n```bash\n# Install WASM target\nrustup target add wasm32-unknown-unknown\n\n# Build contract\ncargo build --target wasm32-unknown-unknown --release\n\n# Optimize WASM (reduce size)\nwasm-opt -Os target/wasm32-unknown-unknown/release/contract.wasm -o contract_optimized.wasm\n```\n\n### 2. Contract Code Structure\n\n```rust\n// lib.rs\n#![no_std]\n\nuse serde::{Deserialize, Serialize};\n\n#[derive(Serialize, Deserialize)]\npub struct InitMsg {\n    pub name: String,\n    pub symbol: String,\n    pub decimals: u8,\n    pub initial_supply: u64,\n}\n\n#[derive(Serialize, Deserialize)]\npub struct ExecuteMsg {\n    pub transfer: TransferMsg,\n}\n\n#[derive(Serialize, Deserialize)]\npub struct TransferMsg {\n    pub to: String,\n    pub amount: u64,\n}\n\n#[no_mangle]\npub extern \"C\" fn instantiate(env_ptr: u32, msg_ptr: u32) -> u32 {\n    // Initialize contract\n    0\n}\n\n#[no_mangle]\npub extern \"C\" fn execute(env_ptr: u32, msg_ptr: u32) -> u32 {\n    // Execute contract function\n    0\n}\n\n#[no_mangle]\npub extern \"C\" fn query(env_ptr: u32, msg_ptr: u32) -> u32 {\n    // Query contract state\n    0\n}\n```\n\n### 3. Deployment Configuration\n\n```rust\n// deployment.rs\nstruct DeploymentConfig {\n    network: String,\n    chain_id: String,\n    gas_limit: u64,\n    gas_price: u64,\n    admin: Option<String>, // Optional admin for upgrades\n}\n\nimpl DeploymentConfig {\n    fn new(network: String) -> Self {\n        DeploymentConfig {\n            network,\n            chain_id: String::from(\"testnet\"),\n            gas_limit: 1_000_000,\n            gas_price: 1,\n            admin: None,\n        }\n    }\n}\n```\n\n## Contract Instantiation\n\n```rust\nstruct ContractInstance {\n    address: String,\n    code_id: u64,\n    creator: String,\n    admin: Option<String>,\n    label: String,\n}\n\nfn instantiate_contract(\n    code_id: u64,\n    init_msg: InitMsg,\n    label: String,\n    admin: Option<String>,\n) -> Result<ContractInstance, String> {\n    // Upload contract code\n    // Instantiate contract\n    // Return contract address\n    Ok(ContractInstance {\n        address: String::from(\"contract_address\"),\n        code_id,\n        creator: String::from(\"deployer\"),\n        admin,\n        label,\n    })\n}\n```\n\n## Deployment Strategies\n\n### 1. Direct Deployment\n\n```rust\nfn deploy_direct(\n    wasm_code: Vec<u8>,\n    init_msg: InitMsg,\n) -> Result<ContractInstance, String> {\n    // Upload code\n    let code_id = upload_code(wasm_code)?;\n    \n    // Instantiate\n    instantiate_contract(code_id, init_msg, String::from(\"MyContract\"), None)\n}\n```\n\n### 2. Factory Pattern\n\n```rust\nstruct ContractFactory;\n\nimpl ContractFactory {\n    fn deploy_token(\n        name: String,\n        symbol: String,\n        initial_supply: u64,\n    ) -> Result<ContractInstance, String> {\n        let init_msg = InitMsg {\n            name,\n            symbol,\n            decimals: 18,\n            initial_supply,\n        };\n        \n        deploy_direct(load_token_wasm(), init_msg)\n    }\n}\n```\n\n## Contract Verification\n\n```rust\nfn verify_contract(\n    address: &str,\n    expected_code_hash: &str,\n) -> Result<bool, String> {\n    // Fetch contract code\n    let code_hash = get_contract_code_hash(address)?;\n    \n    // Compare with expected\n    Ok(code_hash == expected_code_hash)\n}\n```\n\n## Migration and Upgrades\n\n```rust\nstruct UpgradeConfig {\n    contract_address: String,\n    new_code_id: u64,\n    migrate_msg: Option<String>,\n    admin: String,\n}\n\nfn upgrade_contract(config: UpgradeConfig) -> Result<(), String> {\n    // Verify admin\n    verify_admin(&config.contract_address, &config.admin)?;\n    \n    // Migrate state if needed\n    if let Some(msg) = config.migrate_msg {\n        migrate_state(&config.contract_address, msg)?;\n    }\n    \n    // Update code\n    update_contract_code(\n        &config.contract_address,\n        config.new_code_id,\n    )?;\n    \n    Ok(())\n}\n```\n\n## Best Practices\n\n- **Optimize WASM**: Reduce contract size\n- **Verify contracts**: Publish source code\n- **Test thoroughly**: Test on testnet first\n- **Set admin**: For upgradeable contracts\n- **Monitor deployment**: Track gas usage\n- **Document**: Document contract interface\n\n## Common Deployment Frameworks\n\n- **CosmWasm**: For Cosmos-based chains\n- **ink!**: For Polkadot/Substrate\n- **NEAR SDK**: For NEAR Protocol\n- **Solana Program**: For Solana\n\n## Deployment Checklist\n\n- [ ] Code compiled to WASM\n- [ ] WASM optimized\n- [ ] Tests passing\n- [ ] Gas estimation done\n- [ ] Testnet deployment successful\n- [ ] Contract verified\n- [ ] Documentation complete\n- [ ] Mainnet deployment ready",
+  "difficulty": "advanced",
+  "estimatedTime": 60,
+  "prerequisites": [
+    "lesson-41-smart-contract-structure",
+    "lesson-42-contract-testing"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-83-1-deployment-process",
+      "title": "Deployment Process",
+      "description": "Complete contract deployment workflow",
+      "code": "struct ContractDeployment {\n    code_id: u64,\n    contract_address: String,\n    deployer: String,\n}\n\nfn deploy_contract(\n    wasm_code: Vec<u8>,\n    init_msg: String,\n    deployer: String,\n) -> Result<ContractDeployment, String> {\n    // Step 1: Upload code\n    println!(\"Uploading contract code...\");\n    let code_id = upload_code(wasm_code)?;\n    println!(\"Code uploaded with ID: {}\", code_id);\n    \n    // Step 2: Instantiate\n    println!(\"Instantiating contract...\");\n    let contract_address = instantiate_contract(code_id, init_msg)?;\n    println!(\"Contract deployed at: {}\", contract_address);\n    \n    Ok(ContractDeployment {\n        code_id,\n        contract_address,\n        deployer,\n    })\n}\n\nfn upload_code(wasm_code: Vec<u8>) -> Result<u64, String> {\n    // Simulate code upload\n    Ok(1)\n}\n\nfn instantiate_contract(code_id: u64, init_msg: String) -> Result<String, String> {\n    // Simulate instantiation\n    Ok(String::from(\"contract123\"))\n}\n\nfn main() {\n    let wasm_code = vec![0x00, 0x61, 0x73, 0x6d];\n    let init_msg = String::from(\"{\\\"name\\\": \\\"Token\\\"}\");\n    \n    match deploy_contract(wasm_code, init_msg, String::from(\"deployer\")) {\n        Ok(deployment) => {\n            println!(\"Deployment successful!\");\n            println!(\"Code ID: {}\", deployment.code_id);\n            println!(\"Address: {}\", deployment.contract_address);\n        }\n        Err(e) => println!(\"Deployment failed: {}\", e),\n    }\n}",
+      "explanation": "Contract deployment involves uploading WASM code and instantiating a contract instance. The process returns a code ID and contract address.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-83-2-contract-factory",
+      "title": "Contract Factory",
+      "description": "Factory pattern for deploying multiple contract instances",
+      "code": "struct TokenFactory {\n    token_code_id: u64,\n}\n\nimpl TokenFactory {\n    fn new(token_code_id: u64) -> Self {\n        TokenFactory { token_code_id }\n    }\n    \n    fn deploy_token(\n        &self,\n        name: String,\n        symbol: String,\n        initial_supply: u64,\n    ) -> Result<String, String> {\n        let init_msg = format!(\n            \"{{\\\"name\\\": \\\"{}\\\", \\\"symbol\\\": \\\"{}\\\", \\\"initial_supply\\\": {}}}\",\n            name, symbol, initial_supply\n        );\n        \n        instantiate_contract(self.token_code_id, init_msg)\n    }\n}\n\nfn instantiate_contract(code_id: u64, init_msg: String) -> Result<String, String> {\n    Ok(format!(\"token_{}\", code_id))\n}\n\nfn main() {\n    let factory = TokenFactory::new(1);\n    \n    let token1 = factory.deploy_token(\n        String::from(\"TokenA\"),\n        String::from(\"TKA\"),\n        1000000,\n    ).unwrap();\n    \n    let token2 = factory.deploy_token(\n        String::from(\"TokenB\"),\n        String::from(\"TKB\"),\n        2000000,\n    ).unwrap();\n    \n    println!(\"Deployed tokens: {}, {}\", token1, token2);\n}",
+      "explanation": "A factory pattern allows deploying multiple contract instances from the same code. This is useful for creating multiple token contracts or other contract types.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-83-1",
+      "title": "Deploy Contract",
+      "description": "Create a function to deploy a contract!",
+      "starterCode": "fn deploy_contract(wasm_code: Vec<u8>) -> Result<String, String> {\n    // Upload code and instantiate\n    Ok(String::from(\"contract_address\"))\n}\n\nfn main() {\n    let code = vec![0x00, 0x61, 0x73, 0x6d];\n    match deploy_contract(code) {\n        Ok(address) => println!(\"Deployed at: {}\", address),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "solution": "fn upload_code(wasm_code: Vec<u8>) -> Result<u64, String> {\n    if wasm_code.is_empty() {\n        return Err(String::from(\"Empty code\"));\n    }\n    Ok(1)\n}\n\nfn instantiate(code_id: u64) -> Result<String, String> {\n    Ok(format!(\"contract_{}\", code_id))\n}\n\nfn deploy_contract(wasm_code: Vec<u8>) -> Result<String, String> {\n    let code_id = upload_code(wasm_code)?;\n    instantiate(code_id)\n}\n\nfn main() {\n    let code = vec![0x00, 0x61, 0x73, 0x6d];\n    match deploy_contract(code) {\n        Ok(address) => println!(\"Deployed at: {}\", address),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "hints": [
+        "Split into upload_code and instantiate functions",
+        "Use ? operator for error propagation",
+        "Return contract address from instantiate"
+      ],
+      "difficulty": "medium"
+    }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-83-1",
+      "title": "Contract Deployment Tool",
+      "description": "Build a CLI tool for deploying smart contracts. Support multiple networks, contract verification, and deployment tracking.",
+      "difficulty": "hard",
+      "estimatedTime": 12,
+      "requirements": [
+        "CLI interface for deployment",
+        "Support multiple networks (testnet, mainnet)",
+        "Contract code upload",
+        "Contract instantiation",
+        "Deployment verification",
+        "Deployment history tracking"
+      ],
+      "hints": [
+        "Use clap for CLI",
+        "Store deployment configs",
+        "Support different blockchain networks",
+        "Track deployed contracts"
+      ],
+      "extensions": [
+        "Add contract upgrade support",
+        "Implement deployment templates",
+        "Add gas estimation",
+        "Support batch deployments",
+        "Create deployment dashboard"
+      ],
+      "learningOutcomes": [
+        "Master contract deployment",
+        "Learn deployment workflows",
+        "Understand contract instantiation",
+        "Practice with CLI tools"
+      ]
+    },
+    {
+      "id": "project-83-2",
+      "title": "Contract Factory System",
+      "description": "Create a factory contract that deploys multiple contract instances. Track all deployed contracts and provide management functions.",
+      "difficulty": "hard",
+      "estimatedTime": 10,
+      "requirements": [
+        "Factory contract structure",
+        "Deploy multiple contract instances",
+        "Track deployed contracts",
+        "Query deployed contracts",
+        "Contract registry",
+        "Deployment statistics"
+      ],
+      "hints": [
+        "Use HashMap to track contracts",
+        "Generate unique contract addresses",
+        "Store deployment metadata",
+        "Support querying by deployer"
+      ],
+      "extensions": [
+        "Add contract templates",
+        "Implement deployment fees",
+        "Add contract versioning",
+        "Support contract upgrades",
+        "Create deployment analytics"
+      ],
+      "learningOutcomes": [
+        "Understand factory pattern",
+        "Learn contract registry",
+        "Master deployment management",
+        "Practice with contract patterns"
+      ]
+    }
+  ]
+}
+

@@ -5,6 +5,7 @@ export interface Lesson {
   content: string;
   codeExamples?: CodeExample[];
   exercises?: Exercise[];
+  projectIdeas?: ProjectIdea[];
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   estimatedTime: number; // in minutes
   prerequisites?: string[]; // lesson IDs
@@ -27,6 +28,18 @@ export interface Exercise {
   solution?: string;
   hints?: string[];
   difficulty: 'easy' | 'medium' | 'hard';
+}
+
+export interface ProjectIdea {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  estimatedTime: number; // in hours
+  requirements: string[];
+  hints?: string[];
+  extensions?: string[];
+  learningOutcomes?: string[];
 }
 
 export interface Chapter {

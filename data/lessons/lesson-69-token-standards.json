@@ -1,0 +1,150 @@
+{
+  "id": "lesson-69-token-standards",
+  "title": "Token Standards: ERC-20, ERC-721, ERC-1155",
+  "description": "Implementing token standards for fungible tokens, NFTs, and multi-token contracts.",
+  "content": "# Token Standards: ERC-20, ERC-721, ERC-1155\n\nToken standards define interfaces for creating and managing tokens on blockchains.\n\n## ERC-20: Fungible Tokens\n\n**ERC-20** is the standard for fungible tokens (interchangeable, like currency).\n\n### Core Functions\n\n```rust\ntrait ERC20 {\n    fn total_supply(&self) -> u64;\n    fn balance_of(&self, owner: &str) -> u64;\n    fn transfer(&mut self, to: &str, amount: u64) -> Result<(), String>;\n    fn transfer_from(&mut self, from: &str, to: &str, amount: u64) -> Result<(), String>;\n    fn approve(&mut self, spender: &str, amount: u64) -> Result<(), String>;\n    fn allowance(&self, owner: &str, spender: &str) -> u64;\n}\n```\n\n### Events\n\n- `Transfer(from, to, amount)`: Token transfer\n- `Approval(owner, spender, amount)`: Approval granted\n\n## ERC-721: Non-Fungible Tokens (NFTs)\n\n**ERC-721** is the standard for NFTs (unique, non-interchangeable tokens).\n\n### Core Functions\n\n```rust\ntrait ERC721 {\n    fn balance_of(&self, owner: &str) -> u64;\n    fn owner_of(&self, token_id: u64) -> Option<String>;\n    fn transfer_from(&mut self, from: &str, to: &str, token_id: u64) -> Result<(), String>;\n    fn approve(&mut self, approved: &str, token_id: u64) -> Result<(), String>;\n    fn get_approved(&self, token_id: u64) -> Option<String>;\n    fn set_approval_for_all(&mut self, operator: &str, approved: bool) -> Result<(), String>;\n    fn is_approved_for_all(&self, owner: &str, operator: &str) -> bool;\n    fn safe_transfer_from(&mut self, from: &str, to: &str, token_id: u64) -> Result<(), String>;\n}\n```\n\n### Metadata\n\nNFTs include metadata (name, description, image URI) typically stored off-chain.\n\n## ERC-1155: Multi-Token Standard\n\n**ERC-1155** supports both fungible and non-fungible tokens in a single contract.\n\n### Core Functions\n\n```rust\ntrait ERC1155 {\n    fn balance_of(&self, account: &str, token_id: u64) -> u64;\n    fn balance_of_batch(&self, accounts: &[&str], token_ids: &[u64]) -> Vec<u64>;\n    fn set_approval_for_all(&mut self, operator: &str, approved: bool) -> Result<(), String>;\n    fn is_approved_for_all(&self, owner: &str, operator: &str) -> bool;\n    fn safe_transfer_from(\n        &mut self,\n        from: &str,\n        to: &str,\n        token_id: u64,\n        amount: u64,\n    ) -> Result<(), String>;\n    fn safe_batch_transfer_from(\n        &mut self,\n        from: &str,\n        to: &str,\n        token_ids: &[u64],\n        amounts: &[u64],\n    ) -> Result<(), String>;\n}\n```\n\n## Implementation Example\n\n```rust\nuse std::collections::HashMap;\n\nstruct ERC20Token {\n    name: String,\n    symbol: String,\n    decimals: u8,\n    total_supply: u64,\n    balances: HashMap<String, u64>,\n    allowances: HashMap<(String, String), u64>,\n}\n\nimpl ERC20Token {\n    fn new(name: String, symbol: String, initial_supply: u64) -> Self {\n        let mut balances = HashMap::new();\n        balances.insert(String::from(\"owner\"), initial_supply);\n        \n        ERC20Token {\n            name,\n            symbol,\n            decimals: 18,\n            total_supply: initial_supply,\n            balances,\n            allowances: HashMap::new(),\n        }\n    }\n    \n    fn transfer(&mut self, to: &str, amount: u64) -> Result<(), String> {\n        let from = String::from(\"owner\"); // Simplified\n        self._transfer(&from, to, amount)\n    }\n    \n    fn _transfer(&mut self, from: &str, to: &str, amount: u64) -> Result<(), String> {\n        let from_balance = *self.balances.get(from).unwrap_or(&0);\n        if from_balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        *self.balances.entry(from.to_string()).or_insert(0) -= amount;\n        *self.balances.entry(to.to_string()).or_insert(0) += amount;\n        \n        Ok(())\n    }\n    \n    fn approve(&mut self, spender: &str, amount: u64) -> Result<(), String> {\n        let owner = String::from(\"owner\");\n        self.allowances.insert((owner, spender.to_string()), amount);\n        Ok(())\n    }\n    \n    fn transfer_from(&mut self, from: &str, to: &str, amount: u64) -> Result<(), String> {\n        let spender = String::from(\"spender\"); // Simplified\n        let allowance = *self.allowances.get(&(from.to_string(), spender.clone())).unwrap_or(&0);\n        \n        if allowance < amount {\n            return Err(String::from(\"Insufficient allowance\"));\n        }\n        \n        self.allowances.insert((from.to_string(), spender), allowance - amount);\n        self._transfer(from, to, amount)\n    }\n}\n```\n\n## Use Cases\n\n### ERC-20\n\n- **Stablecoins**: USDC, DAI\n- **Governance Tokens**: UNI, COMP\n- **Utility Tokens**: In-app currencies\n\n### ERC-721\n\n- **Digital Art**: CryptoPunks, Bored Apes\n- **Collectibles**: Trading cards, virtual items\n- **Identity**: Domain names, certificates\n\n### ERC-1155\n\n- **Gaming**: Multiple item types in one contract\n- **Marketplaces**: Efficient batch transfers\n- **Hybrid**: Mix of fungible and non-fungible\n\n## Best Practices\n\n- **Reentrancy Protection**: Use checks-effects-interactions pattern\n- **Integer Overflow**: Use checked arithmetic\n- **Access Control**: Implement proper permissions\n- **Events**: Emit events for all state changes\n- **Gas Optimization**: Batch operations when possible\n\n## Security Considerations\n\n- **Overflow/Underflow**: Use safe math libraries\n- **Reentrancy**: Guard against recursive calls\n- **Access Control**: Verify caller permissions\n- **Input Validation**: Check all parameters",
+  "difficulty": "advanced",
+  "estimatedTime": 55,
+  "prerequisites": [
+    "lesson-41-smart-contract-structure",
+    "lesson-49-building-blockchain"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-69-1-erc20-implementation",
+      "title": "ERC-20 Implementation",
+      "description": "Complete ERC-20 token implementation",
+      "code": "use std::collections::HashMap;\n\nstruct ERC20Token {\n    name: String,\n    symbol: String,\n    total_supply: u64,\n    balances: HashMap<String, u64>,\n    allowances: HashMap<(String, String), u64>,\n}\n\nimpl ERC20Token {\n    fn new(name: String, symbol: String, initial_supply: u64) -> Self {\n        let mut balances = HashMap::new();\n        balances.insert(String::from(\"owner\"), initial_supply);\n        \n        ERC20Token {\n            name,\n            symbol,\n            total_supply: initial_supply,\n            balances,\n            allowances: HashMap::new(),\n        }\n    }\n    \n    fn total_supply(&self) -> u64 {\n        self.total_supply\n    }\n    \n    fn balance_of(&self, owner: &str) -> u64 {\n        *self.balances.get(owner).unwrap_or(&0)\n    }\n    \n    fn transfer(&mut self, from: &str, to: &str, amount: u64) -> Result<(), String> {\n        let balance = self.balance_of(from);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        *self.balances.entry(from.to_string()).or_insert(0) -= amount;\n        *self.balances.entry(to.to_string()).or_insert(0) += amount;\n        \n        Ok(())\n    }\n    \n    fn approve(&mut self, owner: &str, spender: &str, amount: u64) -> Result<(), String> {\n        self.allowances.insert((owner.to_string(), spender.to_string()), amount);\n        Ok(())\n    }\n    \n    fn allowance(&self, owner: &str, spender: &str) -> u64 {\n        *self.allowances.get(&(owner.to_string(), spender.to_string())).unwrap_or(&0)\n    }\n    \n    fn transfer_from(&mut self, from: &str, to: &str, amount: u64) -> Result<(), String> {\n        let spender = String::from(\"spender\"); // Simplified\n        let allowance = self.allowance(from, &spender);\n        \n        if allowance < amount {\n            return Err(String::from(\"Insufficient allowance\"));\n        }\n        \n        self.approve(from, &spender, allowance - amount)?;\n        self.transfer(from, to, amount)\n    }\n}\n\nfn main() {\n    let mut token = ERC20Token::new(\n        String::from(\"MyToken\"),\n        String::from(\"MTK\"),\n        1000000,\n    );\n    \n    println!(\"Token: {} ({})\", token.name, token.symbol);\n    println!(\"Total supply: {}\", token.total_supply());\n    println!(\"Owner balance: {}\", token.balance_of(\"owner\"));\n    \n    // Transfer tokens\n    token.transfer(\"owner\", \"alice\", 1000).unwrap();\n    println!(\"Alice balance: {}\", token.balance_of(\"alice\"));\n    \n    // Approve and transfer_from\n    token.approve(\"alice\", \"bob\", 500).unwrap();\n    println!(\"Allowance: {}\", token.allowance(\"alice\", \"bob\"));\n}",
+      "explanation": "ERC-20 defines the standard interface for fungible tokens. Key features: transfer, approve (for delegated transfers), and balance tracking. This enables tokens to work with wallets, exchanges, and DeFi protocols.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-69-2-erc721-nft",
+      "title": "ERC-721 NFT",
+      "description": "Basic ERC-721 NFT implementation",
+      "code": "use std::collections::HashMap;\n\nstruct ERC721Token {\n    name: String,\n    symbol: String,\n    token_owners: HashMap<u64, String>,\n    balances: HashMap<String, u64>,\n    token_approvals: HashMap<u64, String>,\n    operator_approvals: HashMap<(String, String), bool>,\n    next_token_id: u64,\n}\n\nimpl ERC721Token {\n    fn new(name: String, symbol: String) -> Self {\n        ERC721Token {\n            name,\n            symbol,\n            token_owners: HashMap::new(),\n            balances: HashMap::new(),\n            token_approvals: HashMap::new(),\n            operator_approvals: HashMap::new(),\n            next_token_id: 1,\n        }\n    }\n    \n    fn mint(&mut self, to: &str) -> u64 {\n        let token_id = self.next_token_id;\n        self.next_token_id += 1;\n        \n        self.token_owners.insert(token_id, to.to_string());\n        *self.balances.entry(to.to_string()).or_insert(0) += 1;\n        \n        token_id\n    }\n    \n    fn balance_of(&self, owner: &str) -> u64 {\n        *self.balances.get(owner).unwrap_or(&0)\n    }\n    \n    fn owner_of(&self, token_id: u64) -> Option<&String> {\n        self.token_owners.get(&token_id)\n    }\n    \n    fn transfer_from(&mut self, from: &str, to: &str, token_id: u64) -> Result<(), String> {\n        let owner = self.owner_of(token_id)\n            .ok_or(String::from(\"Token does not exist\"))?;\n        \n        if owner != from {\n            return Err(String::from(\"Not the owner\"));\n        }\n        \n        // Remove from old owner\n        self.token_owners.insert(token_id, to.to_string());\n        *self.balances.entry(from.to_string()).or_insert(1) -= 1;\n        *self.balances.entry(to.to_string()).or_insert(0) += 1;\n        \n        // Clear approval\n        self.token_approvals.remove(&token_id);\n        \n        Ok(())\n    }\n    \n    fn approve(&mut self, approved: &str, token_id: u64) -> Result<(), String> {\n        let owner = self.owner_of(token_id)\n            .ok_or(String::from(\"Token does not exist\"))?;\n        \n        self.token_approvals.insert(token_id, approved.to_string());\n        Ok(())\n    }\n}\n\nfn main() {\n    let mut nft = ERC721Token::new(\n        String::from(\"MyNFT\"),\n        String::from(\"MNFT\"),\n    );\n    \n    // Mint NFTs\n    let token1 = nft.mint(\"alice\");\n    let token2 = nft.mint(\"alice\");\n    let token3 = nft.mint(\"bob\");\n    \n    println!(\"Minted tokens: {}, {}, {}\", token1, token2, token3);\n    println!(\"Alice balance: {}\", nft.balance_of(\"alice\"));\n    println!(\"Bob balance: {}\", nft.balance_of(\"bob\"));\n    \n    // Transfer NFT\n    nft.transfer_from(\"alice\", \"bob\", token1).unwrap();\n    println!(\"After transfer - Alice balance: {}\", nft.balance_of(\"alice\"));\n    println!(\"After transfer - Bob balance: {}\", nft.balance_of(\"bob\"));\n}",
+      "explanation": "ERC-721 defines the standard for NFTs. Each token has a unique ID and owner. NFTs can be transferred, approved for others to transfer, and tracked individually. This enables digital collectibles, art, and unique assets.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-69-1",
+      "title": "Simple Token",
+      "description": "Create a simple token with transfer functionality!",
+      "starterCode": "use std::collections::HashMap;\n\nstruct Token {\n    balances: HashMap<String, u64>,\n}\n\nfn main() {\n    // Create token\n    // Transfer tokens\n}",
+      "solution": "use std::collections::HashMap;\n\nstruct Token {\n    balances: HashMap<String, u64>,\n}\n\nimpl Token {\n    fn new(initial_supply: u64) -> Self {\n        let mut balances = HashMap::new();\n        balances.insert(String::from(\"owner\"), initial_supply);\n        Token { balances }\n    }\n    \n    fn balance_of(&self, owner: &str) -> u64 {\n        *self.balances.get(owner).unwrap_or(&0)\n    }\n    \n    fn transfer(&mut self, from: &str, to: &str, amount: u64) -> Result<(), String> {\n        let balance = self.balance_of(from);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        *self.balances.entry(from.to_string()).or_insert(0) -= amount;\n        *self.balances.entry(to.to_string()).or_insert(0) += amount;\n        \n        Ok(())\n    }\n}\n\nfn main() {\n    let mut token = Token::new(1000);\n    \n    println!(\"Owner balance: {}\", token.balance_of(\"owner\"));\n    \n    token.transfer(\"owner\", \"alice\", 100).unwrap();\n    println!(\"Alice balance: {}\", token.balance_of(\"alice\"));\n}",
+      "hints": [
+        "Use HashMap to store balances",
+        "Check balance before transferring",
+        "Update both sender and receiver balances"
+      ],
+      "difficulty": "medium"
+    }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-69-1",
+      "title": "Multi-Standard Token Platform",
+      "description": "Build a platform that supports all three token standards: ERC-20, ERC-721, and ERC-1155. Create a unified interface for managing different token types.",
+      "difficulty": "hard",
+      "estimatedTime": 15,
+      "requirements": [
+        "Implement ERC-20 token with full functionality",
+        "Implement ERC-721 NFT contract",
+        "Implement ERC-1155 multi-token standard",
+        "Create a registry to track all deployed tokens",
+        "Add functions to query token type and standard",
+        "Support token creation for each standard"
+      ],
+      "hints": [
+        "Use traits to define standard interfaces",
+        "Create an enum for token types",
+        "Use a registry HashMap to track tokens",
+        "Implement each standard separately first"
+      ],
+      "extensions": [
+        "Add token metadata support",
+        "Implement token migration between standards",
+        "Add token analytics",
+        "Create a token explorer interface",
+        "Support batch operations"
+      ],
+      "learningOutcomes": [
+        "Master all token standards",
+        "Understand trait-based design",
+        "Learn token registry patterns",
+        "Practice with complex type systems"
+      ]
+    },
+    {
+      "id": "project-69-2",
+      "title": "NFT Collection Manager",
+      "description": "Create a comprehensive NFT collection system. Support minting, transferring, metadata, and collection statistics.",
+      "difficulty": "medium",
+      "estimatedTime": 8,
+      "requirements": [
+        "Implement ERC-721 NFT standard",
+        "Add collection metadata (name, symbol, description)",
+        "Support batch minting",
+        "Track collection statistics (total supply, owners)",
+        "Implement royalty system",
+        "Add metadata storage (IPFS hashes)"
+      ],
+      "hints": [
+        "Use HashMap for token ownership",
+        "Track metadata per token ID",
+        "Calculate statistics on-demand",
+        "Store IPFS hashes as strings"
+      ],
+      "extensions": [
+        "Add rarity system",
+        "Implement traits/attributes",
+        "Add collection whitelist",
+        "Support collection phases (presale, public)",
+        "Add burn functionality"
+      ],
+      "learningOutcomes": [
+        "Master NFT implementation",
+        "Learn metadata management",
+        "Understand collection economics",
+        "Practice with complex state management"
+      ]
+    },
+    {
+      "id": "project-69-3",
+      "title": "Token Factory - Deploy Your Own Token",
+      "description": "Build a token factory that allows users to deploy their own ERC-20 tokens with custom parameters. Include a token registry and management tools.",
+      "difficulty": "medium",
+      "estimatedTime": 10,
+      "requirements": [
+        "Create TokenFactory struct",
+        "Allow deploying new ERC-20 tokens",
+        "Store token parameters (name, symbol, decimals, supply)",
+        "Track all deployed tokens",
+        "Add functions to query token info",
+        "Support initial distribution"
+      ],
+      "hints": [
+        "Use a registry to track deployed tokens",
+        "Generate unique token addresses",
+        "Store token metadata",
+        "Allow custom initial supply distribution"
+      ],
+      "extensions": [
+        "Add token upgrade functionality",
+        "Implement token templates",
+        "Add token verification system",
+        "Support token migration",
+        "Create token analytics dashboard"
+      ],
+      "learningOutcomes": [
+        "Understand factory pattern",
+        "Learn token deployment",
+        "Practice with registries",
+        "Master token parameter management"
+      ]
+    }
+  ]
+}
+

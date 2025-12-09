@@ -1,0 +1,116 @@
+{
+  "id": "lesson-84-smart-contract-security",
+  "title": "Smart Contract Security Patterns",
+  "description": "Critical security patterns and best practices for secure smart contract development in Rust.",
+  "content": "# Smart Contract Security Patterns\n\nSecurity is paramount in smart contracts. Bugs can lead to loss of funds. Rust's type system helps, but you must follow security best practices.\n\n## Common Vulnerabilities\n\n### 1. Reentrancy Attacks\n\n**Problem**: External calls can re-enter the contract before state updates.\n\n```rust\n// VULNERABLE CODE\nstruct Bank {\n    balances: HashMap<String, u64>,\n}\n\nimpl Bank {\n    fn withdraw(&mut self, user: &str, amount: u64) -> Result<(), String> {\n        let balance = self.balances.get(user).copied().unwrap_or(0);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        // VULNERABLE: External call before state update\n        external_transfer(user, amount)?;\n        \n        // State update happens after external call\n        *self.balances.get_mut(user).unwrap() -= amount;\n        Ok(())\n    }\n}\n```\n\n**Solution**: Checks-Effects-Interactions Pattern\n\n```rust\n// SECURE CODE\nimpl Bank {\n    fn withdraw(&mut self, user: &str, amount: u64) -> Result<(), String> {\n        // CHECK: Validate inputs\n        let balance = self.balances.get(user).copied().unwrap_or(0);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        // EFFECTS: Update state FIRST\n        *self.balances.get_mut(user).unwrap() -= amount;\n        \n        // INTERACTIONS: External call LAST\n        external_transfer(user, amount)?;\n        \n        Ok(())\n    }\n}\n```\n\n### 2. Integer Overflow/Underflow\n\n**Problem**: Arithmetic operations can overflow.\n\n```rust\n// VULNERABLE\nfn add_balance(balance: u64, amount: u64) -> u64 {\n    balance + amount  // Can overflow!\n}\n```\n\n**Solution**: Use Checked Arithmetic\n\n```rust\n// SECURE\nfn add_balance(balance: u64, amount: u64) -> Result<u64, String> {\n    balance.checked_add(amount)\n        .ok_or_else(|| String::from(\"Overflow\"))\n}\n\nfn subtract_balance(balance: u64, amount: u64) -> Result<u64, String> {\n    balance.checked_sub(amount)\n        .ok_or_else(|| String::from(\"Underflow\"))\n}\n```\n\n### 3. Access Control\n\n**Problem**: Missing permission checks.\n\n```rust\n// VULNERABLE\nstruct Contract {\n    owner: String,\n    funds: u64,\n}\n\nimpl Contract {\n    fn withdraw(&mut self, amount: u64) -> Result<(), String> {\n        // Missing owner check!\n        self.funds -= amount;\n        Ok(())\n    }\n}\n```\n\n**Solution**: Always Check Permissions\n\n```rust\n// SECURE\nimpl Contract {\n    fn withdraw(&mut self, caller: &str, amount: u64) -> Result<(), String> {\n        // Check access\n        if caller != self.owner {\n            return Err(String::from(\"Unauthorized\"));\n        }\n        \n        // Validate amount\n        if amount > self.funds {\n            return Err(String::from(\"Insufficient funds\"));\n        }\n        \n        self.funds -= amount;\n        Ok(())\n    }\n}\n```\n\n### 4. Input Validation\n\n**Problem**: Unvalidated inputs can cause issues.\n\n```rust\n// VULNERABLE\nfn transfer(&mut self, to: String, amount: u64) {\n    // No validation!\n    self.balances.entry(to).or_insert(0) += amount;\n}\n```\n\n**Solution**: Validate All Inputs\n\n```rust\n// SECURE\nfn transfer(\n    &mut self,\n    from: &str,\n    to: &str,\n    amount: u64,\n) -> Result<(), String> {\n    // Validate addresses\n    if from.is_empty() || to.is_empty() {\n        return Err(String::from(\"Invalid address\"));\n    }\n    \n    if from == to {\n        return Err(String::from(\"Cannot transfer to self\"));\n    }\n    \n    // Validate amount\n    if amount == 0 {\n        return Err(String::from(\"Amount must be > 0\"));\n    }\n    \n    // Validate balance\n    let balance = self.balances.get(from).copied().unwrap_or(0);\n    if balance < amount {\n        return Err(String::from(\"Insufficient balance\"));\n    }\n    \n    // Execute transfer\n    *self.balances.entry(from.to_string()).or_insert(0) -= amount;\n    *self.balances.entry(to.to_string()).or_insert(0) += amount;\n    \n    Ok(())\n}\n```\n\n## Security Patterns\n\n### 1. Reentrancy Guard\n\n```rust\nstruct ReentrancyGuard {\n    locked: bool,\n}\n\nimpl ReentrancyGuard {\n    fn new() -> Self {\n        ReentrancyGuard { locked: false }\n    }\n    \n    fn lock(&mut self) -> Result<(), String> {\n        if self.locked {\n            return Err(String::from(\"Reentrancy detected\"));\n        }\n        self.locked = true;\n        Ok(())\n    }\n    \n    fn unlock(&mut self) {\n        self.locked = false;\n    }\n}\n\n// Usage\nfn withdraw(&mut self, guard: &mut ReentrancyGuard, amount: u64) -> Result<(), String> {\n    guard.lock()?;\n    \n    // Safe operations\n    self.balance -= amount;\n    \n    guard.unlock();\n    Ok(())\n}\n```\n\n### 2. Access Control Modifier\n\n```rust\ntrait AccessControl {\n    fn require_owner(&self, caller: &str) -> Result<(), String>;\n    fn require_admin(&self, caller: &str) -> Result<(), String>;\n}\n\nstruct Contract {\n    owner: String,\n    admins: HashSet<String>,\n}\n\nimpl AccessControl for Contract {\n    fn require_owner(&self, caller: &str) -> Result<(), String> {\n        if caller != self.owner {\n            return Err(String::from(\"Not owner\"));\n        }\n        Ok(())\n    }\n    \n    fn require_admin(&self, caller: &str) -> Result<(), String> {\n        if !self.admins.contains(caller) && caller != self.owner {\n            return Err(String::from(\"Not admin\"));\n        }\n        Ok(())\n    }\n}\n```\n\n### 3. Safe Math Library\n\n```rust\npub mod safe_math {\n    pub fn checked_add(a: u64, b: u64) -> Result<u64, String> {\n        a.checked_add(b).ok_or_else(|| String::from(\"Addition overflow\"))\n    }\n    \n    pub fn checked_sub(a: u64, b: u64) -> Result<u64, String> {\n        a.checked_sub(b).ok_or_else(|| String::from(\"Subtraction underflow\"))\n    }\n    \n    pub fn checked_mul(a: u64, b: u64) -> Result<u64, String> {\n        a.checked_mul(b).ok_or_else(|| String::from(\"Multiplication overflow\"))\n    }\n    \n    pub fn checked_div(a: u64, b: u64) -> Result<u64, String> {\n        if b == 0 {\n            return Err(String::from(\"Division by zero\"));\n        }\n        Ok(a / b)\n    }\n}\n```\n\n## Security Checklist\n\n- [ ] All external calls use checks-effects-interactions\n- [ ] All arithmetic uses checked operations\n- [ ] All functions check permissions\n- [ ] All inputs are validated\n- [ ] Reentrancy guards where needed\n- [ ] Events emitted for important actions\n- [ ] Error messages are clear\n- [ ] Gas optimization considered\n- [ ] Code reviewed by security experts\n- [ ] Comprehensive test coverage\n\n## Testing Security\n\n```rust\n#[cfg(test)]\nmod security_tests {\n    use super::*;\n    \n    #[test]\n    fn test_reentrancy_protection() {\n        // Test that reentrancy is prevented\n    }\n    \n    #[test]\n    fn test_overflow_protection() {\n        // Test overflow handling\n        let max = u64::MAX;\n        assert!(safe_math::checked_add(max, 1).is_err());\n    }\n    \n    #[test]\n    fn test_access_control() {\n        // Test unauthorized access fails\n        let contract = Contract::new(String::from(\"owner\"));\n        assert!(contract.withdraw(\"hacker\", 100).is_err());\n    }\n}\n```\n\n## Best Practices\n\n1. **Minimize External Calls**: Reduce attack surface\n2. **Use Libraries**: Don't reinvent security\n3. **Keep It Simple**: Complex code = more bugs\n4. **Test Extensively**: Test edge cases\n5. **Code Review**: Get security review\n6. **Audit**: Professional security audit\n7. **Document**: Document security assumptions\n8. **Monitor**: Monitor for unusual activity",
+  "difficulty": "advanced",
+  "estimatedTime": 70,
+  "prerequisites": [
+    "lesson-41-smart-contract-structure",
+    "lesson-42-contract-testing"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-84-1-reentrancy-protection",
+      "title": "Reentrancy Protection",
+      "description": "Implementing reentrancy guard",
+      "code": "struct ReentrancyGuard {\n    locked: bool,\n}\n\nimpl ReentrancyGuard {\n    fn new() -> Self {\n        ReentrancyGuard { locked: false }\n    }\n    \n    fn lock(&mut self) -> Result<(), String> {\n        if self.locked {\n            return Err(String::from(\"Reentrancy detected\"));\n        }\n        self.locked = true;\n        Ok(())\n    }\n    \n    fn unlock(&mut self) {\n        self.locked = false;\n    }\n}\n\nstruct Bank {\n    balances: std::collections::HashMap<String, u64>,\n    guard: ReentrancyGuard,\n}\n\nimpl Bank {\n    fn withdraw(&mut self, user: &str, amount: u64) -> Result<(), String> {\n        // Lock to prevent reentrancy\n        self.guard.lock()?;\n        \n        // Checks\n        let balance = self.balances.get(user).copied().unwrap_or(0);\n        if balance < amount {\n            self.guard.unlock();\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        // Effects: Update state FIRST\n        *self.balances.entry(user.to_string()).or_insert(0) -= amount;\n        \n        // Unlock before external call\n        self.guard.unlock();\n        \n        // Interactions: External call LAST\n        // external_transfer(user, amount)?;\n        \n        Ok(())\n    }\n}\n\nfn main() {\n    let mut bank = Bank {\n        balances: std::collections::HashMap::new(),\n        guard: ReentrancyGuard::new(),\n    };\n    \n    bank.balances.insert(String::from(\"alice\"), 1000);\n    \n    match bank.withdraw(\"alice\", 500) {\n        Ok(_) => println!(\"Withdrawal successful\"),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "explanation": "Reentrancy guards prevent recursive calls that could exploit state updates. The guard locks during critical sections and unlocks after state is updated.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-84-2-safe-math",
+      "title": "Safe Math Operations",
+      "description": "Using checked arithmetic to prevent overflows",
+      "code": "fn safe_add(a: u64, b: u64) -> Result<u64, String> {\n    a.checked_add(b).ok_or_else(|| String::from(\"Addition overflow\"))\n}\n\nfn safe_sub(a: u64, b: u64) -> Result<u64, String> {\n    a.checked_sub(b).ok_or_else(|| String::from(\"Subtraction underflow\"))\n}\n\nfn safe_mul(a: u64, b: u64) -> Result<u64, String> {\n    a.checked_mul(b).ok_or_else(|| String::from(\"Multiplication overflow\"))\n}\n\nfn safe_div(a: u64, b: u64) -> Result<u64, String> {\n    if b == 0 {\n        return Err(String::from(\"Division by zero\"));\n    }\n    Ok(a / b)\n}\n\nstruct TokenContract {\n    balances: std::collections::HashMap<String, u64>,\n}\n\nimpl TokenContract {\n    fn transfer(\n        &mut self,\n        from: &str,\n        to: &str,\n        amount: u64,\n    ) -> Result<(), String> {\n        let from_balance = self.balances.get(from).copied().unwrap_or(0);\n        \n        // Safe subtraction\n        let new_from_balance = safe_sub(from_balance, amount)?;\n        \n        // Safe addition\n        let to_balance = self.balances.get(to).copied().unwrap_or(0);\n        let new_to_balance = safe_add(to_balance, amount)?;\n        \n        self.balances.insert(from.to_string(), new_from_balance);\n        self.balances.insert(to.to_string(), new_to_balance);\n        \n        Ok(())\n    }\n}\n\nfn main() {\n    let mut contract = TokenContract {\n        balances: std::collections::HashMap::new(),\n    };\n    \n    contract.balances.insert(String::from(\"alice\"), 1000);\n    \n    match contract.transfer(\"alice\", \"bob\", 500) {\n        Ok(_) => println!(\"Transfer successful\"),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "explanation": "Checked arithmetic prevents integer overflow and underflow. Always use checked operations for financial calculations in smart contracts.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-84-1",
+      "title": "Implement Access Control",
+      "description": "Add access control to a contract function!",
+      "starterCode": "struct Contract {\n    owner: String,\n    value: u64,\n}\n\nimpl Contract {\n    fn set_value(&mut self, caller: &str, new_value: u64) -> Result<(), String> {\n        // Add owner check\n        self.value = new_value;\n        Ok(())\n    }\n}\n\nfn main() {\n    let mut contract = Contract {\n        owner: String::from(\"owner\"),\n        value: 0,\n    };\n    \n    contract.set_value(\"owner\", 100).unwrap();\n    println!(\"Value: {}\", contract.value);\n}",
+      "solution": "struct Contract {\n    owner: String,\n    value: u64,\n}\n\nimpl Contract {\n    fn set_value(&mut self, caller: &str, new_value: u64) -> Result<(), String> {\n        // Check access\n        if caller != self.owner {\n            return Err(String::from(\"Unauthorized\"));\n        }\n        \n        self.value = new_value;\n        Ok(())\n    }\n}\n\nfn main() {\n    let mut contract = Contract {\n        owner: String::from(\"owner\"),\n        value: 0,\n    };\n    \n    contract.set_value(\"owner\", 100).unwrap();\n    println!(\"Value: {}\", contract.value);\n    \n    // Unauthorized access should fail\n    match contract.set_value(\"hacker\", 999) {\n        Ok(_) => println!(\"Should not happen\"),\n        Err(e) => println!(\"Access denied: {}\", e),\n    }\n}",
+      "hints": [
+        "Check if caller == owner",
+        "Return error if unauthorized",
+        "Only update if authorized"
+      ],
+      "difficulty": "medium"
+    }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-84-1",
+      "title": "Security Audit Tool",
+      "description": "Build a tool that analyzes smart contract code for common vulnerabilities. Check for reentrancy, overflow, access control issues.",
+      "difficulty": "hard",
+      "estimatedTime": 15,
+      "requirements": [
+        "Static code analysis",
+        "Detect reentrancy patterns",
+        "Check for unchecked arithmetic",
+        "Verify access control",
+        "Validate input sanitization",
+        "Generate security report"
+      ],
+      "hints": [
+        "Parse Rust code",
+        "Check for common patterns",
+        "Use AST analysis",
+        "Generate warnings"
+      ],
+      "extensions": [
+        "Add more vulnerability checks",
+        "Support multiple contract frameworks",
+        "Create fix suggestions",
+        "Integrate with CI/CD",
+        "Add false positive filtering"
+      ],
+      "learningOutcomes": [
+        "Understand security vulnerabilities",
+        "Learn static analysis",
+        "Master security patterns",
+        "Practice with code analysis"
+      ]
+    },
+    {
+      "id": "project-84-2",
+      "title": "Secure Token Contract",
+      "description": "Build a fully secure ERC-20-like token contract with all security best practices: reentrancy protection, safe math, access control.",
+      "difficulty": "hard",
+      "estimatedTime": 12,
+      "requirements": [
+        "Implement all security patterns",
+        "Reentrancy protection",
+        "Safe math operations",
+        "Access control",
+        "Input validation",
+        "Comprehensive tests"
+      ],
+      "hints": [
+        "Use checked arithmetic",
+        "Implement reentrancy guard",
+        "Check all permissions",
+        "Validate all inputs"
+      ],
+      "extensions": [
+        "Add pause functionality",
+        "Implement upgradeability",
+        "Add event logging",
+        "Support batch operations",
+        "Add rate limiting"
+      ],
+      "learningOutcomes": [
+        "Master security patterns",
+        "Understand common vulnerabilities",
+        "Learn defensive programming",
+        "Practice secure coding"
+      ]
+    }
+  ]
+}
+

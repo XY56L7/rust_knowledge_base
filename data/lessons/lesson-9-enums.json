@@ -75,5 +75,109 @@
       ],
       "difficulty": "easy"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-9-1",
+      "title": "Transaction Type System",
+      "description": "Build a transaction system using enums to represent different transaction types. Handle transfers, contract calls, staking, and more.",
+      "difficulty": "medium",
+      "estimatedTime": 4,
+      "requirements": [
+        "Create TransactionType enum with multiple variants",
+        "Each variant contains relevant data",
+        "Function to process different transaction types",
+        "Use pattern matching to handle all types",
+        "Support at least 4 transaction types",
+        "Display transaction information"
+      ],
+      "hints": [
+        "Use enum variants with data",
+        "Use match expression for processing",
+        "Each variant can have different fields",
+        "Handle all cases explicitly"
+      ],
+      "extensions": [
+        "Add transaction validation per type",
+        "Implement transaction serialization",
+        "Add transaction history tracking",
+        "Support transaction conversion",
+        "Add transaction statistics"
+      ],
+      "learningOutcomes": [
+        "Master enum usage",
+        "Understand variant data",
+        "Learn pattern matching",
+        "Practice with type-safe state"
+      ]
+    },
+    {
+      "id": "project-9-2",
+      "title": "Blockchain Event System",
+      "description": "Create an event system using enums to represent different blockchain events. Track and process events like transfers, deployments, and updates.",
+      "difficulty": "medium",
+      "estimatedTime": 4,
+      "requirements": [
+        "Create BlockchainEvent enum",
+        "Different event types with data",
+        "Event processing function",
+        "Event history storage",
+        "Pattern matching for all events",
+        "Event filtering and search"
+      ],
+      "hints": [
+        "Use enum for type safety",
+        "Store events in a vector",
+        "Use match to process events",
+        "Filter events by type"
+      ],
+      "extensions": [
+        "Add event timestamps",
+        "Implement event subscriptions",
+        "Add event aggregation",
+        "Support event replay",
+        "Create event statistics"
+      ],
+      "learningOutcomes": [
+        "Understand event-driven design",
+        "Master enum-based state",
+        "Learn event processing",
+        "Practice with pattern matching"
+      ]
+    },
+    {
+      "id": "project-9-3",
+      "title": "Network Message Protocol",
+      "description": "Build a message protocol system using enums to represent different message types. Handle requests, responses, and notifications.",
+      "difficulty": "easy",
+      "estimatedTime": 3,
+      "requirements": [
+        "Create Message enum with variants",
+        "Different message types",
+        "Message handler function",
+        "Pattern matching for messages",
+        "Message routing",
+        "Display message information"
+      ],
+      "hints": [
+        "Use enum for message types",
+        "Each variant can have different data",
+        "Use match for routing",
+        "Keep it simple for now"
+      ],
+      "extensions": [
+        "Add message validation",
+        "Implement message queuing",
+        "Add message serialization",
+        "Support message priorities",
+        "Create message statistics"
+      ],
+      "learningOutcomes": [
+        "Understand protocol design",
+        "Master enum for types",
+        "Learn message handling",
+        "Practice with enums"
+      ]
+    }
   ]
 }

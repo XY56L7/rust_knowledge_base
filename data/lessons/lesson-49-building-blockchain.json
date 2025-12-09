@@ -40,5 +40,151 @@
       ],
       "difficulty": "hard"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-49-1",
+      "title": "Complete Cryptocurrency Implementation",
+      "description": "Build a full-featured cryptocurrency from scratch. Implement transactions, mining, balance tracking, and blockchain validation.",
+      "difficulty": "hard",
+      "estimatedTime": 20,
+      "requirements": [
+        "Complete blockchain with genesis block",
+        "Transaction system with validation",
+        "Balance tracking for multiple accounts",
+        "Block mining functionality",
+        "Transaction pool management",
+        "Chain validation and integrity checks",
+        "CLI interface for interactions"
+      ],
+      "hints": [
+        "Start with basic structures, then add features incrementally",
+        "Use HashMap for balance tracking",
+        "Implement proper error handling",
+        "Test each component separately"
+      ],
+      "extensions": [
+        "Add cryptographic hashing (SHA-256)",
+        "Implement Proof of Work mining",
+        "Add digital signatures for transactions",
+        "Create persistence (save/load blockchain)",
+        "Add network support (P2P)",
+        "Implement wallet functionality",
+        "Add transaction history",
+        "Create a simple GUI"
+      ],
+      "learningOutcomes": [
+        "Master complete blockchain implementation",
+        "Understand transaction processing",
+        "Learn state management",
+        "Practice with complex data structures",
+        "Implement real-world blockchain features"
+      ]
+    },
+    {
+      "id": "project-49-2",
+      "title": "Multi-Token Blockchain Platform",
+      "description": "Create a blockchain that supports multiple token types. Each token has its own supply, balances, and transactions.",
+      "difficulty": "hard",
+      "estimatedTime": 15,
+      "requirements": [
+        "Support multiple token types",
+        "Separate balance tracking per token",
+        "Token-specific transactions",
+        "Token creation/minting",
+        "Cross-token operations",
+        "Token metadata (name, symbol, decimals)"
+      ],
+      "hints": [
+        "Use nested HashMaps: address -> token -> balance",
+        "Create Token struct with metadata",
+        "Separate transaction types per token",
+        "Track total supply per token"
+      ],
+      "extensions": [
+        "Add token transfer between users",
+        "Implement token burning",
+        "Add token exchange functionality",
+        "Create token registry",
+        "Support custom token creation",
+        "Add token statistics"
+      ],
+      "learningOutcomes": [
+        "Understand multi-asset systems",
+        "Practice with complex data modeling",
+        "Learn token economics",
+        "Implement flexible blockchain design"
+      ]
+    },
+    {
+      "id": "project-49-3",
+      "title": "Blockchain with Smart Contract Support",
+      "description": "Extend your blockchain to support simple smart contracts. Allow users to deploy contracts and execute them.",
+      "difficulty": "hard",
+      "estimatedTime": 25,
+      "requirements": [
+        "Contract deployment functionality",
+        "Contract storage system",
+        "Contract execution engine",
+        "Contract state management",
+        "Contract interaction (call functions)",
+        "Gas metering system"
+      ],
+      "hints": [
+        "Create Contract struct with code and storage",
+        "Use HashMap for contract storage",
+        "Implement simple VM or interpreter",
+        "Track gas usage per operation"
+      ],
+      "extensions": [
+        "Add more contract operations",
+        "Implement contract events",
+        "Add contract upgradeability",
+        "Support contract-to-contract calls",
+        "Add contract verification",
+        "Implement contract templates"
+      ],
+      "learningOutcomes": [
+        "Understand smart contract architecture",
+        "Learn virtual machine concepts",
+        "Practice with execution engines",
+        "Master state management for contracts"
+      ]
+    },
+    {
+      "id": "project-49-4",
+      "title": "Blockchain Analytics Dashboard",
+      "description": "Build a dashboard that analyzes blockchain data. Display statistics, transaction patterns, and network health metrics.",
+      "difficulty": "medium",
+      "estimatedTime": 10,
+      "requirements": [
+        "Calculate blockchain statistics (height, total transactions)",
+        "Track transaction volume over time",
+        "Analyze account activity",
+        "Display top accounts by balance",
+        "Calculate average block time",
+        "Show transaction fee statistics"
+      ],
+      "hints": [
+        "Iterate through blocks to collect data",
+        "Use aggregations for statistics",
+        "Track metrics over time",
+        "Format output nicely"
+      ],
+      "extensions": [
+        "Add visualization (ASCII charts)",
+        "Export data to CSV/JSON",
+        "Add time-based filtering",
+        "Implement caching for performance",
+        "Add real-time updates",
+        "Create web API for data access"
+      ],
+      "learningOutcomes": [
+        "Learn data analysis techniques",
+        "Practice with aggregations",
+        "Understand blockchain metrics",
+        "Work with time-series data"
+      ]
+    }
   ]
 }

@@ -63,5 +63,75 @@
       ],
       "difficulty": "medium"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-6-1",
+      "title": "Blockchain State Inspector",
+      "description": "Build a state inspector that uses borrowing to examine blockchain state without modifying it. Display balances, transaction counts, and statistics.",
+      "difficulty": "medium",
+      "estimatedTime": 3,
+      "requirements": [
+        "Create functions that borrow blockchain state immutably",
+        "Display account balances",
+        "Count transactions",
+        "Calculate statistics",
+        "Show state without taking ownership",
+        "Support multiple read operations"
+      ],
+      "hints": [
+        "Use &BlockchainState for immutable borrowing",
+        "Create multiple functions that read state",
+        "Use references to avoid ownership transfer",
+        "Demonstrate multiple immutable references"
+      ],
+      "extensions": [
+        "Add state caching",
+        "Implement state comparison",
+        "Add state snapshot creation",
+        "Support filtering and querying",
+        "Add state export functionality"
+      ],
+      "learningOutcomes": [
+        "Master immutable borrowing",
+        "Understand multiple references",
+        "Learn to read without ownership",
+        "Practice with borrowing patterns"
+      ]
+    },
+    {
+      "id": "project-6-2",
+      "title": "Transaction Queue Manager",
+      "description": "Create a transaction queue that uses mutable borrowing to add transactions. Process transactions while maintaining queue ownership.",
+      "difficulty": "medium",
+      "estimatedTime": 4,
+      "requirements": [
+        "Create TransactionQueue struct",
+        "Function to add transactions (mutable borrow)",
+        "Function to process transactions (mutable borrow)",
+        "Function to view queue (immutable borrow)",
+        "Demonstrate borrowing rules",
+        "Handle multiple operations"
+      ],
+      "hints": [
+        "Use &mut for modifications",
+        "Use & for reading",
+        "Show borrowing rules in action",
+        "Process transactions without taking ownership"
+      ],
+      "extensions": [
+        "Add transaction prioritization",
+        "Implement queue statistics",
+        "Add transaction filtering",
+        "Support batch operations",
+        "Add queue persistence"
+      ],
+      "learningOutcomes": [
+        "Master mutable borrowing",
+        "Understand borrowing rules",
+        "Learn safe state modification",
+        "Practice with borrowing in queues"
+      ]
+    }
   ]
 }

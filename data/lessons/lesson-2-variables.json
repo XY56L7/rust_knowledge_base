@@ -75,5 +75,98 @@
       ],
       "difficulty": "easy"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-2-1",
+      "title": "Simple Wallet Balance Tracker",
+      "description": "Create a program that tracks cryptocurrency wallet balances. Use mutable variables to update balances when receiving or sending tokens.",
+      "difficulty": "easy",
+      "estimatedTime": 2,
+      "requirements": [
+        "Create mutable variables for wallet balances",
+        "Simulate receiving tokens (increase balance)",
+        "Simulate sending tokens (decrease balance)",
+        "Display balance after each transaction",
+        "Handle at least 2 different tokens (e.g., ETH and BTC)"
+      ],
+      "hints": [
+        "Use mut keyword for changing balances",
+        "Use += for receiving, -= for sending",
+        "Print balance after each operation"
+      ],
+      "extensions": [
+        "Add transaction history",
+        "Calculate total portfolio value",
+        "Add validation (prevent negative balances)",
+        "Support multiple wallets"
+      ],
+      "learningOutcomes": [
+        "Understand mutability in Rust",
+        "Practice with arithmetic operations",
+        "Learn variable shadowing concepts",
+        "Work with different numeric types"
+      ]
+    },
+    {
+      "id": "project-2-2",
+      "title": "Block Height Calculator",
+      "description": "Build a program that calculates blockchain block height over time. Use variables to track current block, block time, and calculate future block heights.",
+      "difficulty": "easy",
+      "estimatedTime": 1,
+      "requirements": [
+        "Create variables for current block height",
+        "Store block time (seconds per block)",
+        "Calculate future block height after X seconds",
+        "Use shadowing to update block height"
+      ],
+      "hints": [
+        "Use immutable variables for constants (block time)",
+        "Use mutable or shadowing for changing block height",
+        "Calculate: future_height = current + (seconds / block_time)"
+      ],
+      "extensions": [
+        "Calculate block height for specific date",
+        "Add multiple blockchain support (different block times)",
+        "Display estimated time until target block"
+      ],
+      "learningOutcomes": [
+        "Practice with variables and mutability",
+        "Understand shadowing vs mutation",
+        "Work with calculations",
+        "Learn Rust's type system basics"
+      ]
+    },
+    {
+      "id": "project-2-3",
+      "title": "Transaction Fee Calculator",
+      "description": "Create a calculator that computes transaction fees based on gas price and gas limit. Practice with immutable constants and mutable calculations.",
+      "difficulty": "easy",
+      "estimatedTime": 1,
+      "requirements": [
+        "Define gas price as immutable constant",
+        "Use mutable variable for gas limit",
+        "Calculate total fee (gas_price * gas_limit)",
+        "Convert between wei and ETH",
+        "Display results in both units"
+      ],
+      "hints": [
+        "Use const for gas price (doesn't change)",
+        "Use mut for gas limit (user input)",
+        "1 ETH = 1e18 wei",
+        "Use type casting for conversions"
+      ],
+      "extensions": [
+        "Support multiple gas price tiers",
+        "Calculate fees for different transaction types",
+        "Add gas optimization suggestions"
+      ],
+      "learningOutcomes": [
+        "Understand const vs let",
+        "Practice with mutability",
+        "Work with large numbers",
+        "Learn type conversions"
+      ]
+    }
   ]
 }

@@ -21,22 +21,58 @@ export default function CodeBlock({ code, language }: CodeBlockProps) {
   };
 
   return (
-    <div className="relative">
-      <div className="flex items-center justify-between bg-gray-800 text-gray-300 px-4 py-2 rounded-t-lg">
-        <span className="text-sm font-mono">{language}</span>
-        <button
-          onClick={copyToClipboard}
-          className="text-sm hover:text-white transition-colors"
-          title="Másolás vágólapra"
-        >
-          {copied ? '✓ Másolva!' : '📋 Másolás'}
-        </button>
+    <div className="relative group">
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-500"></div>
+      
+      <div className="relative bg-gradient-to-br from-gray-800 via-gray-850 to-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-700/50 backdrop-blur-sm">
+        <div className="flex items-center justify-between bg-gradient-to-r from-gray-800/95 via-gray-850/95 to-gray-900/95 backdrop-blur-md px-4 py-3 border-b border-gray-700/50">
+          <div className="flex items-center gap-3">
+            <div className="flex gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-red-500 shadow-lg shadow-red-500/50"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/50"></div>
+              <div className="w-3 h-3 rounded-full bg-green-500 shadow-lg shadow-green-500/50"></div>
+            </div>
+            <span className="text-sm font-mono text-gray-300 font-semibold tracking-wide">{language.toUpperCase()}</span>
+          </div>
+          <button
+            onClick={copyToClipboard}
+            className="group/btn relative px-4 py-1.5 bg-gray-700/60 hover:bg-gradient-to-r hover:from-orange-500 hover:to-orange-600 rounded-lg text-sm text-gray-300 hover:text-white transition-all duration-300 flex items-center gap-2 border border-gray-600/50 hover:border-orange-500/50 hover:shadow-lg hover:shadow-orange-500/25 transform hover:scale-105"
+            title="Copy to clipboard"
+          >
+            <svg 
+              className={`w-4 h-4 transition-all duration-300 ${copied ? 'scale-0 rotate-90 opacity-0' : 'scale-100 rotate-0 opacity-100'}`}
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <svg 
+              className={`absolute w-4 h-4 text-green-400 transition-all duration-300 ${copied ? 'scale-100 rotate-0 opacity-100' : 'scale-0 -rotate-90 opacity-0'}`}
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className={`transition-all duration-300 ${copied ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+              {copied ? 'Copied!' : 'Copy'}
+            </span>
+          </button>
+        </div>
+        
+        <div className="relative overflow-x-auto">
+          <pre className="p-6 m-0 bg-transparent">
+            <code className="font-mono text-sm leading-relaxed text-gray-100 block whitespace-pre">
+              {code}
+            </code>
+          </pre>
+          
+          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gray-800/30 border-r border-gray-700/50 pointer-events-none"></div>
+          
+          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent pointer-events-none"></div>
+        </div>
       </div>
-      <pre className="bg-gray-900 text-gray-100 p-4 rounded-b-lg overflow-x-auto">
-        <code className="font-mono text-sm">{code}</code>
-      </pre>
     </div>
   );
 }
-
-

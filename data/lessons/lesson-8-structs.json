@@ -76,5 +76,103 @@
       ],
       "difficulty": "easy"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-8-1",
+      "title": "Blockchain Transaction Manager",
+      "description": "Build a transaction management system using structs. Create Transaction, Block, and Account structs to represent blockchain data structures.",
+      "difficulty": "medium",
+      "estimatedTime": 3,
+      "requirements": [
+        "Create Transaction struct with from, to, amount, fee, nonce fields",
+        "Create Block struct with index, transactions, previous_hash, hash",
+        "Create Account struct with address, balance, nonce",
+        "Implement functions to create and display these structs",
+        "Create at least 3 sample transactions and 1 block"
+      ],
+      "hints": [
+        "Use String for addresses and hashes",
+        "Use u64 for amounts and indices",
+        "Use Vec<Transaction> for block transactions",
+        "Create helper functions to display struct data"
+      ],
+      "extensions": [
+        "Add validation functions (check balance, validate transaction)",
+        "Implement a simple blockchain with multiple blocks",
+        "Add methods to structs using impl blocks",
+        "Create a transaction history tracker"
+      ],
+      "learningOutcomes": [
+        "Master struct definition and usage",
+        "Understand field access and modification",
+        "Learn to organize related data",
+        "Practice with nested structs"
+      ]
+    },
+    {
+      "id": "project-8-2",
+      "title": "Cryptocurrency Portfolio Tracker",
+      "description": "Create a portfolio tracking system using structs. Track multiple cryptocurrencies with their balances, prices, and values.",
+      "difficulty": "medium",
+      "estimatedTime": 2,
+      "requirements": [
+        "Create Coin struct with symbol, balance, price fields",
+        "Create Portfolio struct containing multiple coins",
+        "Calculate total portfolio value",
+        "Display individual coin values and total",
+        "Support at least 3 different cryptocurrencies"
+      ],
+      "hints": [
+        "Use Vec<Coin> in Portfolio struct",
+        "Use f64 for prices (or u64 for fixed-point)",
+        "Create methods to calculate values",
+        "Use iteration to sum portfolio value"
+      ],
+      "extensions": [
+        "Add price update functionality",
+        "Calculate profit/loss",
+        "Add percentage allocation",
+        "Support adding/removing coins"
+      ],
+      "learningOutcomes": [
+        "Work with structs containing collections",
+        "Practice with calculations",
+        "Learn struct methods",
+        "Understand data organization"
+      ]
+    },
+    {
+      "id": "project-8-3",
+      "title": "Smart Contract Registry",
+      "description": "Build a registry system for smart contracts. Use structs to store contract information like address, name, creator, and deployment date.",
+      "difficulty": "easy",
+      "estimatedTime": 2,
+      "requirements": [
+        "Create SmartContract struct with address, name, creator, deployed_at fields",
+        "Create Registry struct to hold multiple contracts",
+        "Add function to register new contracts",
+        "Display all registered contracts",
+        "Find contract by address or name"
+      ],
+      "hints": [
+        "Use String for addresses and names",
+        "Use Vec<SmartContract> for registry",
+        "Create search functions",
+        "Use pattern matching for lookups"
+      ],
+      "extensions": [
+        "Add contract versioning",
+        "Track contract interactions",
+        "Add categories/tags",
+        "Implement contract verification status"
+      ],
+      "learningOutcomes": [
+        "Practice with struct collections",
+        "Learn search and filter operations",
+        "Understand data modeling",
+        "Work with multiple struct types"
+      ]
+    }
   ]
 }

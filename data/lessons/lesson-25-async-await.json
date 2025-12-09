@@ -56,5 +56,110 @@
       ],
       "difficulty": "medium"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-25-1",
+      "title": "Async Blockchain Node",
+      "description": "Build an async blockchain node that can handle multiple network operations concurrently. Fetch blocks from multiple peers, process transactions, and sync state all asynchronously.",
+      "difficulty": "hard",
+      "estimatedTime": 15,
+      "requirements": [
+        "Async block fetching from multiple peers",
+        "Concurrent transaction processing",
+        "Async state synchronization",
+        "Non-blocking network I/O",
+        "Handle multiple connections simultaneously",
+        "Async error handling"
+      ],
+      "hints": [
+        "Use tokio for async runtime",
+        "Use tokio::spawn for concurrent tasks",
+        "Use channels for async communication",
+        "Use tokio::join! for parallel operations"
+      ],
+      "extensions": [
+        "Add WebSocket support",
+        "Implement async RPC server",
+        "Add connection pooling",
+        "Support async database operations",
+        "Add metrics and monitoring",
+        "Implement rate limiting"
+      ],
+      "learningOutcomes": [
+        "Master async/await patterns",
+        "Understand async I/O",
+        "Learn concurrent network programming",
+        "Practice with Tokio runtime"
+      ]
+    },
+    {
+      "id": "project-25-2",
+      "title": "Async Transaction Pool Manager",
+      "description": "Create an async transaction pool that can add, remove, and process transactions concurrently. Use async channels for communication.",
+      "difficulty": "medium",
+      "estimatedTime": 8,
+      "requirements": [
+        "Async transaction addition",
+        "Concurrent transaction validation",
+        "Async transaction broadcasting",
+        "Non-blocking pool operations",
+        "Handle multiple operations simultaneously",
+        "Async state updates"
+      ],
+      "hints": [
+        "Use tokio channels for async communication",
+        "Use async mutexes for shared state",
+        "Spawn tasks for concurrent operations",
+        "Use select! for multiple async operations"
+      ],
+      "extensions": [
+        "Add transaction prioritization",
+        "Implement async filtering",
+        "Add rate limiting",
+        "Support transaction batching",
+        "Add async metrics collection"
+      ],
+      "learningOutcomes": [
+        "Understand async state management",
+        "Learn async channels",
+        "Practice with concurrent operations",
+        "Master async patterns"
+      ]
+    },
+    {
+      "id": "project-25-3",
+      "title": "Async Price Aggregator",
+      "description": "Build an async price aggregator that fetches prices from multiple exchanges simultaneously. Aggregate and calculate average prices.",
+      "difficulty": "medium",
+      "estimatedTime": 6,
+      "requirements": [
+        "Fetch prices from multiple sources concurrently",
+        "Use async HTTP requests",
+        "Aggregate results asynchronously",
+        "Handle timeouts and errors",
+        "Calculate statistics (average, median)",
+        "Display results"
+      ],
+      "hints": [
+        "Use reqwest for async HTTP",
+        "Use tokio::join! for parallel requests",
+        "Handle errors with Result",
+        "Use async timeouts"
+      ],
+      "extensions": [
+        "Add caching with TTL",
+        "Implement price change detection",
+        "Add WebSocket for real-time updates",
+        "Support multiple cryptocurrencies",
+        "Create price history"
+      ],
+      "learningOutcomes": [
+        "Master async HTTP requests",
+        "Learn parallel async operations",
+        "Understand error handling in async",
+        "Practice with real-world async patterns"
+      ]
+    }
   ]
 }

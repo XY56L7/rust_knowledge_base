@@ -48,5 +48,109 @@
       ],
       "difficulty": "medium"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-11-1",
+      "title": "Blockchain Address Lookup System",
+      "description": "Build a system that looks up account information using Option. Handle cases where accounts don't exist gracefully.",
+      "difficulty": "medium",
+      "estimatedTime": 3,
+      "requirements": [
+        "Function to find account by address (returns Option)",
+        "Handle None case for non-existent accounts",
+        "Display account information if found",
+        "Use Option methods (unwrap_or, map, etc.)",
+        "Safe error handling",
+        "Support multiple lookups"
+      ],
+      "hints": [
+        "Use HashMap for account storage",
+        "get() returns Option",
+        "Handle None gracefully",
+        "Use Option combinators"
+      ],
+      "extensions": [
+        "Add account creation",
+        "Implement account search",
+        "Add account statistics",
+        "Support account filtering",
+        "Create account cache"
+      ],
+      "learningOutcomes": [
+        "Master Option handling",
+        "Learn safe error handling",
+        "Understand Option methods",
+        "Practice with None cases"
+      ]
+    },
+    {
+      "id": "project-11-2",
+      "title": "Transaction Finder",
+      "description": "Create a transaction finder that uses Option to safely search for transactions. Handle missing transactions without panics.",
+      "difficulty": "easy",
+      "estimatedTime": 2,
+      "requirements": [
+        "Find transaction by hash (returns Option)",
+        "Find transaction by index (returns Option)",
+        "Handle None cases",
+        "Use match for Option handling",
+        "Display transaction if found",
+        "Show error message if not found"
+      ],
+      "hints": [
+        "Use Vec or HashMap for storage",
+        "Search functions return Option",
+        "Use match or unwrap_or",
+        "Handle None explicitly"
+      ],
+      "extensions": [
+        "Add transaction filtering",
+        "Implement transaction search",
+        "Add transaction history",
+        "Support multiple search methods",
+        "Create transaction index"
+      ],
+      "learningOutcomes": [
+        "Understand Option patterns",
+        "Learn safe lookups",
+        "Practice with Option methods",
+        "Master error handling"
+      ]
+    },
+    {
+      "id": "project-11-3",
+      "title": "Configurable Blockchain Node",
+      "description": "Build a configurable node where settings are optional. Use Option for optional configuration values with defaults.",
+      "difficulty": "medium",
+      "estimatedTime": 4,
+      "requirements": [
+        "Node configuration with Option fields",
+        "Optional settings (port, timeout, etc.)",
+        "Default values for None",
+        "Configuration loading",
+        "Safe configuration access",
+        "Display configuration"
+      ],
+      "hints": [
+        "Use Option for optional fields",
+        "Use unwrap_or for defaults",
+        "Create config struct",
+        "Handle missing values"
+      ],
+      "extensions": [
+        "Add config file loading",
+        "Implement config validation",
+        "Support config updates",
+        "Add config persistence",
+        "Create config templates"
+      ],
+      "learningOutcomes": [
+        "Master Option for configuration",
+        "Learn default values",
+        "Understand optional fields",
+        "Practice with Option patterns"
+      ]
+    }
   ]
 }

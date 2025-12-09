@@ -1,0 +1,174 @@
+{
+  "id": "lesson-39-smart-contract-fundamentals",
+  "title": "Smart Contract Fundamentals",
+  "description": "Introduction to smart contracts: what they are, how they work, and why they're important for blockchain development.",
+  "content": "# Smart Contract Fundamentals\n\n**Smart contracts** are self-executing programs that run on blockchains. They automatically execute when predefined conditions are met, without requiring intermediaries.\n\n## What is a Smart Contract?\n\nA smart contract is:\n\n- **Code**: Written in a programming language (like Rust)\n- **Deployed**: Stored on the blockchain\n- **Automatic**: Executes automatically when called\n- **Immutable**: Once deployed, code cannot be changed (unless upgradeable)\n- **Transparent**: Code and execution are visible to everyone\n- **Trustless**: No need to trust a third party\n\n## Real-World Analogy\n\nThink of a vending machine:\n\n1. You insert money (input)\n2. You select a product (function call)\n3. The machine automatically dispenses the product (execution)\n4. No human operator needed (trustless)\n\nSmart contracts work similarly, but on a blockchain!\n\n## Key Concepts\n\n### 1. State\n\nSmart contracts maintain **state** - data that persists between function calls.\n\n```rust\nstruct SimpleContract {\n    owner: String,        // State: who owns the contract\n    balance: u64,         // State: contract balance\n    counter: u64,         // State: a counter value\n}\n```\n\n### 2. Functions\n\nContracts expose **functions** that can be called to interact with the contract.\n\n```rust\nimpl SimpleContract {\n    // Read function (query) - doesn't change state\n    fn get_balance(&self) -> u64 {\n        self.balance\n    }\n    \n    // Write function (execute) - changes state\n    fn increment_counter(&mut self) {\n        self.counter += 1;\n    }\n}\n```\n\n### 3. Transactions\n\nEvery function call is a **transaction** that:\n- Costs gas (fee)\n- Is recorded on the blockchain\n- Can modify state\n- Returns a result\n\n## Your First Smart Contract\n\nLet's build a simple counter contract:\n\n```rust\nstruct CounterContract {\n    count: u64,\n    owner: String,\n}\n\nimpl CounterContract {\n    // Initialize the contract\n    fn new(owner: String) -> Self {\n        CounterContract {\n            count: 0,\n            owner,\n        }\n    }\n    \n    // Read the count (query)\n    fn get_count(&self) -> u64 {\n        self.count\n    }\n    \n    // Increment the count (execute)\n    fn increment(&mut self, caller: &str) -> Result<(), String> {\n        // Simple access control\n        if caller != self.owner {\n            return Err(String::from(\"Only owner can increment\"));\n        }\n        \n        self.count += 1;\n        Ok(())\n    }\n    \n    // Reset the count (execute)\n    fn reset(&mut self, caller: &str) -> Result<(), String> {\n        if caller != self.owner {\n            return Err(String::from(\"Only owner can reset\"));\n        }\n        \n        self.count = 0;\n        Ok(())\n    }\n}\n```\n\n## How Smart Contracts Work\n\n### 1. Deployment\n\n```rust\n// Deploy the contract\nlet mut contract = CounterContract::new(String::from(\"0xAlice\"));\n```\n\n### 2. Query (Read)\n\n```rust\n// Read state - doesn't cost gas, doesn't change state\nlet current_count = contract.get_count();\nprintln!(\"Current count: {}\", current_count);\n```\n\n### 3. Execute (Write)\n\n```rust\n// Execute function - costs gas, changes state\nmatch contract.increment(\"0xAlice\") {\n    Ok(_) => println!(\"Count incremented!\"),\n    Err(e) => println!(\"Error: {}\", e),\n}\n```\n\n## Smart Contract Lifecycle\n\n1. **Write Code**: Write contract in Rust\n2. **Compile**: Compile to WASM (WebAssembly)\n3. **Deploy**: Upload to blockchain\n4. **Instantiate**: Create contract instance\n5. **Interact**: Call functions (query/execute)\n6. **Monitor**: Watch events and state changes\n\n## Types of Functions\n\n### Query Functions (Read)\n\n- **No state change**: Only read data\n- **Free**: Usually don't cost gas\n- **Fast**: Execute immediately\n- **Examples**: `get_balance()`, `get_count()`, `get_owner()`\n\n```rust\nfn get_balance(&self, address: &str) -> u64 {\n    self.balances.get(address).copied().unwrap_or(0)\n}\n```\n\n### Execute Functions (Write)\n\n- **State change**: Modify contract state\n- **Costs gas**: Requires payment\n- **Recorded**: Stored on blockchain\n- **Examples**: `transfer()`, `mint()`, `approve()`\n\n```rust\nfn transfer(&mut self, from: &str, to: &str, amount: u64) -> Result<(), String> {\n    // Validate\n    let balance = self.balances.get(from).copied().unwrap_or(0);\n    if balance < amount {\n        return Err(String::from(\"Insufficient balance\"));\n    }\n    \n    // Update state\n    *self.balances.entry(from.to_string()).or_insert(0) -= amount;\n    *self.balances.entry(to.to_string()).or_insert(0) += amount;\n    \n    Ok(())\n}\n```\n\n## Simple Token Contract Example\n\n```rust\nuse std::collections::HashMap;\n\nstruct TokenContract {\n    name: String,\n    symbol: String,\n    total_supply: u64,\n    balances: HashMap<String, u64>,\n    owner: String,\n}\n\nimpl TokenContract {\n    // Initialize contract\n    fn new(name: String, symbol: String, initial_supply: u64, owner: String) -> Self {\n        let mut balances = HashMap::new();\n        balances.insert(owner.clone(), initial_supply);\n        \n        TokenContract {\n            name,\n            symbol,\n            total_supply: initial_supply,\n            balances,\n            owner,\n        }\n    }\n    \n    // Query: Get balance\n    fn balance_of(&self, address: &str) -> u64 {\n        self.balances.get(address).copied().unwrap_or(0)\n    }\n    \n    // Query: Get total supply\n    fn get_total_supply(&self) -> u64 {\n        self.total_supply\n    }\n    \n    // Execute: Transfer tokens\n    fn transfer(\n        &mut self,\n        from: &str,\n        to: &str,\n        amount: u64,\n    ) -> Result<(), String> {\n        // Validate addresses\n        if from.is_empty() || to.is_empty() {\n            return Err(String::from(\"Invalid address\"));\n        }\n        \n        if from == to {\n            return Err(String::from(\"Cannot transfer to self\"));\n        }\n        \n        // Validate amount\n        if amount == 0 {\n            return Err(String::from(\"Amount must be greater than 0\"));\n        }\n        \n        // Check balance\n        let balance = self.balance_of(from);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        // Execute transfer\n        *self.balances.entry(from.to_string()).or_insert(0) -= amount;\n        *self.balances.entry(to.to_string()).or_insert(0) += amount;\n        \n        Ok(())\n    }\n}\n```\n\n## Why Smart Contracts?\n\n### Advantages\n\n1. **Trustless**: No need for intermediaries\n2. **Transparent**: Code is visible to everyone\n3. **Automatic**: Execute automatically\n4. **Immutable**: Code cannot be changed (security)\n5. **Global**: Accessible from anywhere\n6. **Cost-effective**: Reduce middleman fees\n\n### Use Cases\n\n- **Tokens**: Create cryptocurrencies\n- **DeFi**: Lending, trading, staking\n- **NFTs**: Digital collectibles\n- **DAOs**: Decentralized organizations\n- **Gaming**: In-game assets and logic\n- **Supply Chain**: Track products\n- **Voting**: Transparent elections\n\n## Smart Contract vs Traditional Contract\n\n| Traditional Contract | Smart Contract |\n|---------------------|----------------|\n| Written in legal language | Written in code |\n| Requires lawyers | Self-executing |\n| Manual enforcement | Automatic execution |\n| Can be disputed | Deterministic |\n| Expensive | Lower cost |\n| Slow | Fast |\n\n## Important Concepts\n\n### Gas\n\n- **Gas** is the fee paid to execute smart contracts\n- More complex operations = more gas\n- Gas price varies by network\n- Failed transactions still cost gas\n\n### Immutability\n\n- Once deployed, code cannot be changed\n- This ensures security and trust\n- Some contracts support upgrades (with admin)\n\n### Determinism\n\n- Same input always produces same output\n- Critical for blockchain consensus\n- No random numbers (unless from oracle)\n\n## Next Steps\n\nNow that you understand the fundamentals:\n\n1. Learn about **WebAssembly (WASM)** - how contracts are compiled\n2. Study **contract structure** - organizing your code\n3. Practice **testing** - ensuring your contracts work correctly\n4. Explore **security** - protecting against attacks\n5. Build **real projects** - apply what you've learned\n\n## Key Takeaways\n\n- Smart contracts are self-executing programs on blockchains\n- They maintain state and expose functions\n- Query functions read data, execute functions modify state\n- They're trustless, transparent, and automatic\n- Gas is required to execute functions\n- Contracts are immutable once deployed",
+  "difficulty": "intermediate",
+  "estimatedTime": 45,
+  "prerequisites": [
+    "lesson-8-structs",
+    "lesson-9-enums",
+    "lesson-12-result"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-39-1-first-contract",
+      "title": "Your First Smart Contract",
+      "description": "A simple counter contract to understand the basics",
+      "code": "struct CounterContract {\n    count: u64,\n    owner: String,\n}\n\nimpl CounterContract {\n    fn new(owner: String) -> Self {\n        CounterContract {\n            count: 0,\n            owner,\n        }\n    }\n    \n    // Query function - read state\n    fn get_count(&self) -> u64 {\n        self.count\n    }\n    \n    // Execute function - modify state\n    fn increment(&mut self, caller: &str) -> Result<(), String> {\n        if caller != self.owner {\n            return Err(String::from(\"Only owner can increment\"));\n        }\n        \n        self.count += 1;\n        Ok(())\n    }\n}\n\nfn main() {\n    // Deploy contract\n    let mut contract = CounterContract::new(String::from(\"0xAlice\"));\n    \n    // Query: Read count\n    println!(\"Initial count: {}\", contract.get_count());\n    \n    // Execute: Increment\n    contract.increment(\"0xAlice\").unwrap();\n    println!(\"After increment: {}\", contract.get_count());\n    \n    // Try unauthorized access\n    match contract.increment(\"0xBob\") {\n        Ok(_) => println!(\"Incremented\"),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "explanation": "This simple counter contract demonstrates the basic concepts: state (count), query function (get_count), and execute function (increment). It also shows basic access control.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-39-2-simple-token",
+      "title": "Simple Token Contract",
+      "description": "A basic token contract with transfer functionality",
+      "code": "use std::collections::HashMap;\n\nstruct TokenContract {\n    name: String,\n    symbol: String,\n    total_supply: u64,\n    balances: HashMap<String, u64>,\n}\n\nimpl TokenContract {\n    fn new(name: String, symbol: String, initial_supply: u64, owner: String) -> Self {\n        let mut balances = HashMap::new();\n        balances.insert(owner.clone(), initial_supply);\n        \n        TokenContract {\n            name,\n            symbol,\n            total_supply: initial_supply,\n            balances,\n        }\n    }\n    \n    // Query: Get balance\n    fn balance_of(&self, address: &str) -> u64 {\n        self.balances.get(address).copied().unwrap_or(0)\n    }\n    \n    // Execute: Transfer tokens\n    fn transfer(\n        &mut self,\n        from: &str,\n        to: &str,\n        amount: u64,\n    ) -> Result<(), String> {\n        // Validate\n        if amount == 0 {\n            return Err(String::from(\"Amount must be > 0\"));\n        }\n        \n        let balance = self.balance_of(from);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        // Transfer\n        *self.balances.entry(from.to_string()).or_insert(0) -= amount;\n        *self.balances.entry(to.to_string()).or_insert(0) += amount;\n        \n        Ok(())\n    }\n}\n\nfn main() {\n    // Deploy token\n    let mut token = TokenContract::new(\n        String::from(\"MyToken\"),\n        String::from(\"MTK\"),\n        1000000,\n        String::from(\"0xAlice\"),\n    );\n    \n    println!(\"Token: {} ({})\", token.name, token.symbol);\n    println!(\"Alice balance: {}\", token.balance_of(\"0xAlice\"));\n    \n    // Transfer tokens\n    token.transfer(\"0xAlice\", \"0xBob\", 1000).unwrap();\n    \n    println!(\"After transfer:\");\n    println!(\"Alice balance: {}\", token.balance_of(\"0xAlice\"));\n    println!(\"Bob balance: {}\", token.balance_of(\"0xBob\"));\n}",
+      "explanation": "This token contract shows how smart contracts manage state (balances) and provide functions to interact with that state. Transfer is an execute function that modifies state.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-39-3-query-vs-execute",
+      "title": "Query vs Execute",
+      "description": "Understanding the difference between query and execute functions",
+      "code": "struct SimpleContract {\n    value: u64,\n    owner: String,\n}\n\nimpl SimpleContract {\n    fn new(owner: String) -> Self {\n        SimpleContract {\n            value: 0,\n            owner,\n        }\n    }\n    \n    // QUERY: Read-only, no state change, free\n    fn get_value(&self) -> u64 {\n        self.value\n    }\n    \n    // EXECUTE: Modifies state, costs gas\n    fn set_value(&mut self, caller: &str, new_value: u64) -> Result<(), String> {\n        if caller != self.owner {\n            return Err(String::from(\"Unauthorized\"));\n        }\n        \n        self.value = new_value;\n        Ok(())\n    }\n    \n    // EXECUTE: Can also return values\n    fn increment(&mut self, caller: &str) -> Result<u64, String> {\n        if caller != self.owner {\n            return Err(String::from(\"Unauthorized\"));\n        }\n        \n        self.value += 1;\n        Ok(self.value)\n    }\n}\n\nfn main() {\n    let mut contract = SimpleContract::new(String::from(\"0xAlice\"));\n    \n    // Query - free, instant\n    println!(\"Value: {}\", contract.get_value());\n    \n    // Execute - costs gas, changes state\n    contract.set_value(\"0xAlice\", 42).unwrap();\n    println!(\"After set: {}\", contract.get_value());\n    \n    // Execute with return value\n    let new_value = contract.increment(\"0xAlice\").unwrap();\n    println!(\"After increment: {}\", new_value);\n}",
+      "explanation": "Query functions are read-only and free. Execute functions modify state and cost gas. Both are important for smart contract functionality.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-39-1",
+      "title": "Create a Simple Contract",
+      "description": "Create a simple contract that stores a message and allows the owner to update it!",
+      "starterCode": "struct MessageContract {\n    message: String,\n    owner: String,\n}\n\nfn main() {\n    let mut contract = MessageContract::new(String::from(\"0xAlice\"));\n    println!(\"Message: {}\", contract.get_message());\n}",
+      "solution": "struct MessageContract {\n    message: String,\n    owner: String,\n}\n\nimpl MessageContract {\n    fn new(owner: String) -> Self {\n        MessageContract {\n            message: String::from(\"Hello, World!\"),\n            owner,\n        }\n    }\n    \n    fn get_message(&self) -> &str {\n        &self.message\n    }\n    \n    fn set_message(&mut self, caller: &str, new_message: String) -> Result<(), String> {\n        if caller != self.owner {\n            return Err(String::from(\"Only owner can set message\"));\n        }\n        \n        self.message = new_message;\n        Ok(())\n    }\n}\n\nfn main() {\n    let mut contract = MessageContract::new(String::from(\"0xAlice\"));\n    println!(\"Message: {}\", contract.get_message());\n    \n    contract.set_message(\"0xAlice\", String::from(\"New message!\")).unwrap();\n    println!(\"Updated message: {}\", contract.get_message());\n}",
+      "hints": [
+        "Create get_message() query function",
+        "Create set_message() execute function",
+        "Check if caller is owner",
+        "Update the message"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "exercise-39-2",
+      "title": "Add Transfer Function",
+      "description": "Add a transfer function to the token contract!",
+      "starterCode": "use std::collections::HashMap;\n\nstruct TokenContract {\n    balances: HashMap<String, u64>,\n}\n\nimpl TokenContract {\n    fn new(initial_supply: u64, owner: String) -> Self {\n        let mut balances = HashMap::new();\n        balances.insert(owner, initial_supply);\n        TokenContract { balances }\n    }\n    \n    fn balance_of(&self, address: &str) -> u64 {\n        self.balances.get(address).copied().unwrap_or(0)\n    }\n    \n    // Add transfer function here\n}\n\nfn main() {\n    let mut token = TokenContract::new(1000, String::from(\"0xAlice\"));\n    // Test transfer here\n}",
+      "solution": "use std::collections::HashMap;\n\nstruct TokenContract {\n    balances: HashMap<String, u64>,\n}\n\nimpl TokenContract {\n    fn new(initial_supply: u64, owner: String) -> Self {\n        let mut balances = HashMap::new();\n        balances.insert(owner, initial_supply);\n        TokenContract { balances }\n    }\n    \n    fn balance_of(&self, address: &str) -> u64 {\n        self.balances.get(address).copied().unwrap_or(0)\n    }\n    \n    fn transfer(\n        &mut self,\n        from: &str,\n        to: &str,\n        amount: u64,\n    ) -> Result<(), String> {\n        if amount == 0 {\n            return Err(String::from(\"Amount must be > 0\"));\n        }\n        \n        let balance = self.balance_of(from);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        *self.balances.entry(from.to_string()).or_insert(0) -= amount;\n        *self.balances.entry(to.to_string()).or_insert(0) += amount;\n        \n        Ok(())\n    }\n}\n\nfn main() {\n    let mut token = TokenContract::new(1000, String::from(\"0xAlice\"));\n    \n    println!(\"Alice balance: {}\", token.balance_of(\"0xAlice\"));\n    \n    token.transfer(\"0xAlice\", \"0xBob\", 200).unwrap();\n    \n    println!(\"After transfer:\");\n    println!(\"Alice balance: {}\", token.balance_of(\"0xAlice\"));\n    println!(\"Bob balance: {}\", token.balance_of(\"0xBob\"));\n}",
+      "hints": [
+        "Check if amount > 0",
+        "Check if sender has enough balance",
+        "Update both balances",
+        "Return Ok(()) on success"
+      ],
+      "difficulty": "medium"
+    }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-39-1",
+      "title": "Simple Voting Contract",
+      "description": "Build a basic voting contract where users can vote on proposals. Learn about state management and access control.",
+      "difficulty": "medium",
+      "estimatedTime": 4,
+      "requirements": [
+        "Create Proposal struct with title and options",
+        "Allow users to vote on proposals",
+        "Track votes per option",
+        "Prevent double voting",
+        "Query function to get vote results",
+        "Display voting statistics"
+      ],
+      "hints": [
+        "Use HashMap to track votes per user",
+        "Store proposals in a vector",
+        "Check if user already voted",
+        "Count votes for each option"
+      ],
+      "extensions": [
+        "Add voting deadline",
+        "Implement weighted voting",
+        "Add proposal creation",
+        "Support multiple proposals",
+        "Add vote delegation"
+      ],
+      "learningOutcomes": [
+        "Understand smart contract state",
+        "Learn access control patterns",
+        "Practice with data structures",
+        "Master query and execute functions"
+      ]
+    },
+    {
+      "id": "project-39-2",
+      "title": "Simple Bank Contract",
+      "description": "Create a basic bank contract where users can deposit and withdraw funds. Practice with state management and validation.",
+      "difficulty": "medium",
+      "estimatedTime": 4,
+      "requirements": [
+        "Allow users to deposit funds",
+        "Allow users to withdraw funds",
+        "Track balances per user",
+        "Validate withdrawals (sufficient balance)",
+        "Query function to check balance",
+        "Display transaction history"
+      ],
+      "hints": [
+        "Use HashMap for balances",
+        "Check balance before withdrawal",
+        "Use Result for error handling",
+        "Track deposits and withdrawals"
+      ],
+      "extensions": [
+        "Add interest calculation",
+        "Implement minimum balance",
+        "Add transfer between users",
+        "Support multiple currencies",
+        "Add transaction fees"
+      ],
+      "learningOutcomes": [
+        "Master state management",
+        "Learn validation patterns",
+        "Practice error handling",
+        "Understand contract interactions"
+      ]
+    },
+    {
+      "id": "project-39-3",
+      "title": "Todo List Contract",
+      "description": "Build a simple todo list contract where users can add, complete, and delete tasks. Learn about state management and user data.",
+      "difficulty": "easy",
+      "estimatedTime": 3,
+      "requirements": [
+        "Create Todo struct with id, title, completed",
+        "Allow users to add todos",
+        "Allow users to mark todos as complete",
+        "Allow users to delete todos",
+        "Query function to get all todos",
+        "Filter todos by completion status"
+      ],
+      "hints": [
+        "Use Vec to store todos",
+        "Generate unique IDs",
+        "Use struct for todo items",
+        "Filter by completion status"
+      ],
+      "extensions": [
+        "Add due dates",
+        "Implement priorities",
+        "Add todo categories",
+        "Support multiple users",
+        "Add todo sharing"
+      ],
+      "learningOutcomes": [
+        "Understand data structures",
+        "Learn CRUD operations",
+        "Practice with structs",
+        "Master query functions"
+      ]
+    }
+  ]
+}
+

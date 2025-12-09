@@ -1,0 +1,46 @@
+{
+  "id": "lesson-65-advanced-traits",
+  "title": "Advanced Traits: Trait Objects and Associated Types",
+  "description": "Master advanced trait patterns essential for building flexible blockchain architectures.",
+  "content": "# Advanced Traits: Trait Objects and Associated Types\n\nAdvanced trait features enable powerful abstractions needed for blockchain development.\n\n## Trait Objects\n\nTrait objects allow dynamic dispatch - choosing which implementation to use at runtime.\n\n```rust\ntrait Validator {\n    fn validate(&self, data: &[u8]) -> bool;\n}\n\nstruct PoWValidator;\nstruct PoSValidator;\n\nimpl Validator for PoWValidator {\n    fn validate(&self, data: &[u8]) -> bool {\n        // Proof of Work validation\n        true\n    }\n}\n\nimpl Validator for PoSValidator {\n    fn validate(&self, data: &[u8]) -> bool {\n        // Proof of Stake validation\n        true\n    }\n}\n\n// Trait object: Box<dyn Trait>\nlet validators: Vec<Box<dyn Validator>> = vec![\n    Box::new(PoWValidator),\n    Box::new(PoSValidator),\n];\n```\n\n## Associated Types\n\nAssociated types allow traits to define types that implementors must specify.\n\n```rust\ntrait Blockchain {\n    type Block;\n    type Transaction;\n    \n    fn create_block(&self, txs: Vec<Self::Transaction>) -> Self::Block;\n    fn validate_block(&self, block: &Self::Block) -> bool;\n}\n\nstruct BitcoinChain;\n\nimpl Blockchain for BitcoinChain {\n    type Block = BitcoinBlock;\n    type Transaction = BitcoinTx;\n    \n    fn create_block(&self, txs: Vec<BitcoinTx>) -> BitcoinBlock {\n        // Implementation\n    }\n    \n    fn validate_block(&self, block: &BitcoinBlock) -> bool {\n        // Implementation\n    }\n}\n```\n\n## Generic Associated Types (GATs)\n\nGATs allow associated types to be generic.\n\n```rust\ntrait Storage {\n    type Item<T>;\n    \n    fn store<T>(&mut self, item: T) -> Self::Item<T>;\n    fn retrieve<T>(&self, id: &str) -> Option<&Self::Item<T>>;\n}\n```\n\n## Why This Matters for Blockchain\n\n- **Consensus Abstraction**: Different consensus mechanisms can implement the same trait\n- **Storage Flexibility**: Support multiple storage backends\n- **Transaction Types**: Handle different transaction formats generically\n- **Plugin Architecture**: Allow runtime selection of validators, miners, etc.",
+  "difficulty": "advanced",
+  "estimatedTime": 50,
+  "prerequisites": [
+    "lesson-21-traits",
+    "lesson-22-trait-bounds"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-65-1-trait-objects",
+      "title": "Trait Objects for Validators",
+      "description": "Using trait objects to support multiple validator types",
+      "code": "trait Validator {\n    fn validate(&self, block_hash: &str) -> bool;\n    fn get_name(&self) -> &str;\n}\n\nstruct SimpleValidator;\nstruct AdvancedValidator;\n\nimpl Validator for SimpleValidator {\n    fn validate(&self, block_hash: &str) -> bool {\n        !block_hash.is_empty()\n    }\n    fn get_name(&self) -> &str {\n        \"Simple\"\n    }\n}\n\nimpl Validator for AdvancedValidator {\n    fn validate(&self, block_hash: &str) -> bool {\n        block_hash.len() == 64 && block_hash.chars().all(|c| c.is_ascii_hexdigit())\n    }\n    fn get_name(&self) -> &str {\n        \"Advanced\"\n    }\n}\n\nfn validate_with(validator: &dyn Validator, hash: &str) -> bool {\n    println!(\"Using {} validator\", validator.get_name());\n    validator.validate(hash)\n}\n\nfn main() {\n    let validators: Vec<Box<dyn Validator>> = vec![\n        Box::new(SimpleValidator),\n        Box::new(AdvancedValidator),\n    ];\n    \n    for validator in &validators {\n        println!(\"Valid: {}\", validate_with(validator.as_ref(), \"abc123\"));\n    }\n}",
+      "explanation": "Trait objects (Box<dyn Trait>) allow storing different types that implement the same trait in a collection. This is essential for blockchain systems that need to support multiple validator types or consensus mechanisms.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-65-2-associated-types",
+      "title": "Associated Types for Blockchain",
+      "description": "Using associated types to define blockchain-specific types",
+      "code": "trait BlockchainProtocol {\n    type Block;\n    type Transaction;\n    type Address;\n    \n    fn create_transaction(&self, from: Self::Address, to: Self::Address, amount: u64) -> Self::Transaction;\n    fn create_block(&self, txs: Vec<Self::Transaction>) -> Self::Block;\n}\n\nstruct EthereumProtocol;\n\nstruct EthBlock {\n    number: u64,\n    transactions: Vec<EthTx>,\n}\n\nstruct EthTx {\n    from: String,\n    to: String,\n    value: u64,\n}\n\nimpl BlockchainProtocol for EthereumProtocol {\n    type Block = EthBlock;\n    type Transaction = EthTx;\n    type Address = String;\n    \n    fn create_transaction(&self, from: String, to: String, amount: u64) -> EthTx {\n        EthTx { from, to, value: amount }\n    }\n    \n    fn create_block(&self, txs: Vec<EthTx>) -> EthBlock {\n        EthBlock {\n            number: 1,\n            transactions: txs,\n        }\n    }\n}\n\nfn main() {\n    let protocol = EthereumProtocol;\n    let tx = protocol.create_transaction(\n        String::from(\"0xAlice\"),\n        String::from(\"0xBob\"),\n        100\n    );\n    let block = protocol.create_block(vec![tx]);\n    println!(\"Created block with {} transactions\", block.transactions.len());\n}",
+      "explanation": "Associated types allow each blockchain implementation to define its own Block, Transaction, and Address types while implementing the same protocol trait. This provides type safety and flexibility.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-65-1",
+      "title": "Trait Object Validator",
+      "description": "Create a trait object system for different blockchain validators!",
+      "starterCode": "trait Validator {\n    fn validate(&self, data: &str) -> bool;\n}\n\nfn main() {\n    // Create a vector of validators\n    // Call validate on each\n}",
+      "solution": "trait Validator {\n    fn validate(&self, data: &str) -> bool;\n}\n\nstruct StrictValidator;\nstruct LenientValidator;\n\nimpl Validator for StrictValidator {\n    fn validate(&self, data: &str) -> bool {\n        data.len() > 10\n    }\n}\n\nimpl Validator for LenientValidator {\n    fn validate(&self, data: &str) -> bool {\n        !data.is_empty()\n    }\n}\n\nfn main() {\n    let validators: Vec<Box<dyn Validator>> = vec![\n        Box::new(StrictValidator),\n        Box::new(LenientValidator),\n    ];\n    \n    for validator in &validators {\n        println!(\"Valid: {}\", validator.validate(\"test\"));\n    }\n}",
+      "hints": [
+        "Use Box<dyn Validator> for trait objects",
+        "Implement the trait for both validator types",
+        "Use Vec<Box<dyn Validator>> to store multiple validators"
+      ],
+      "difficulty": "hard"
+    }
+  ]
+}
+

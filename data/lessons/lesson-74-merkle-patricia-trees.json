@@ -1,0 +1,46 @@
+{
+  "id": "lesson-74-merkle-patricia-trees",
+  "title": "Merkle Patricia Trees: Ethereum State Trie",
+  "description": "Understanding and implementing Merkle Patricia Trees used in Ethereum for efficient state storage.",
+  "content": "# Merkle Patricia Trees: Ethereum State Trie\n\n**Merkle Patricia Trees (MPT)** combine Merkle trees with Patricia (trie) structures for efficient state storage.\n\n## Why MPT?\n\nEthereum uses MPT for:\n\n- **State Trie**: Account balances, nonces, storage\n- **Transaction Trie**: Transactions in a block\n- **Receipt Trie**: Transaction receipts\n\n## Key Features\n\n### Trie Structure\n\nA **trie** (prefix tree) stores keys by their prefixes:\n\n```\n        Root\n       /    \\\n    0x0    0x1\n   /  \\    /  \\\n 0x00 0x01 0x10 0x11\n```\n\n### Node Types\n\n1. **Extension Node**: Shared prefix\n2. **Branch Node**: 16 children (hex digits)\n3. **Leaf Node**: Final value\n\n## Implementation\n\n```rust\nenum MPTNode {\n    Extension { shared_nibbles: Vec<u8>, next: Box<MPTNode> },\n    Branch { children: [Option<Box<MPTNode>>; 16], value: Option<Vec<u8>> },\n    Leaf { remaining_nibbles: Vec<u8>, value: Vec<u8> },\n}\n\nstruct MerklePatriciaTree {\n    root: Option<Box<MPTNode>>,\n}\n\nimpl MerklePatriciaTree {\n    fn new() -> Self {\n        MerklePatriciaTree { root: None }\n    }\n    \n    fn insert(&mut self, key: &[u8], value: Vec<u8>) {\n        // Insert key-value pair\n        // Navigate trie, create nodes as needed\n    }\n    \n    fn get(&self, key: &[u8]) -> Option<Vec<u8>> {\n        // Retrieve value by key\n        // Navigate trie following key path\n    }\n    \n    fn root_hash(&self) -> Vec<u8> {\n        // Calculate Merkle root hash\n    }\n}\n```\n\n## Ethereum State\n\nEthereum stores:\n\n- **Account State**: Balance, nonce, code hash, storage root\n- **Storage**: Contract storage (key-value pairs)\n- **Code**: Smart contract bytecode\n\n## Benefits\n\n- **Efficient Lookups**: O(log n) for state queries\n- **Merkle Proofs**: Prove state without full data\n- **Incremental Updates**: Only update changed paths\n- **Compact Storage**: Shared prefixes reduce size\n\n## Real-World Usage\n\n- **Ethereum**: State, transactions, receipts\n- **Light Clients**: Verify state with proofs\n- **State Sync**: Sync only changed state\n\n## Optimization\n\n- **Caching**: Cache frequently accessed nodes\n- **Pruning**: Remove old state\n- **Compression**: Compress node data",
+  "difficulty": "advanced",
+  "estimatedTime": 55,
+  "prerequisites": [
+    "lesson-32-merkle-trees",
+    "lesson-15-hashmaps"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-74-1-simple-trie",
+      "title": "Simple Trie Structure",
+      "description": "Basic trie implementation",
+      "code": "use std::collections::HashMap;\n\nstruct TrieNode {\n    children: HashMap<u8, Box<TrieNode>>,\n    value: Option<Vec<u8>>,\n}\n\nimpl TrieNode {\n    fn new() -> Self {\n        TrieNode {\n            children: HashMap::new(),\n            value: None,\n        }\n    }\n    \n    fn insert(&mut self, key: &[u8], value: Vec<u8>) {\n        if key.is_empty() {\n            self.value = Some(value);\n            return;\n        }\n        \n        let first = key[0];\n        let child = self.children\n            .entry(first)\n            .or_insert_with(|| Box::new(TrieNode::new()));\n        \n        child.insert(&key[1..], value);\n    }\n    \n    fn get(&self, key: &[u8]) -> Option<&Vec<u8>> {\n        if key.is_empty() {\n            return self.value.as_ref();\n        }\n        \n        let first = key[0];\n        if let Some(child) = self.children.get(&first) {\n            child.get(&key[1..])\n        } else {\n            None\n        }\n    }\n}\n\nstruct Trie {\n    root: TrieNode,\n}\n\nimpl Trie {\n    fn new() -> Self {\n        Trie { root: TrieNode::new() }\n    }\n    \n    fn insert(&mut self, key: &[u8], value: Vec<u8>) {\n        self.root.insert(key, value);\n    }\n    \n    fn get(&self, key: &[u8]) -> Option<&Vec<u8>> {\n        self.root.get(key)\n    }\n}\n\nfn main() {\n    let mut trie = Trie::new();\n    \n    // Insert key-value pairs\n    trie.insert(b\"0x1234\", b\"value1\".to_vec());\n    trie.insert(b\"0x5678\", b\"value2\".to_vec());\n    \n    // Retrieve values\n    if let Some(value) = trie.get(b\"0x1234\") {\n        println!(\"Found: {:?}\", value);\n    }\n}",
+      "explanation": "A trie (prefix tree) stores keys by their prefixes. Each node can have multiple children. This enables efficient lookups and shared prefixes reduce storage. Ethereum uses a more complex version (MPT) with Merkle hashing.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-74-2-ethereum-state",
+      "title": "Ethereum State Concept",
+      "description": "Conceptual Ethereum state storage",
+      "code": "use std::collections::HashMap;\n\nstruct AccountState {\n    balance: u64,\n    nonce: u64,\n    code_hash: Vec<u8>,\n    storage_root: Vec<u8>, // Root of storage trie\n}\n\nstruct EthereumState {\n    accounts: HashMap<Vec<u8>, AccountState>, // Address -> State\n    state_root: Vec<u8>, // Root of state trie\n}\n\nimpl EthereumState {\n    fn new() -> Self {\n        EthereumState {\n            accounts: HashMap::new(),\n            state_root: vec![0; 32],\n        }\n    }\n    \n    fn set_balance(&mut self, address: &[u8], balance: u64) {\n        let account = self.accounts\n            .entry(address.to_vec())\n            .or_insert_with(|| AccountState {\n                balance: 0,\n                nonce: 0,\n                code_hash: vec![],\n                storage_root: vec![],\n            });\n        \n        account.balance = balance;\n        // In real implementation: update state root\n    }\n    \n    fn get_balance(&self, address: &[u8]) -> u64 {\n        self.accounts\n            .get(address)\n            .map(|acc| acc.balance)\n            .unwrap_or(0)\n    }\n    \n    fn increment_nonce(&mut self, address: &[u8]) {\n        let account = self.accounts\n            .entry(address.to_vec())\n            .or_insert_with(|| AccountState {\n                balance: 0,\n                nonce: 0,\n                code_hash: vec![],\n                storage_root: vec![],\n            });\n        \n        account.nonce += 1;\n    }\n}\n\nfn main() {\n    let mut state = EthereumState::new();\n    \n    let address = b\"0xAlice\";\n    \n    // Set balance\n    state.set_balance(address, 1000);\n    println!(\"Balance: {}\", state.get_balance(address));\n    \n    // Increment nonce (transaction)\n    state.increment_nonce(address);\n    \n    println!(\"State root represents all account states\");\n    println!(\"Can prove any account state with Merkle proof!\");\n}",
+      "explanation": "Ethereum stores all account states in a Merkle Patricia Tree. The state root is a single hash representing all accounts. You can prove any account's state with a Merkle proof without downloading the entire state.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-74-1",
+      "title": "Simple Trie",
+      "description": "Create a simple trie that stores key-value pairs!",
+      "starterCode": "use std::collections::HashMap;\n\nstruct TrieNode {\n    children: HashMap<u8, Box<TrieNode>>,\n    value: Option<String>,\n}\n\nfn main() {\n    // Create trie\n    // Insert values\n    // Retrieve values\n}",
+      "solution": "use std::collections::HashMap;\n\nstruct TrieNode {\n    children: HashMap<u8, Box<TrieNode>>,\n    value: Option<String>,\n}\n\nimpl TrieNode {\n    fn new() -> Self {\n        TrieNode {\n            children: HashMap::new(),\n            value: None,\n        }\n    }\n    \n    fn insert(&mut self, key: &[u8], value: String) {\n        if key.is_empty() {\n            self.value = Some(value);\n            return;\n        }\n        \n        let child = self.children\n            .entry(key[0])\n            .or_insert_with(|| Box::new(TrieNode::new()));\n        \n        child.insert(&key[1..], value);\n    }\n    \n    fn get(&self, key: &[u8]) -> Option<&String> {\n        if key.is_empty() {\n            return self.value.as_ref();\n        }\n        \n        self.children.get(&key[0])\n            .and_then(|child| child.get(&key[1..]))\n    }\n}\n\nstruct Trie {\n    root: TrieNode,\n}\n\nimpl Trie {\n    fn new() -> Self {\n        Trie { root: TrieNode::new() }\n    }\n    \n    fn insert(&mut self, key: &str, value: String) {\n        self.root.insert(key.as_bytes(), value);\n    }\n    \n    fn get(&self, key: &str) -> Option<&String> {\n        self.root.get(key.as_bytes())\n    }\n}\n\nfn main() {\n    let mut trie = Trie::new();\n    \n    trie.insert(\"key1\", String::from(\"value1\"));\n    trie.insert(\"key2\", String::from(\"value2\"));\n    \n    println!(\"key1: {:?}\", trie.get(\"key1\"));\n    println!(\"key2: {:?}\", trie.get(\"key2\"));\n}",
+      "hints": [
+        "Use HashMap for children",
+        "Recursively insert/get following key path",
+        "Store value when key is empty"
+      ],
+      "difficulty": "hard"
+    }
+  ]
+}
+

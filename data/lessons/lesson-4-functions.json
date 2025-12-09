@@ -77,5 +77,109 @@
       ],
       "difficulty": "medium"
     }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-4-1",
+      "title": "Blockchain Calculator Library",
+      "description": "Create a library of functions for blockchain calculations. Include functions for fees, conversions, validations, and balance calculations.",
+      "difficulty": "medium",
+      "estimatedTime": 3,
+      "requirements": [
+        "Function to calculate transaction fees",
+        "Function to convert wei to ETH",
+        "Function to validate transaction amounts",
+        "Function to calculate new balance after transfer",
+        "Function to check sufficient funds",
+        "Function to format blockchain addresses"
+      ],
+      "hints": [
+        "Create separate functions for each operation",
+        "Use appropriate return types (Result for validation)",
+        "Use constants for minimum values",
+        "Document each function"
+      ],
+      "extensions": [
+        "Add gas estimation functions",
+        "Implement slippage calculations",
+        "Add interest calculation functions",
+        "Create unit conversion utilities",
+        "Add comprehensive error handling"
+      ],
+      "learningOutcomes": [
+        "Master function design",
+        "Learn error handling with Result",
+        "Practice with function organization",
+        "Understand library structure"
+      ]
+    },
+    {
+      "id": "project-4-2",
+      "title": "Transaction Validator",
+      "description": "Build a transaction validation system with multiple validation functions. Check amounts, fees, addresses, and balances.",
+      "difficulty": "medium",
+      "estimatedTime": 3,
+      "requirements": [
+        "Function to validate transaction amount",
+        "Function to validate fee",
+        "Function to check address format",
+        "Function to verify sufficient balance",
+        "Function to validate entire transaction",
+        "Return detailed error messages"
+      ],
+      "hints": [
+        "Use Result<String, String> for validation",
+        "Create specific error messages",
+        "Chain validation functions",
+        "Use early returns for errors"
+      ],
+      "extensions": [
+        "Add validation rules configuration",
+        "Support different validation levels",
+        "Add validation statistics",
+        "Create validation report",
+        "Support custom validation rules"
+      ],
+      "learningOutcomes": [
+        "Master validation patterns",
+        "Learn error handling",
+        "Practice with function composition",
+        "Understand defensive programming"
+      ]
+    },
+    {
+      "id": "project-4-3",
+      "title": "Blockchain Unit Converter",
+      "description": "Create a comprehensive unit converter for blockchain values. Convert between different units, formats, and representations.",
+      "difficulty": "easy",
+      "estimatedTime": 2,
+      "requirements": [
+        "Convert wei <-> ETH",
+        "Convert satoshi <-> BTC",
+        "Format large numbers with commas",
+        "Convert hex to decimal",
+        "Format addresses",
+        "Display results clearly"
+      ],
+      "hints": [
+        "Create conversion functions",
+        "Use f64 for decimal conversions",
+        "Use string formatting for display",
+        "Handle edge cases (zero, max values)"
+      ],
+      "extensions": [
+        "Support more cryptocurrencies",
+        "Add batch conversion",
+        "Create interactive CLI",
+        "Add conversion history",
+        "Support custom units"
+      ],
+      "learningOutcomes": [
+        "Practice with functions",
+        "Learn number formatting",
+        "Understand unit conversions",
+        "Work with different numeric types"
+      ]
+    }
   ]
 }
