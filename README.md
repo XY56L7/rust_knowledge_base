@@ -1,158 +1,162 @@
-# 🦀 Rust fejlesztői kurzus - Kezdőtől haladóig
+# 🦀 Rust Developer Course - From Beginner to Advanced
 
-Egy modern, interaktív Next.js weboldal, amely a Rust programozási nyelv tanítására szolgál. A projekt teljes mértékben JSON fájlokból táplálkozik, így könnyen bővíthető és karbantartható.
+A modern, interactive Next.js website for teaching the Rust programming language. The project is fully powered by JSON files, making it easy to extend and maintain.
 
-## 🚀 Funkciók
+## 🚀 Features
 
-- **Interaktív leckék**: Részletes leckék markdown formátumban
-- **Kód példák**: Szintaxis kiemeléssel és magyarázatokkal
-- **Gyakorlatok**: Gyakorló feladatok megoldásokkal és tippekkel
-- **Progresszív tananyag**: Kezdőtől haladó szintig strukturált kurzus
-- **Modern UI**: Reszponzív design dark mode támogatással
-- **JSON-alapú**: Minden tartalom JSON fájlokból, könnyen szerkeszthető
+- **Interactive Lessons**: Detailed lessons in markdown format
+- **Code Examples**: Syntax highlighting with explanations
+- **Exercises**: Practice problems with solutions and hints
+- **Progressive Curriculum**: Structured course from beginner to advanced level
+- **Modern UI**: Responsive design with dark mode support
+- **JSON-based**: All content from JSON files, easily editable
 
-## 📁 Projekt struktúra
+## 📁 Project Structure
 
 ```
 rust-for-beginners/
 ├── app/                    # Next.js App Router
-│   ├── page.tsx           # Főoldal
-│   ├── lessons/           # Lecke oldalak
+│   ├── page.tsx           # Home page
+│   ├── lessons/           # Lesson pages
 │   └── layout.tsx         # Root layout
-├── components/            # React komponensek
-│   ├── CodeBlock.tsx      # Kód megjelenítő
-│   └── ExerciseCard.tsx   # Gyakorlat kártya
-├── data/                  # JSON adatfájlok
-│   ├── course.json        # Kurzus struktúra
-│   └── lessons/           # Lecke fájlok
-├── types/                 # TypeScript típusok
+├── components/            # React components
+│   ├── CodeBlock.tsx      # Code display
+│   └── ExerciseCard.tsx   # Exercise card
+├── data/                  # JSON data files
+│   ├── course.json        # Course structure
+│   └── lessons/           # Lesson files
+├── types/                 # TypeScript types
 │   └── index.ts
-└── utils/                 # Segédfüggvények
-    └── dataLoader.ts      # Adat betöltő
+└── utils/                 # Helper functions
+    └── dataLoader.ts      # Data loader
 ```
 
-## 🛠️ Telepítés és futtatás
+## 🛠️ Installation and Running
 
-### Előfeltételek
+### Prerequisites
 
 - Node.js 18+ 
-- npm vagy yarn
+- npm or yarn
 
-### Telepítés
+### Installation
 
 ```bash
 npm install
 ```
 
-### Fejlesztési szerver indítása
+### Start Development Server
 
 ```bash
 npm run dev
 ```
 
-Nyisd meg a böngészőben: [http://localhost:3000](http://localhost:3000)
+Open in browser: [http://localhost:3000](http://localhost:3000)
 
-### Build készítése
+### Build for Production
 
 ```bash
 npm run build
 npm start
 ```
 
-## 📝 Új lecke hozzáadása
+## 📝 Adding a New Lesson
 
-### Automatikus módszer (ajánlott)
+### Automatic Method (Recommended)
 
-Használd a beépített scriptet:
+Use the built-in script:
 
 ```bash
-npm run create-lesson lesson-X-title "Lecke címe"
+npm run create-lesson lesson-X-title "Lesson Title"
 ```
 
-Ez létrehoz egy sablon JSON fájlt a `data/lessons/` könyvtárban.
+This creates a template JSON file in the `data/lessons/` directory.
 
-### Manuális módszer
+### Manual Method
 
-1. **Kurzus struktúra frissítése**: Szerkeszd a `data/course.json` fájlt, és add hozzá az új lecke ID-ját a megfelelő fejezethez.
+1. **Update Course Structure**: Edit the `data/course.json` file and add the new lesson ID to the appropriate chapter.
 
-2. **Lecke fájl létrehozása**: Hozz létre egy új JSON fájlt a `data/lessons/` könyvtárban, például `lesson-X-title.json`.
+2. **Create Lesson File**: Create a new JSON file in the `data/lessons/` directory, for example `lesson-X-title.json`.
 
-3. **Lecke struktúra**:
+3. **Lesson Structure**:
 
 ```json
 {
   "id": "lesson-X-title",
-  "title": "Lecke címe",
-  "description": "Rövid leírás",
-  "content": "# Markdown tartalom\n\nItt lehet markdown formátumban írni...",
+  "title": "Lesson Title",
+  "description": "Short description",
+  "content": "# Markdown Content\n\nYou can write in markdown format here...",
   "difficulty": "beginner|intermediate|advanced",
   "estimatedTime": 20,
   "prerequisites": ["lesson-1-introduction"],
   "codeExamples": [
     {
       "id": "ex-1",
-      "title": "Példa címe",
-      "description": "Leírás",
+      "title": "Example Title",
+      "description": "Description",
       "code": "fn main() {\n    println!(\"Hello!\");\n}",
-      "explanation": "Magyarázat",
+      "explanation": "Explanation",
       "language": "rust"
     }
   ],
   "exercises": [
     {
       "id": "exercise-1",
-      "title": "Feladat címe",
-      "description": "Leírás",
-      "starterCode": "fn main() {\n    // Kód\n}",
-      "solution": "fn main() {\n    println!(\"Megoldás\");\n}",
-      "hints": ["Tipp 1", "Tipp 2"],
+      "title": "Exercise Title",
+      "description": "Description",
+      "starterCode": "fn main() {\n}",
+      "solution": "fn main() {\n    println!(\"Solution\");\n}",
+      "hints": ["Hint 1", "Hint 2"],
       "difficulty": "easy|medium|hard"
     }
   ]
 }
 ```
 
-## 🎨 Testreszabás
+## 🎨 Customization
 
-### Színek és stílusok
+### Colors and Styles
 
-A Tailwind CSS konfiguráció a `tailwind.config.ts` fájlban található. A színek és stílusok könnyen módosíthatók.
+The Tailwind CSS configuration is in the `tailwind.config.ts` file. Colors and styles can be easily modified.
 
-### Dark mode
+### Dark Mode
 
-A dark mode automatikusan működik a rendszer beállításai alapján. A `app/globals.css` fájlban testreszabható.
+Dark mode works automatically based on system settings. It can be customized in the `app/globals.css` file.
 
-## 📚 Jelenlegi kurzus tartalom
+## 📚 Current Course Content
 
-A kurzus 9 fejezetből áll:
+The course consists of 14 chapters covering:
 
-1. **Alapok** - Bevezetés, változók, adattípusok, függvények
-2. **Ownership és Borrowing** - Rust egyedi memóriakezelése
-3. **Struktúrák és Enumok** - Adatszerkezetek és mintaillesztés
-4. **Hibakezelés** - Result és Option típusok
-5. **Kollekciók** - Vektorok, hash map-ek, stringek
-6. **Modulok és Csomagok** - Kód szervezése
-7. **Generikus típusok és Traits** - Polimorfizmus
-8. **Párhuzamos programozás** - Thread-ek, async/await
-9. **Haladó témák** - Macro-k, unsafe Rust, optimalizálás
+1. **Rust Fundamentals for Blockchain** - Introduction, variables, data types, functions
+2. **Memory Safety & Ownership** - Rust's unique memory management
+3. **Data Structures for Blockchain** - Structs, enums, and pattern matching
+4. **Error Handling in Blockchain** - Result and Option types
+5. **Collections & Data Management** - Vectors, hash maps, strings
+6. **Code Organization** - Modules and packages
+7. **Blockchain Fundamentals** - Understanding blockchain architecture
+8. **Cryptography for Blockchain** - Security primitives
+9. **Consensus Mechanisms** - Agreement algorithms
+10. **Smart Contracts & WebAssembly** - Contract development
+11. **P2P Networking** - Decentralized communication
+12. **Advanced Blockchain Topics** - Optimization and patterns
+13. **Deployment & Operations** - Production deployment
+14. **Project Architecture & Structure** - Best practices and patterns
 
-## 🔧 Technológiai stack
+## 🔧 Technology Stack
 
-- **Next.js 14** - React framework App Router-rel
-- **TypeScript** - Típusbiztonság
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type safety
 - **Tailwind CSS** - Utility-first CSS framework
-- **React Markdown** - Markdown renderelés
-- **JSON** - Adattárolás és konfiguráció
+- **React Markdown** - Markdown rendering
+- **JSON** - Data storage and configuration
 
-## 📄 Licenc
+## 📄 License
 
-Ez a projekt oktatási célokra készült.
+This project is created for educational purposes.
 
-## 🤝 Közreműködés
+## 🤝 Contributing
 
-A projekt könnyen bővíthető új leckékkel. Egyszerűen add hozzá az új lecke JSON fájlt a `data/lessons/` könyvtárba, és frissítsd a `course.json` fájlt.
+The project is easily extensible with new lessons. Simply add the new lesson JSON file to the `data/lessons/` directory and update the `course.json` file.
 
 ---
 
-**Készítve szeretettel a Rust közösség számára** 🦀
-
+**Made with love for the Rust community** 🦀
