@@ -5,13 +5,15 @@
   "content": "# Packages\n\nA **package** consists of one or more crates that together provide a functionality.\n\n## Package Structure\n\n```\nmy_project/\n├── Cargo.toml\n└── src/\n    └── main.rs\n```\n\n## Binary Crate\n\n```rust\n// src/main.rs\nfn main() {\n    println!(\"Hello, world!\");\n}\n```\n\n## Library Crate\n\n```rust\n// src/lib.rs\npub fn add(left: u64, right: u64) -> u64 {\n    left + right\n}\n```\n\n## Cargo.toml\n\n```toml\n[package]\nname = \"my_project\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[dependencies]\n```\n\n## Adding Dependencies\n\n```toml\n[dependencies]\nserde = \"1.0\"\nrand = \"0.8\"\n```\n\n## Workspace\n\n```toml\n[workspace]\nmembers = [\n    \"adder\",\n    \"add_one\",\n]\n```\n\n## Public API\n\n```rust\n// src/lib.rs\npub mod front_of_house {\n    pub mod hosting {\n        pub fn add_to_waitlist() {}\n    }\n}\n\npub use crate::front_of_house::hosting;\n```",
   "difficulty": "intermediate",
   "estimatedTime": 35,
-  "prerequisites": ["lesson-17-modules"],
+  "prerequisites": [
+    "lesson-17-modules"
+  ],
   "codeExamples": [
     {
       "id": "ex-18-1-cargo-toml",
       "title": "Cargo.toml",
       "description": "Package configuration",
-      "code": "# Cargo.toml\n[package]\nname = \"my_project\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[dependencies]\n# Dependencies go here",
+      "code": "# Cargo.toml\n[package]\nname = \"my_project\"\nversion = \"0.1.0\"\nedition = \"2021\"\n[dependencies]\n# Dependencies go here",
       "explanation": "The Cargo.toml file contains package metadata and dependencies. name, version, and edition are required fields.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-18-2-binary-crate",
       "title": "Binary Crate",
       "description": "Creating an executable program",
-      "code": "// src/main.rs\nfn main() {\n    println!(\"Hello from binary crate!\");\n    \n    let result = my_lib::add(5, 3);\n    println!(\"5 + 3 = {}\", result);\n}\n\n// src/lib.rs\npub mod my_lib {\n    pub fn add(x: i32, y: i32) -> i32 {\n        x + y\n    }\n}",
+      "code": "fn main() {\n    println!(\"Hello from binary crate!\");\n    let result = my_lib::add(5, 3);\n    println!(\"5 + 3 = {}\", result);\n}\npub mod my_lib {\n    pub fn add(x: i32, y: i32) -> i32 {\n        x + y\n    }\n}",
       "explanation": "A binary crate is an executable program. main.rs contains the main() function. lib.rs defines a library crate.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-18-3-dependencies",
       "title": "Dependencies",
       "description": "Using external crates",
-      "code": "# Cargo.toml\n[dependencies]\nrand = \"0.8\"\n\n// src/main.rs\nuse rand::Rng;\n\nfn main() {\n    let mut rng = rand::thread_rng();\n    let number: u32 = rng.gen_range(1..=100);\n    println!(\"Random number: {}\", number);\n}",
+      "code": "# Cargo.toml\n[dependencies]\nrand = \"0.8\"\nuse rand::Rng;\nfn main() {\n    let mut rng = rand::thread_rng();\n    let number: u32 = rng.gen_range(1..=100);\n    println!(\"Random number: {}\", number);\n}",
       "explanation": "In the Cargo.toml [dependencies] section, we can add external crates. cargo build automatically downloads and compiles them.",
       "language": "rust"
     }
@@ -37,8 +39,8 @@
       "id": "exercise-18-1",
       "title": "Creating a Package",
       "description": "Create a new Cargo project!",
-      "starterCode": "# Cargo.toml\n# Write the package configuration\n\n# src/main.rs\n# Write the main function",
-      "solution": "# Cargo.toml\n[package]\nname = \"my_project\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n# src/main.rs\nfn main() {\n    println!(\"Hello, Cargo!\");\n}",
+      "starterCode": "# Cargo.toml\n# Write the package configuration\n# src/main.rs\n# Write the main function",
+      "solution": "# Cargo.toml\n[package]\nname = \"my_project\"\nversion = \"0.1.0\"\nedition = \"2021\"\n# src/main.rs\nfn main() {\n    println!(\"Hello, Cargo!\");\n}",
       "hints": [
         "Cargo.toml contains package metadata",
         "src/main.rs contains the main() function"

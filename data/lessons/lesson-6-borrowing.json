@@ -5,13 +5,15 @@
   "content": "# Borrowing\n\n**Borrowing** allows us to use values without transferring ownership. We use references (`&`).\n\n## References\n\n```rust\nlet s1 = String::from(\"hello\");\nlet s2 = &s1;  // s2 is a reference to s1\n// s1 is still the owner\n```\n\n## Immutable References\n\n```rust\nfn calculate_length(s: &String) -> usize {\n    s.len()  // we use s, but don't own it\n}\n\nlet s = String::from(\"hello\");\nlet len = calculate_length(&s);\nprintln!(\"{}\", s);  // s is still usable!\n```\n\n## Mutable References\n\n```rust\nfn change(s: &mut String) {\n    s.push_str(\", world\");\n}\n\nlet mut s = String::from(\"hello\");\nchange(&mut s);\n```\n\n## Borrowing Rules\n\n1. **At any time, you can have either one mutable reference OR any number of immutable references**\n2. **References must always be valid**\n\n```rust\nlet mut s = String::from(\"hello\");\nlet r1 = &s;      // OK\nlet r2 = &s;      // OK - multiple immutable references\n// let r3 = &mut s;  // ERROR!\n```",
   "difficulty": "intermediate",
   "estimatedTime": 40,
-  "prerequisites": ["lesson-5-ownership"],
+  "prerequisites": [
+    "lesson-5-ownership"
+  ],
   "codeExamples": [
     {
       "id": "ex-6-1-immutable-ref",
       "title": "Immutable Reference",
       "description": "Borrowing a value with an immutable reference",
-      "code": "fn main() {\n    let s = String::from(\"hello\");\n    let len = calculate_length(&s);\n    \n    println!(\"The length of '{}' is {} characters.\", s, len);\n    // s is still usable!\n}\n\nfn calculate_length(s: &String) -> usize {\n    s.len()\n}",
+      "code": "fn main() {\n    let s = String::from(\"hello\");\n    let len = calculate_length(&s);\n    println!(\"The length of '{}' is {} characters.\", s, len);\n}\nfn calculate_length(s: &String) -> usize {\n    s.len()\n}",
       "explanation": "The `&s` is a reference to the String. The function can use the value but doesn't own it. The s variable remains usable after the function call.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-6-2-mutable-ref",
       "title": "Mutable Reference",
       "description": "Modifying a value with a mutable reference",
-      "code": "fn main() {\n    let mut s = String::from(\"hello\");\n    change(&mut s);\n    println!(\"{}\", s);\n}\n\nfn change(some_string: &mut String) {\n    some_string.push_str(\", world\");\n}",
+      "code": "fn main() {\n    let mut s = String::from(\"hello\");\n    change(&mut s);\n    println!(\"{}\", s);\n}\nfn change(some_string: &mut String) {\n    some_string.push_str(\", world\");\n}",
       "explanation": "The `&mut s` is a mutable reference that allows modification of the String. The variable must also be `mut`.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-6-3-borrowing-rules",
       "title": "Borrowing Rules",
       "description": "Demonstrating borrowing rules",
-      "code": "fn main() {\n    let mut s = String::from(\"hello\");\n    \n    let r1 = &s;      // OK\n    let r2 = &s;      // OK - multiple immutable references\n    println!(\"{}\", r1);\n    println!(\"{}\", r2);\n    \n    // Now r1 and r2 are no longer usable\n    let r3 = &mut s;  // OK - no more immutable references\n    println!(\"{}\", r3);\n}",
+      "code": "fn main() {\n    let mut s = String::from(\"hello\");\n    let r1 = &s;\n    let r2 = &s;\n    println!(\"{}\", r1);\n    println!(\"{}\", r2);\n    let r3 = &mut s;\n    println!(\"{}\", r3);\n}",
       "explanation": "At any time, you can have either multiple immutable references OR one mutable reference. The compiler checks these rules.",
       "language": "rust"
     },
@@ -35,7 +37,7 @@
       "id": "ex-6-4-blockchain-validation",
       "title": "Blockchain: Validating Without Ownership",
       "description": "Using borrowing for blockchain validation",
-      "code": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n    fee: u64,\n}\n\n// Validate transaction without taking ownership\nfn validate_transaction(tx: &Transaction, sender_balance: u64) -> bool {\n    // We can read tx but don't own it\n    tx.amount > 0 && \n    tx.fee >= 10 && \n    sender_balance >= tx.amount + tx.fee\n}\n\nfn main() {\n    let tx = Transaction {\n        from: String::from(\"0xAlice\"),\n        to: String::from(\"0xBob\"),\n        amount: 100,\n        fee: 10,\n    };\n    \n    let balance = 1000;\n    \n    // Validate without moving tx\n    if validate_transaction(&tx, balance) {\n        println!(\"Transaction is valid\");\n    }\n    \n    // tx is still usable here!\n    println!(\"Transaction: {} -> {} ({} tokens)\", tx.from, tx.to, tx.amount);\n}",
+      "code": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n    fee: u64,\n}\nfn validate_transaction(tx: &Transaction, sender_balance: u64) -> bool {\n    tx.amount > 0 &&\n    tx.fee >= 10 &&\n    sender_balance >= tx.amount + tx.fee\n}\nfn main() {\n    let tx = Transaction {\n        from: String::from(\"0xAlice\"),\n        to: String::from(\"0xBob\"),\n        amount: 100,\n        fee: 10,\n    };\n    let balance = 1000;\n    if validate_transaction(&tx, balance) {\n        println!(\"Transaction is valid\");\n    }\n    println!(\"Transaction: {} -> {} ({} tokens)\", tx.from, tx.to, tx.amount);\n}",
       "explanation": "Borrowing is essential in blockchain for validation. We can check transactions without taking ownership, allowing the transaction to be used elsewhere (e.g., added to a block).",
       "language": "rust"
     },
@@ -43,7 +45,7 @@
       "id": "ex-6-5-blockchain-state-update",
       "title": "Blockchain: Updating State with Mutable Borrow",
       "description": "Using mutable references to update blockchain state",
-      "code": "use std::collections::HashMap;\n\nstruct BlockchainState {\n    balances: HashMap<String, u64>,\n}\n\n// Update balance using mutable reference\nfn transfer_funds(\n    state: &mut BlockchainState,\n    from: &str,\n    to: &str,\n    amount: u64\n) -> Result<(), String> {\n    let from_balance = state.balances.get(from).copied().unwrap_or(0);\n    \n    if from_balance < amount {\n        return Err(String::from(\"Insufficient balance\"));\n    }\n    \n    // Mutable borrow allows modification\n    *state.balances.entry(from.to_string()).or_insert(0) -= amount;\n    *state.balances.entry(to.to_string()).or_insert(0) += amount;\n    \n    Ok(())\n}\n\nfn main() {\n    let mut state = BlockchainState {\n        balances: HashMap::new(),\n    };\n    \n    state.balances.insert(String::from(\"0xAlice\"), 1000);\n    state.balances.insert(String::from(\"0xBob\"), 500);\n    \n    // Update state using mutable reference\n    transfer_funds(&mut state, \"0xAlice\", \"0xBob\", 200).unwrap();\n    \n    println!(\"Alice: {}\", state.balances.get(\"0xAlice\").unwrap());\n    println!(\"Bob: {}\", state.balances.get(\"0xBob\").unwrap());\n}",
+      "code": "use std::collections::HashMap;\nstruct BlockchainState {\n    balances: HashMap<String, u64>,\n}\nfn transfer_funds(\n    state: &mut BlockchainState,\n    from: &str,\n    to: &str,\n    amount: u64\n) -> Result<(), String> {\n    let from_balance = state.balances.get(from).copied().unwrap_or(0);\n    if from_balance < amount {\n        return Err(String::from(\"Insufficient balance\"));\n    }\n    *state.balances.entry(from.to_string()).or_insert(0) -= amount;\n    *state.balances.entry(to.to_string()).or_insert(0) += amount;\n    Ok(())\n}\nfn main() {\n    let mut state = BlockchainState {\n        balances: HashMap::new(),\n    };\n    state.balances.insert(String::from(\"0xAlice\"), 1000);\n    state.balances.insert(String::from(\"0xBob\"), 500);\n    transfer_funds(&mut state, \"0xAlice\", \"0xBob\", 200).unwrap();\n    println!(\"Alice: {}\", state.balances.get(\"0xAlice\").unwrap());\n    println!(\"Bob: {}\", state.balances.get(\"0xBob\").unwrap());\n}",
       "explanation": "Mutable references allow updating blockchain state (like balances) without taking ownership. This is crucial for state management in blockchain nodes.",
       "language": "rust"
     }
@@ -53,8 +55,8 @@
       "id": "exercise-6-1",
       "title": "Using References",
       "description": "Write a function that returns a String's length using a reference!",
-      "starterCode": "fn main() {\n    let s = String::from(\"Rust\");\n    let len = get_length(/* ... */);\n    println!(\"The length of '{}' is: {}\", s, len);\n}\n\n// Write the get_length function",
-      "solution": "fn main() {\n    let s = String::from(\"Rust\");\n    let len = get_length(&s);\n    println!(\"The length of '{}' is: {}\", s, len);\n}\n\nfn get_length(s: &String) -> usize {\n    s.len()\n}",
+      "starterCode": "fn main() {\n    let s = String::from(\"Rust\");\n    let len = get_length();\n    println!(\"The length of '{}' is: {}\", s, len);\n}",
+      "solution": "fn main() {\n    let s = String::from(\"Rust\");\n    let len = get_length(&s);\n    println!(\"The length of '{}' is: {}\", s, len);\n}\nfn get_length(s: &String) -> usize {\n    s.len()\n}",
       "hints": [
         "Use &String type in the parameter",
         "Use the & operator when calling"

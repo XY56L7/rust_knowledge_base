@@ -5,13 +5,15 @@
   "content": "# Hash Maps\n\n**HashMap<K, V>** stores key-value pairs, where each key is unique.\n\n## Creating a HashMap\n\n```rust\nuse std::collections::HashMap;\n\nlet mut scores = HashMap::new();\nscores.insert(String::from(\"Blue\"), 10);\nscores.insert(String::from(\"Yellow\"), 50);\n```\n\n## Accessing Values\n\n```rust\nlet team_name = String::from(\"Blue\");\nlet score = scores.get(&team_name);  // Option<&V>\n```\n\n## Iteration\n\n```rust\nfor (key, value) in &scores {\n    println!(\"{}: {}\", key, value);\n}\n```\n\n## Updating Values\n\n### Overwriting\n\n```rust\nscores.insert(String::from(\"Blue\"), 25);  // Overwrites 10\n```\n\n### Only if Key Doesn't Exist\n\n```rust\nscores.entry(String::from(\"Yellow\")).or_insert(50);\n```\n\n### Updating Based on Existing Value\n\n```rust\nlet text = \"hello world wonderful world\";\nlet mut map = HashMap::new();\n\nfor word in text.split_whitespace() {\n    let count = map.entry(word).or_insert(0);\n    *count += 1;\n}\n```\n\n## Ownership\n\n```rust\nlet field_name = String::from(\"Favorite color\");\nlet field_value = String::from(\"Blue\");\n\nlet mut map = HashMap::new();\nmap.insert(field_name, field_value);\n// field_name and field_value are no longer usable!\n```",
   "difficulty": "intermediate",
   "estimatedTime": 35,
-  "prerequisites": ["lesson-14-vectors"],
+  "prerequisites": [
+    "lesson-14-vectors"
+  ],
   "codeExamples": [
     {
       "id": "ex-15-1-basic-hashmap",
       "title": "Basic HashMap",
       "description": "Creating and using a HashMap",
-      "code": "use std::collections::HashMap;\n\nfn main() {\n    let mut scores = HashMap::new();\n    \n    scores.insert(String::from(\"Blue\"), 10);\n    scores.insert(String::from(\"Yellow\"), 50);\n    \n    println!(\"Scores: {:?}\", scores);\n}",
+      "code": "use std::collections::HashMap;\nfn main() {\n    let mut scores = HashMap::new();\n    scores.insert(String::from(\"Blue\"), 10);\n    scores.insert(String::from(\"Yellow\"), 50);\n    println!(\"Scores: {:?}\", scores);\n}",
       "explanation": "HashMap stores key-value pairs. The insert() method adds pairs. Keys must be unique.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-15-2-accessing",
       "title": "Accessing Values",
       "description": "Accessing HashMap values",
-      "code": "use std::collections::HashMap;\n\nfn main() {\n    let mut scores = HashMap::new();\n    scores.insert(String::from(\"Blue\"), 10);\n    scores.insert(String::from(\"Yellow\"), 50);\n    \n    let team_name = String::from(\"Blue\");\n    let score = scores.get(&team_name);\n    \n    match score {\n        Some(value) => println!(\"Blue team score: {}\", value),\n        None => println!(\"No such team\"),\n    }\n    \n    // Iteration\n    for (key, value) in &scores {\n        println!(\"{}: {}\", key, value);\n    }\n}",
+      "code": "use std::collections::HashMap;\nfn main() {\n    let mut scores = HashMap::new();\n    scores.insert(String::from(\"Blue\"), 10);\n    scores.insert(String::from(\"Yellow\"), 50);\n    let team_name = String::from(\"Blue\");\n    let score = scores.get(&team_name);\n    match score {\n        Some(value) => println!(\"Blue team score: {}\", value),\n        None => println!(\"No such team\"),\n    }\n    for (key, value) in &scores {\n        println!(\"{}: {}\", key, value);\n    }\n}",
       "explanation": "The get() method returns Option<&V>. If the key exists, Some(value), if not, None. You can iterate with a for loop.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-15-3-entry",
       "title": "Entry API",
       "description": "Using Entry to update values",
-      "code": "use std::collections::HashMap;\n\nfn main() {\n    let text = \"hello world wonderful world\";\n    let mut map = HashMap::new();\n    \n    for word in text.split_whitespace() {\n        let count = map.entry(word).or_insert(0);\n        *count += 1;\n    }\n    \n    println!(\"{:?}\", map);\n}",
+      "code": "use std::collections::HashMap;\nfn main() {\n    let text = \"hello world wonderful world\";\n    let mut map = HashMap::new();\n    for word in text.split_whitespace() {\n        let count = map.entry(word).or_insert(0);\n        *count += 1;\n    }\n    println!(\"{:?}\", map);\n}",
       "explanation": "The entry() API allows us to check if a key exists. or_insert() only adds a value if the key doesn't exist. Then we can modify the value.",
       "language": "rust"
     },
@@ -35,7 +37,7 @@
       "id": "ex-15-4-blockchain-balances",
       "title": "Blockchain: Account Balances",
       "description": "Using HashMap for blockchain account balances",
-      "code": "use std::collections::HashMap;\n\nfn main() {\n    // Blockchain state: address -> balance mapping\n    let mut balances: HashMap<String, u64> = HashMap::new();\n    \n    // Initialize accounts\n    balances.insert(String::from(\"0xAlice\"), 1000);\n    balances.insert(String::from(\"0xBob\"), 500);\n    balances.insert(String::from(\"0xCharlie\"), 200);\n    \n    // Check balance\n    if let Some(balance) = balances.get(\"0xAlice\") {\n        println!(\"Alice's balance: {} tokens\", balance);\n    }\n    \n    // Transfer: Alice sends 100 to Bob\n    if let Some(alice_balance) = balances.get_mut(\"0xAlice\") {\n        *alice_balance -= 100;\n    }\n    \n    if let Some(bob_balance) = balances.get_mut(\"0xBob\") {\n        *bob_balance += 100;\n    }\n    \n    // Display all balances\n    println!(\"\\nFinal balances:\");\n    for (address, balance) in &balances {\n        println!(\"{}: {} tokens\", address, balance);\n    }\n}",
+      "code": "use std::collections::HashMap;\nfn main() {\n    let mut balances: HashMap<String, u64> = HashMap::new();\n    balances.insert(String::from(\"0xAlice\"), 1000);\n    balances.insert(String::from(\"0xBob\"), 500);\n    balances.insert(String::from(\"0xCharlie\"), 200);\n    if let Some(balance) = balances.get(\"0xAlice\") {\n        println!(\"Alice's balance: {} tokens\", balance);\n    }\n    if let Some(alice_balance) = balances.get_mut(\"0xAlice\") {\n        *alice_balance -= 100;\n    }\n    if let Some(bob_balance) = balances.get_mut(\"0xBob\") {\n        *bob_balance += 100;\n    }\n    println!(\"\\nFinal balances:\");\n    for (address, balance) in &balances {\n        println!(\"{}: {} tokens\", address, balance);\n    }\n}",
       "explanation": "HashMaps are essential for blockchain state management. They map addresses to balances, allowing fast lookups and updates. This is how most blockchains store account state.",
       "language": "rust"
     },
@@ -43,7 +45,7 @@
       "id": "ex-15-5-blockchain-nonces",
       "title": "Blockchain: Transaction Nonces",
       "description": "Tracking transaction nonces with HashMap",
-      "code": "use std::collections::HashMap;\n\nfn main() {\n    // Track nonces for each address\n    let mut nonces: HashMap<String, u64> = HashMap::new();\n    \n    // Initialize nonces\n    nonces.insert(String::from(\"0xAlice\"), 0);\n    nonces.insert(String::from(\"0xBob\"), 0);\n    \n    // Process transactions and increment nonces\n    fn process_transaction(nonces: &mut HashMap<String, u64>, sender: &str) {\n        let current_nonce = nonces.entry(sender.to_string()).or_insert(0);\n        *current_nonce += 1;\n        println!(\"{} sent transaction with nonce {}\", sender, current_nonce);\n    }\n    \n    process_transaction(&mut nonces, \"0xAlice\");\n    process_transaction(&mut nonces, \"0xAlice\");\n    process_transaction(&mut nonces, \"0xBob\");\n    \n    println!(\"\\nFinal nonces:\");\n    for (address, nonce) in &nonces {\n        println!(\"{}: {}\", address, nonce);\n    }\n}",
+      "code": "use std::collections::HashMap;\nfn main() {\n    let mut nonces: HashMap<String, u64> = HashMap::new();\n    nonces.insert(String::from(\"0xAlice\"), 0);\n    nonces.insert(String::from(\"0xBob\"), 0);\n    fn process_transaction(nonces: &mut HashMap<String, u64>, sender: &str) {\n        let current_nonce = nonces.entry(sender.to_string()).or_insert(0);\n        *current_nonce += 1;\n        println!(\"{} sent transaction with nonce {}\", sender, current_nonce);\n    }\n    process_transaction(&mut nonces, \"0xAlice\");\n    process_transaction(&mut nonces, \"0xAlice\");\n    process_transaction(&mut nonces, \"0xBob\");\n    println!(\"\\nFinal nonces:\");\n    for (address, nonce) in &nonces {\n        println!(\"{}: {}\", address, nonce);\n    }\n}",
       "explanation": "Nonces prevent replay attacks in blockchain. Each address has a nonce that increments with each transaction. HashMaps efficiently track nonces for all addresses.",
       "language": "rust"
     }
@@ -53,8 +55,8 @@
       "id": "exercise-15-1",
       "title": "HashMap Practice",
       "description": "Create a HashMap, add some key-value pairs, and print all pairs!",
-      "starterCode": "use std::collections::HashMap;\n\nfn main() {\n    // Create a HashMap\n    // Add: \"Rust\" -> 5, \"Python\" -> 3, \"JavaScript\" -> 4\n    // Iterate and print all pairs\n}",
-      "solution": "use std::collections::HashMap;\n\nfn main() {\n    let mut languages = HashMap::new();\n    languages.insert(String::from(\"Rust\"), 5);\n    languages.insert(String::from(\"Python\"), 3);\n    languages.insert(String::from(\"JavaScript\"), 4);\n    \n    for (key, value) in &languages {\n        println!(\"{}: {}\", key, value);\n    }\n}",
+      "starterCode": "use std::collections::HashMap;\nfn main() {\n}",
+      "solution": "use std::collections::HashMap;\nfn main() {\n    let mut languages = HashMap::new();\n    languages.insert(String::from(\"Rust\"), 5);\n    languages.insert(String::from(\"Python\"), 3);\n    languages.insert(String::from(\"JavaScript\"), 4);\n    for (key, value) in &languages {\n        println!(\"{}: {}\", key, value);\n    }\n}",
       "hints": [
         "Use the HashMap::new() method",
         "The insert() method adds pairs",
@@ -66,8 +68,8 @@
       "id": "exercise-15-2",
       "title": "Blockchain: Balance Tracker",
       "description": "Create a HashMap to track account balances!",
-      "starterCode": "use std::collections::HashMap;\n\nfn main() {\n    // Create a HashMap for balances\n    // Add: \"0xAlice\" -> 1000, \"0xBob\" -> 500\n    // Print all balances\n}",
-      "solution": "use std::collections::HashMap;\n\nfn main() {\n    let mut balances: HashMap<String, u64> = HashMap::new();\n    balances.insert(String::from(\"0xAlice\"), 1000);\n    balances.insert(String::from(\"0xBob\"), 500);\n    \n    for (address, balance) in &balances {\n        println!(\"{}: {} tokens\", address, balance);\n    }\n}",
+      "starterCode": "use std::collections::HashMap;\nfn main() {\n}",
+      "solution": "use std::collections::HashMap;\nfn main() {\n    let mut balances: HashMap<String, u64> = HashMap::new();\n    balances.insert(String::from(\"0xAlice\"), 1000);\n    balances.insert(String::from(\"0xBob\"), 500);\n    for (address, balance) in &balances {\n        println!(\"{}: {} tokens\", address, balance);\n    }\n}",
       "hints": [
         "Use HashMap<String, u64> for address -> balance",
         "Use insert() to add entries",

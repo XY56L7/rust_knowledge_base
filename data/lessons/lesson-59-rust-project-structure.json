@@ -5,13 +5,16 @@
   "content": "# Rust Project Structure\n\nProper project structure is essential for maintainable, scalable Rust applications.\n\n## Standard Rust Project Layout\n\n```\nmy-project/\n├── Cargo.toml          # Project manifest\n├── Cargo.lock          # Dependency lock file\n├── README.md           # Project documentation\n├── .gitignore          # Git ignore rules\n├── src/                # Source code\n│   ├── main.rs         # Binary entry point\n│   ├── lib.rs          # Library entry point\n│   ├── bin/            # Additional binaries\n│   │   └── cli.rs\n│   ├── modules/        # Application modules\n│   │   ├── mod.rs\n│   │   ├── api.rs\n│   │   └── db.rs\n│   └── utils/          # Utility functions\n│       └── helpers.rs\n├── tests/              # Integration tests\n│   └── integration_test.rs\n├── examples/           # Example code\n│   └── basic_example.rs\n├── benches/            # Benchmark tests\n│   └── performance.rs\n└── docs/               # Additional documentation\n```\n\n## Cargo.toml Structure\n\n```toml\n[package]\nname = \"my-project\"\nversion = \"0.1.0\"\nedition = \"2021\"\nauthors = [\"Your Name\"]\ndescription = \"Project description\"\nlicense = \"MIT\"\n\n[dependencies]\n# External crates\nserde = { version = \"1.0\", features = [\"derive\"] }\ntokio = { version = \"1.0\", features = [\"full\"] }\n\n[dev-dependencies]\n# Test dependencies\nmockito = \"1.0\"\n\n[build-dependencies]\n# Build-time dependencies\n\n[[bin]]\nname = \"my-binary\"\npath = \"src/bin/my_binary.rs\"\n\n[lib]\nname = \"my_lib\"\npath = \"src/lib.rs\"\n```\n\n## Module Organization\n\n### Flat Structure (Small Projects)\n\n```\nsrc/\n├── main.rs\n├── api.rs\n├── database.rs\n├── models.rs\n└── utils.rs\n```\n\n### Hierarchical Structure (Medium Projects)\n\n```\nsrc/\n├── main.rs\n├── lib.rs\n├── api/\n│   ├── mod.rs\n│   ├── routes.rs\n│   └── handlers.rs\n├── database/\n│   ├── mod.rs\n│   ├── connection.rs\n│   └── migrations.rs\n└── models/\n    ├── mod.rs\n    ├── user.rs\n    └── transaction.rs\n```\n\n### Domain-Driven Structure (Large Projects)\n\n```\nsrc/\n├── main.rs\n├── lib.rs\n├── domain/\n│   ├── mod.rs\n│   ├── user/\n│   │   ├── mod.rs\n│   │   ├── model.rs\n│   │   └── service.rs\n│   └── transaction/\n│       ├── mod.rs\n│       ├── model.rs\n│       └── service.rs\n├── infrastructure/\n│   ├── mod.rs\n│   ├── database.rs\n│   └── cache.rs\n└── api/\n    ├── mod.rs\n    └── routes.rs\n```\n\n## Workspace Structure (Multiple Crates)\n\n```\nworkspace/\n├── Cargo.toml          # Workspace manifest\n├── api/                # API crate\n│   ├── Cargo.toml\n│   └── src/\n├── core/               # Core business logic\n│   ├── Cargo.toml\n│   └── src/\n├── database/           # Database layer\n│   ├── Cargo.toml\n│   └── src/\n└── shared/             # Shared utilities\n    ├── Cargo.toml\n    └── src/\n```\n\nWorkspace Cargo.toml:\n\n```toml\n[workspace]\nmembers = [\"api\", \"core\", \"database\", \"shared\"]\nresolver = \"2\"\n\n[workspace.dependencies]\n# Shared dependencies\nserde = \"1.0\"\ntokio = \"1.0\"\n```\n\n## Best Practices\n\n- **Separation of concerns**: Keep business logic separate from infrastructure\n- **Module visibility**: Use `pub` carefully, prefer private by default\n- **Feature flags**: Use Cargo features for optional functionality\n- **Tests alongside code**: Unit tests in same file, integration tests in `tests/`\n- **Documentation**: Use `///` for public API docs\n- **Error types**: Centralize error definitions\n- **Configuration**: Separate config from code",
   "difficulty": "intermediate",
   "estimatedTime": 40,
-  "prerequisites": ["lesson-17-modules", "lesson-18-packages"],
+  "prerequisites": [
+    "lesson-17-modules",
+    "lesson-18-packages"
+  ],
   "codeExamples": [
     {
       "id": "ex-59-1-module-structure",
       "title": "Module Structure Example",
       "description": "Organizing code into modules",
-      "code": "// src/lib.rs\npub mod api;\npub mod database;\npub mod models;\n\n// src/api/mod.rs\npub mod routes;\npub mod handlers;\n\n// src/api/routes.rs\npub fn setup_routes() {\n    println!(\"Setting up API routes\");\n}\n\n// src/api/handlers.rs\npub fn handle_request() {\n    println!(\"Handling request\");\n}\n\n// src/database/mod.rs\npub mod connection;\npub mod migrations;\n\n// src/models/mod.rs\npub mod user;\npub mod transaction;\n\nfn main() {\n    println!(\"Project structure:\");\n    println!(\"- lib.rs: Library entry point\");\n    println!(\"- mod.rs: Module declarations\");\n    println!(\"- Separate files: Different concerns\");\n}",
+      "code": "pub mod api;\npub mod database;\npub mod models;\npub mod routes;\npub mod handlers;\npub fn setup_routes() {\n    println!(\"Setting up API routes\");\n}\npub fn handle_request() {\n    println!(\"Handling request\");\n}\npub mod connection;\npub mod migrations;\npub mod user;\npub mod transaction;\nfn main() {\n    println!(\"Project structure:\");\n    println!(\"- lib.rs: Library entry point\");\n    println!(\"- mod.rs: Module declarations\");\n    println!(\"- Separate files: Different concerns\");\n}",
       "explanation": "Modules organize code into logical units. Each module can be in its own file or directory with a mod.rs file.",
       "language": "rust"
     },
@@ -19,7 +22,7 @@
       "id": "ex-59-2-workspace",
       "title": "Workspace Structure",
       "description": "Multi-crate workspace organization",
-      "code": "// Workspace root Cargo.toml\n// [workspace]\n// members = [\"api\", \"core\", \"shared\"]\n// \n// [workspace.dependencies]\n// serde = \"1.0\"\n// tokio = \"1.0\"\n\n// api/Cargo.toml\n// [package]\n// name = \"api\"\n// [dependencies]\n// core = { path = \"../core\" }\n// shared = { path = \"../shared\" }\n// serde = { workspace = true }\n\nfn main() {\n    println!(\"Workspace benefits:\");\n    println!(\"- Multiple related crates\");\n    println!(\"- Shared dependencies\");\n    println!(\"- Independent versioning\");\n    println!(\"- Faster compilation\");\n}",
+      "code": "fn main() {\n    println!(\"Workspace benefits:\");\n    println!(\"- Multiple related crates\");\n    println!(\"- Shared dependencies\");\n    println!(\"- Independent versioning\");\n    println!(\"- Faster compilation\");\n}",
       "explanation": "Workspaces allow managing multiple related crates together. They share a dependency resolver and can reference each other.",
       "language": "rust"
     }
@@ -29,8 +32,8 @@
       "id": "exercise-59-1",
       "title": "Create Module Structure",
       "description": "Create a module structure with api, database, and models modules!",
-      "starterCode": "// src/lib.rs\n// Declare three modules: api, database, models\n\n// src/api/mod.rs\n// Create this file\n\n// src/database/mod.rs\n// Create this file\n\n// src/models/mod.rs\n// Create this file\n\nfn main() {\n    println!(\"Modules created!\");\n}",
-      "solution": "// src/lib.rs\npub mod api;\npub mod database;\npub mod models;\n\n// src/api/mod.rs\n// API module\n\n// src/database/mod.rs\n// Database module\n\n// src/models/mod.rs\n// Models module\n\nfn main() {\n    println!(\"Modules created!\");\n}",
+      "starterCode": "fn main() {\n    println!(\"Modules created!\");\n}",
+      "solution": "pub mod api;\npub mod database;\npub mod models;\nfn main() {\n    println!(\"Modules created!\");\n}",
       "hints": [
         "Use pub mod to declare modules",
         "Create mod.rs files in each directory"
@@ -39,4 +42,3 @@
     }
   ]
 }
-

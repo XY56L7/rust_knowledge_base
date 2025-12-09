@@ -5,13 +5,15 @@
   "content": "# Ownership\n\n**Ownership** is one of Rust's most important and unique features. This system guarantees memory safety without using a garbage collector.\n\n## Principles\n\n1. **Every value has one \"owner\"**\n2. **There can only be one owner at a time**\n3. **When the owner goes out of scope, the value is freed**\n\n## Scope and Ownership\n\n```rust\n{  // s doesn't exist here\n    let s = String::from(\"hello\");  // s is valid from here\n    // use s\n}  // s goes out of scope, memory is freed\n```\n\n## Move Semantics\n\n```rust\nlet s1 = String::from(\"hello\");\nlet s2 = s1;  // s1's value moves to s2\n// s1 is no longer usable!\nprintln!(\"{}\", s1);  // ERROR!\n```\n\n## Copy Types\n\nSome types are automatically copied (Copy trait):\n\n```rust\nlet x = 5;\nlet y = x;  // x's value is copied, not moved\nprintln!(\"{}\", x);  // OK, x is still usable\n```\n\nCopy types: integers, bool, char, tuples (if all elements are Copy).",
   "difficulty": "intermediate",
   "estimatedTime": 35,
-  "prerequisites": ["lesson-4-functions"],
+  "prerequisites": [
+    "lesson-4-functions"
+  ],
   "codeExamples": [
     {
       "id": "ex-5-1-scope",
       "title": "Scope and Ownership",
       "description": "How ownership works in scopes",
-      "code": "fn main() {\n    let s = String::from(\"hello\");\n    println!(\"s value: {}\", s);\n    \n    {\n        let inner = String::from(\"world\");\n        println!(\"inner value: {}\", inner);\n    }  // inner goes out of scope, memory is freed\n    \n    // inner no longer exists here\n    println!(\"s is still valid: {}\", s);\n}",
+      "code": "fn main() {\n    let s = String::from(\"hello\");\n    println!(\"s value: {}\", s);\n    {\n        let inner = String::from(\"world\");\n        println!(\"inner value: {}\", inner);\n    }\n    println!(\"s is still valid: {}\", s);\n}",
       "explanation": "Variable lifetimes are tied to scope. When a variable goes out of scope, memory is automatically freed.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-5-2-move",
       "title": "Move Semantics",
       "description": "How the move operation works",
-      "code": "fn main() {\n    let s1 = String::from(\"hello\");\n    let s2 = s1;  // s1's value moves to s2\n    \n    // println!(\"{}\", s1);  // This would cause an error!\n    println!(\"s2 value: {}\", s2);\n}",
+      "code": "fn main() {\n    let s1 = String::from(\"hello\");\n    let s2 = s1;\n    println!(\"s2 value: {}\", s2);\n}",
       "explanation": "The String type is not Copy, so when we assign s1 to s2, the value \"moves\". s1 is no longer usable after this.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-5-3-copy",
       "title": "Copy Types",
       "description": "Automatic copying of Copy types",
-      "code": "fn main() {\n    let x = 5;\n    let y = x;  // x's value is copied\n    \n    println!(\"x: {}\", x);  // OK\n    println!(\"y: {}\", y);  // OK\n    \n    let tup = (1, 2, 3);\n    let tup2 = tup;  // Copy, because all elements are Copy\n    println!(\"tup: {:?}\", tup);  // OK\n}",
+      "code": "fn main() {\n    let x = 5;\n    let y = x;\n    println!(\"x: {}\", x);\n    println!(\"y: {}\", y);\n    let tup = (1, 2, 3);\n    let tup2 = tup;\n    println!(\"tup: {:?}\", tup);\n}",
       "explanation": "Integers and other Copy types are automatically copied, not moved. Both variables remain usable.",
       "language": "rust"
     },
@@ -35,7 +37,7 @@
       "id": "ex-5-4-blockchain-ownership",
       "title": "Blockchain: Ownership of Transactions",
       "description": "Understanding ownership in blockchain transactions",
-      "code": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n}\n\nfn process_transaction(tx: Transaction) {\n    // tx is moved into this function\n    println!(\"Processing: {} -> {} ({} tokens)\", tx.from, tx.to, tx.amount);\n    // tx is dropped here\n}\n\nfn main() {\n    let tx = Transaction {\n        from: String::from(\"0xAlice\"),\n        to: String::from(\"0xBob\"),\n        amount: 100,\n    };\n    \n    process_transaction(tx);  // tx moves into function\n    // println!(\"{}\", tx.from);  // ERROR! tx was moved\n    \n    // For blockchain: once a transaction is processed, it's consumed\n    // This prevents double-spending at the type level!\n}",
+      "code": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n}\nfn process_transaction(tx: Transaction) {\n    println!(\"Processing: {} -> {} ({} tokens)\", tx.from, tx.to, tx.amount);\n}\nfn main() {\n    let tx = Transaction {\n        from: String::from(\"0xAlice\"),\n        to: String::from(\"0xBob\"),\n        amount: 100,\n    };\n    process_transaction(tx);\n}",
       "explanation": "In blockchain, transactions should be consumed when processed. Rust's ownership system enforces this - once a transaction is moved, it can't be used again, preventing accidental double-processing.",
       "language": "rust"
     }
@@ -45,8 +47,8 @@
       "id": "exercise-5-1",
       "title": "Ownership Practice",
       "description": "Create a String, assign it to another variable, and try to use the original!",
-      "starterCode": "fn main() {\n    let text = String::from(\"Rust\");\n    // Assign text to another variable\n    // Try to print text\n}",
-      "solution": "fn main() {\n    let text = String::from(\"Rust\");\n    let text2 = text;  // Move\n    // println!(\"{}\", text);  // This would cause an error!\n    println!(\"{}\", text2);  // This works\n}",
+      "starterCode": "fn main() {\n    let text = String::from(\"Rust\");\n}",
+      "solution": "fn main() {\n    let text = String::from(\"Rust\");\n    let text2 = text;\n    println!(\"{}\", text2);\n}",
       "hints": [
         "String is not a Copy type",
         "After move, the original variable is not usable",

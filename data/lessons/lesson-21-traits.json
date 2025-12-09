@@ -5,13 +5,15 @@
   "content": "# Traits\n\n**Traits** allow us to define shared behavior that different types can implement.\n\n## Trait Definition\n\n```rust\ntrait Summary {\n    fn summarize(&self) -> String;\n}\n```\n\n## Trait Implementation\n\n```rust\nstruct NewsArticle {\n    headline: String,\n    location: String,\n    author: String,\n    content: String,\n}\n\nimpl Summary for NewsArticle {\n    fn summarize(&self) -> String {\n        format!(\"{}, by {} ({})\", self.headline, self.author, self.location)\n    }\n}\n```\n\n## Default Implementation\n\n```rust\ntrait Summary {\n    fn summarize(&self) -> String {\n        String::from(\"(Read more...)\")\n    }\n}\n```\n\n## Trait Parameters\n\n```rust\nfn notify(item: &impl Summary) {\n    println!(\"Breaking news! {}\", item.summarize());\n}\n```\n\n## Trait Bound Syntax\n\n```rust\nfn notify<T: Summary>(item: &T) {\n    println!(\"Breaking news! {}\", item.summarize());\n}\n```\n\n## Multiple Trait Bounds\n\n```rust\nfn some_function<T: Display + Clone, U: Clone + Debug>(t: &T, u: &U) -> i32 {\n    // ...\n}\n```\n\n## where Clause\n\n```rust\nfn some_function<T, U>(t: &T, u: &U) -> i32\nwhere\n    T: Display + Clone,\n    U: Clone + Debug,\n{\n    // ...\n}\n```",
   "difficulty": "intermediate",
   "estimatedTime": 45,
-  "prerequisites": ["lesson-20-generics"],
+  "prerequisites": [
+    "lesson-20-generics"
+  ],
   "codeExamples": [
     {
       "id": "ex-21-1-basic-trait",
       "title": "Basic Trait",
       "description": "Trait definition and implementation",
-      "code": "trait Summary {\n    fn summarize(&self) -> String;\n}\n\nstruct NewsArticle {\n    headline: String,\n    author: String,\n}\n\nimpl Summary for NewsArticle {\n    fn summarize(&self) -> String {\n        format!(\"{}, by {}\", self.headline, self.author)\n    }\n}\n\nfn main() {\n    let article = NewsArticle {\n        headline: String::from(\"Rust new version\"),\n        author: String::from(\"John\"),\n    };\n    \n    println!(\"{}\", article.summarize());\n}",
+      "code": "trait Summary {\n    fn summarize(&self) -> String;\n}\nstruct NewsArticle {\n    headline: String,\n    author: String,\n}\nimpl Summary for NewsArticle {\n    fn summarize(&self) -> String {\n        format!(\"{}, by {}\", self.headline, self.author)\n    }\n}\nfn main() {\n    let article = NewsArticle {\n        headline: String::from(\"Rust new version\"),\n        author: String::from(\"John\"),\n    };\n    println!(\"{}\", article.summarize());\n}",
       "explanation": "A trait defines shared behavior. impl Summary for NewsArticle implements the trait for the NewsArticle type. Now NewsArticle can use the summarize() method.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-21-2-default-impl",
       "title": "Default Implementation",
       "description": "Trait with default methods",
-      "code": "trait Summary {\n    fn summarize(&self) -> String {\n        String::from(\"(Read more...)\")\n    }\n    \n    fn summarize_author(&self) -> String;\n}\n\nstruct Tweet {\n    username: String,\n    content: String,\n}\n\nimpl Summary for Tweet {\n    fn summarize_author(&self) -> String {\n        format!(\"@{}\", self.username)\n    }\n    // summarize() uses the default implementation\n}\n\nfn main() {\n    let tweet = Tweet {\n        username: String::from(\"rust_lang\"),\n        content: String::from(\"Rust 1.70 released!\"),\n    };\n    \n    println!(\"{}\", tweet.summarize());\n    println!(\"{}\", tweet.summarize_author());\n}",
+      "code": "trait Summary {\n    fn summarize(&self) -> String {\n        String::from(\"(Read more...)\")\n    }\n    fn summarize_author(&self) -> String;\n}\nstruct Tweet {\n    username: String,\n    content: String,\n}\nimpl Summary for Tweet {\n    fn summarize_author(&self) -> String {\n        format!(\"@{}\", self.username)\n    }\n}\nfn main() {\n    let tweet = Tweet {\n        username: String::from(\"rust_lang\"),\n        content: String::from(\"Rust 1.70 released!\"),\n    };\n    println!(\"{}\", tweet.summarize());\n    println!(\"{}\", tweet.summarize_author());\n}",
       "explanation": "Trait methods can have default implementations. If a type doesn't implement it explicitly, it uses the default version.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-21-3-trait-parameter",
       "title": "Trait Parameters",
       "description": "Functions with trait parameters",
-      "code": "trait Summary {\n    fn summarize(&self) -> String;\n}\n\nstruct NewsArticle {\n    headline: String,\n}\n\nimpl Summary for NewsArticle {\n    fn summarize(&self) -> String {\n        self.headline.clone()\n    }\n}\n\n// impl Summary syntax\nfn notify(item: &impl Summary) {\n    println!(\"Breaking news! {}\", item.summarize());\n}\n\n// Trait bound syntax\nfn notify2<T: Summary>(item: &T) {\n    println!(\"Breaking news! {}\", item.summarize());\n}\n\nfn main() {\n    let article = NewsArticle {\n        headline: String::from(\"Rust news\"),\n    };\n    \n    notify(&article);\n    notify2(&article);\n}",
+      "code": "trait Summary {\n    fn summarize(&self) -> String;\n}\nstruct NewsArticle {\n    headline: String,\n}\nimpl Summary for NewsArticle {\n    fn summarize(&self) -> String {\n        self.headline.clone()\n    }\n}\nfn notify(item: &impl Summary) {\n    println!(\"Breaking news! {}\", item.summarize());\n}\nfn notify2<T: Summary>(item: &T) {\n    println!(\"Breaking news! {}\", item.summarize());\n}\nfn main() {\n    let article = NewsArticle {\n        headline: String::from(\"Rust news\"),\n    };\n    notify(&article);\n    notify2(&article);\n}",
       "explanation": "The &impl Summary parameter accepts any type that implements the Summary trait. This enables polymorphism.",
       "language": "rust"
     },
@@ -35,7 +37,7 @@
       "id": "ex-21-4-blockchain-validatable",
       "title": "Blockchain: Validatable Trait",
       "description": "Using traits for blockchain validation",
-      "code": "// Trait for blockchain items that can be validated\ntrait Validatable {\n    fn validate(&self) -> bool;\n    fn get_id(&self) -> String;\n}\n\nstruct Transaction {\n    id: String,\n    amount: u64,\n    fee: u64,\n}\n\nstruct Block {\n    id: String,\n    previous_hash: String,\n    hash: String,\n}\n\nimpl Validatable for Transaction {\n    fn validate(&self) -> bool {\n        self.amount > 0 && self.fee >= 10\n    }\n    \n    fn get_id(&self) -> String {\n        self.id.clone()\n    }\n}\n\nimpl Validatable for Block {\n    fn validate(&self) -> bool {\n        !self.hash.is_empty() && !self.previous_hash.is_empty()\n    }\n    \n    fn get_id(&self) -> String {\n        self.id.clone()\n    }\n}\n\n// Generic function that works with any Validatable type\nfn process_validatable<T: Validatable>(item: &T) {\n    if item.validate() {\n        println!(\"{} is valid\", item.get_id());\n    } else {\n        println!(\"{} is invalid\", item.get_id());\n    }\n}\n\nfn main() {\n    let tx = Transaction {\n        id: String::from(\"tx1\"),\n        amount: 100,\n        fee: 10,\n    };\n    \n    let block = Block {\n        id: String::from(\"block1\"),\n        previous_hash: String::from(\"prev\"),\n        hash: String::from(\"hash\"),\n    };\n    \n    process_validatable(&tx);\n    process_validatable(&block);\n}",
+      "code": "trait Validatable {\n    fn validate(&self) -> bool;\n    fn get_id(&self) -> String;\n}\nstruct Transaction {\n    id: String,\n    amount: u64,\n    fee: u64,\n}\nstruct Block {\n    id: String,\n    previous_hash: String,\n    hash: String,\n}\nimpl Validatable for Transaction {\n    fn validate(&self) -> bool {\n        self.amount > 0 && self.fee >= 10\n    }\n    fn get_id(&self) -> String {\n        self.id.clone()\n    }\n}\nimpl Validatable for Block {\n    fn validate(&self) -> bool {\n        !self.hash.is_empty() && !self.previous_hash.is_empty()\n    }\n    fn get_id(&self) -> String {\n        self.id.clone()\n    }\n}\nfn process_validatable<T: Validatable>(item: &T) {\n    if item.validate() {\n        println!(\"{} is valid\", item.get_id());\n    } else {\n        println!(\"{} is invalid\", item.get_id());\n    }\n}\nfn main() {\n    let tx = Transaction {\n        id: String::from(\"tx1\"),\n        amount: 100,\n        fee: 10,\n    };\n    let block = Block {\n        id: String::from(\"block1\"),\n        previous_hash: String::from(\"prev\"),\n        hash: String::from(\"hash\"),\n    };\n    process_validatable(&tx);\n    process_validatable(&block);\n}",
       "explanation": "Traits enable polymorphism in blockchain code. Different types (transactions, blocks) can implement the same trait, allowing generic validation functions. This is essential for blockchain architecture.",
       "language": "rust"
     }
@@ -45,8 +47,8 @@
       "id": "exercise-21-1",
       "title": "Trait Implementation",
       "description": "Create a Drawable trait and implement it on a struct!",
-      "starterCode": "// Define the Drawable trait with a draw() method\n// Create a Circle struct\n// Implement the Drawable trait for Circle\n\nfn main() {\n    let circle = Circle { radius: 5.0 };\n    circle.draw();\n}",
-      "solution": "trait Drawable {\n    fn draw(&self);\n}\n\nstruct Circle {\n    radius: f64,\n}\n\nimpl Drawable for Circle {\n    fn draw(&self) {\n        println!(\"Drawing circle with radius {}\", self.radius);\n    }\n}\n\nfn main() {\n    let circle = Circle { radius: 5.0 };\n    circle.draw();\n}",
+      "starterCode": "fn main() {\n    let circle = Circle { radius: 5.0 };\n    circle.draw();\n}",
+      "solution": "trait Drawable {\n    fn draw(&self);\n}\nstruct Circle {\n    radius: f64,\n}\nimpl Drawable for Circle {\n    fn draw(&self) {\n        println!(\"Drawing circle with radius {}\", self.radius);\n    }\n}\nfn main() {\n    let circle = Circle { radius: 5.0 };\n    circle.draw();\n}",
       "hints": [
         "Use the trait keyword to define a trait",
         "Use the impl TraitName for TypeName syntax to implement"

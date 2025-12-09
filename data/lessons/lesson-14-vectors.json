@@ -5,13 +5,15 @@
   "content": "# Vectors\n\n**Vec<T>** is a dynamic array that stores values of the same type.\n\n## Creating a Vector\n\n```rust\nlet v: Vec<i32> = Vec::new();\nlet v = vec![1, 2, 3];  // Using macro\n```\n\n## Adding Values\n\n```rust\nlet mut v = Vec::new();\nv.push(5);\nv.push(6);\nv.push(7);\n```\n\n## Accessing Values\n\n```rust\nlet v = vec![1, 2, 3, 4, 5];\n\nlet third: &i32 = &v[2];  // Index - panics if out of bounds\nlet third: Option<&i32> = v.get(2);  // Safe - Option\n```\n\n## Iteration\n\n```rust\nlet v = vec![100, 32, 57];\nfor i in &v {\n    println!(\"{}\", i);\n}\n\n// Modifying during iteration\nlet mut v = vec![100, 32, 57];\nfor i in &mut v {\n    *i += 50;\n}\n```\n\n## Using Enum to Store Different Types\n\n```rust\nenum SpreadsheetCell {\n    Int(i32),\n    Float(f64),\n    Text(String),\n}\n\nlet row = vec![\n    SpreadsheetCell::Int(3),\n    SpreadsheetCell::Text(String::from(\"blue\")),\n    SpreadsheetCell::Float(10.12),\n];\n```",
   "difficulty": "beginner",
   "estimatedTime": 30,
-  "prerequisites": ["lesson-9-enums"],
+  "prerequisites": [
+    "lesson-9-enums"
+  ],
   "codeExamples": [
     {
       "id": "ex-14-1-basic-vector",
       "title": "Basic Vector",
       "description": "Creating and using a vector",
-      "code": "fn main() {\n    let mut v = Vec::new();\n    v.push(1);\n    v.push(2);\n    v.push(3);\n    \n    println!(\"Vector: {:?}\", v);\n    \n    // Another way\n    let v2 = vec![4, 5, 6];\n    println!(\"Vector2: {:?}\", v2);\n}",
+      "code": "fn main() {\n    let mut v = Vec::new();\n    v.push(1);\n    v.push(2);\n    v.push(3);\n    println!(\"Vector: {:?}\", v);\n    let v2 = vec![4, 5, 6];\n    println!(\"Vector2: {:?}\", v2);\n}",
       "explanation": "Vec::new() creates an empty vector. The vec![] macro creates a vector with initial values. The push() method adds elements.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-14-2-accessing",
       "title": "Accessing Values",
       "description": "Accessing vector elements",
-      "code": "fn main() {\n    let v = vec![1, 2, 3, 4, 5];\n    \n    // Index - panics if out of bounds\n    let third = &v[2];\n    println!(\"Third element: {}\", third);\n    \n    // Safe access - Option\n    match v.get(2) {\n        Some(third) => println!(\"Third element: {}\", third),\n        None => println!(\"No third element\"),\n    }\n    \n    // get() is safe, doesn't panic\n    match v.get(100) {\n        Some(value) => println!(\"Value: {}\", value),\n        None => println!(\"No 100th element\"),\n    }\n}",
+      "code": "fn main() {\n    let v = vec![1, 2, 3, 4, 5];\n    let third = &v[2];\n    println!(\"Third element: {}\", third);\n    match v.get(2) {\n        Some(third) => println!(\"Third element: {}\", third),\n        None => println!(\"No third element\"),\n    }\n    match v.get(100) {\n        Some(value) => println!(\"Value: {}\", value),\n        None => println!(\"No 100th element\"),\n    }\n}",
       "explanation": "The v[index] syntax panics if the index is invalid. v.get(index) returns an Option, which is safer.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-14-3-iteration",
       "title": "Iteration",
       "description": "Iterating through a vector",
-      "code": "fn main() {\n    let v = vec![100, 32, 57];\n    \n    // Immutable iteration\n    for i in &v {\n        println!(\"{}\", i);\n    }\n    \n    // Mutable iteration\n    let mut v = vec![100, 32, 57];\n    for i in &mut v {\n        *i += 50;  // Dereference\n    }\n    \n    println!(\"Modified vector: {:?}\", v);\n}",
+      "code": "fn main() {\n    let v = vec![100, 32, 57];\n    for i in &v {\n        println!(\"{}\", i);\n    }\n    let mut v = vec![100, 32, 57];\n    for i in &mut v {\n        *i += 50;\n    }\n    println!(\"Modified vector: {:?}\", v);\n}",
       "explanation": "The for loop can be immutable (&v) or mutable (&mut v). In mutable iteration, you need to dereference the value with the * operator.",
       "language": "rust"
     },
@@ -35,7 +37,7 @@
       "id": "ex-14-4-blockchain-transactions",
       "title": "Blockchain: Transaction Vector",
       "description": "Using vectors to store blockchain transactions",
-      "code": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n}\n\nfn main() {\n    // Block contains a vector of transactions\n    let mut transactions = Vec::new();\n    \n    transactions.push(Transaction {\n        from: String::from(\"0xAlice\"),\n        to: String::from(\"0xBob\"),\n        amount: 100,\n    });\n    \n    transactions.push(Transaction {\n        from: String::from(\"0xBob\"),\n        to: String::from(\"0xCharlie\"),\n        amount: 50,\n    });\n    \n    println!(\"Block contains {} transactions\", transactions.len());\n    \n    // Iterate through transactions\n    for (index, tx) in transactions.iter().enumerate() {\n        println!(\"Tx {}: {} -> {} ({} tokens)\", \n                index + 1, tx.from, tx.to, tx.amount);\n    }\n}",
+      "code": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n}\nfn main() {\n    let mut transactions = Vec::new();\n    transactions.push(Transaction {\n        from: String::from(\"0xAlice\"),\n        to: String::from(\"0xBob\"),\n        amount: 100,\n    });\n    transactions.push(Transaction {\n        from: String::from(\"0xBob\"),\n        to: String::from(\"0xCharlie\"),\n        amount: 50,\n    });\n    println!(\"Block contains {} transactions\", transactions.len());\n    for (index, tx) in transactions.iter().enumerate() {\n        println!(\"Tx {}: {} -> {} ({} tokens)\",\n                index + 1, tx.from, tx.to, tx.amount);\n    }\n}",
       "explanation": "Blocks contain vectors of transactions. Vectors are perfect for this because blocks can have varying numbers of transactions. We can iterate through them to process each transaction.",
       "language": "rust"
     },
@@ -43,7 +45,7 @@
       "id": "ex-14-5-blockchain-blockchain",
       "title": "Blockchain: Chain of Blocks",
       "description": "Using vectors to represent blockchain",
-      "code": "struct Block {\n    index: u64,\n    hash: String,\n}\n\nstruct Blockchain {\n    blocks: Vec<Block>,\n}\n\nimpl Blockchain {\n    fn new() -> Self {\n        Blockchain { blocks: Vec::new() }\n    }\n    \n    fn add_block(&mut self, block: Block) {\n        self.blocks.push(block);\n    }\n    \n    fn height(&self) -> usize {\n        self.blocks.len()\n    }\n    \n    fn get_latest(&self) -> Option<&Block> {\n        self.blocks.last()\n    }\n}\n\nfn main() {\n    let mut chain = Blockchain::new();\n    \n    chain.add_block(Block { index: 0, hash: String::from(\"genesis\") });\n    chain.add_block(Block { index: 1, hash: String::from(\"hash1\") });\n    chain.add_block(Block { index: 2, hash: String::from(\"hash2\") });\n    \n    println!(\"Blockchain height: {}\", chain.height());\n    \n    if let Some(latest) = chain.get_latest() {\n        println!(\"Latest block: index {}, hash {}\", latest.index, latest.hash);\n    }\n}",
+      "code": "struct Block {\n    index: u64,\n    hash: String,\n}\nstruct Blockchain {\n    blocks: Vec<Block>,\n}\nimpl Blockchain {\n    fn new() -> Self {\n        Blockchain { blocks: Vec::new() }\n    }\n    fn add_block(&mut self, block: Block) {\n        self.blocks.push(block);\n    }\n    fn height(&self) -> usize {\n        self.blocks.len()\n    }\n    fn get_latest(&self) -> Option<&Block> {\n        self.blocks.last()\n    }\n}\nfn main() {\n    let mut chain = Blockchain::new();\n    chain.add_block(Block { index: 0, hash: String::from(\"genesis\") });\n    chain.add_block(Block { index: 1, hash: String::from(\"hash1\") });\n    chain.add_block(Block { index: 2, hash: String::from(\"hash2\") });\n    println!(\"Blockchain height: {}\", chain.height());\n    if let Some(latest) = chain.get_latest() {\n        println!(\"Latest block: index {}, hash {}\", latest.index, latest.hash);\n    }\n}",
       "explanation": "A blockchain is essentially a vector of blocks. Each block is added to the end, and we can access the latest block or iterate through all blocks. This is the foundation of blockchain data structures.",
       "language": "rust"
     }
@@ -53,8 +55,8 @@
       "id": "exercise-14-1",
       "title": "Vector Operations",
       "description": "Create a vector, add elements, and print all elements!",
-      "starterCode": "fn main() {\n    // Create an empty vector\n    // Add the numbers: 1, 2, 3, 4, 5\n    // Iterate and print each element\n}",
-      "solution": "fn main() {\n    let mut v = Vec::new();\n    v.push(1);\n    v.push(2);\n    v.push(3);\n    v.push(4);\n    v.push(5);\n    \n    for i in &v {\n        println!(\"{}\", i);\n    }\n}",
+      "starterCode": "fn main() {\n}",
+      "solution": "fn main() {\n    let mut v = Vec::new();\n    v.push(1);\n    v.push(2);\n    v.push(3);\n    v.push(4);\n    v.push(5);\n    for i in &v {\n        println!(\"{}\", i);\n    }\n}",
       "hints": [
         "Use Vec::new() or vec![] macro",
         "The push() method adds elements",
@@ -66,8 +68,8 @@
       "id": "exercise-14-2",
       "title": "Blockchain: Transaction List",
       "description": "Create a vector of transaction amounts and calculate total!",
-      "starterCode": "fn main() {\n    // Create a vector of transaction amounts: 100, 250, 75, 300\n    // Calculate and print the total amount\n}",
-      "solution": "fn main() {\n    let amounts = vec![100, 250, 75, 300];\n    \n    let mut total = 0;\n    for amount in &amounts {\n        total += amount;\n    }\n    \n    println!(\"Total transaction amount: {}\", total);\n}",
+      "starterCode": "fn main() {\n}",
+      "solution": "fn main() {\n    let amounts = vec![100, 250, 75, 300];\n    let mut total = 0;\n    for amount in &amounts {\n        total += amount;\n    }\n    println!(\"Total transaction amount: {}\", total);\n}",
       "hints": [
         "Use vec![] macro to create vector with values",
         "Iterate and sum the amounts"

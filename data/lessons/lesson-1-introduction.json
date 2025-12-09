@@ -18,7 +18,7 @@
       "id": "ex-1-2-blockchain-structure",
       "title": "Basic Blockchain Structure",
       "description": "A simple blockchain data structure",
-      "code": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,\n}\n\nfn main() {\n    let genesis_block = Block {\n        index: 0,\n        data: String::from(\"Genesis Block\"),\n        previous_hash: String::from(\"0\"),\n        hash: String::from(\"genesis_hash\"),\n    };\n    \n    println!(\"Block #{}: {}\", genesis_block.index, genesis_block.data);\n}",
+      "code": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,\n}\nfn main() {\n    let genesis_block = Block {\n        index: 0,\n        data: String::from(\"Genesis Block\"),\n        previous_hash: String::from(\"0\"),\n        hash: String::from(\"genesis_hash\"),\n    };\n    println!(\"Block #{}: {}\", genesis_block.index, genesis_block.data);\n}",
       "explanation": "This preview shows a basic Block structure. In later lessons, you'll learn to create, validate, and chain blocks together. Rust's struct system is perfect for representing blockchain data.",
       "language": "rust"
     }
@@ -28,7 +28,7 @@
       "id": "exercise-1-1",
       "title": "Welcome Message",
       "description": "Create a program that prints a welcome message for blockchain developers!",
-      "starterCode": "fn main() {\n    // Print a welcome message for blockchain development\n}",
+      "starterCode": "fn main() {\n}",
       "solution": "fn main() {\n    println!(\"Welcome to Blockchain Development with Rust!\");\n    println!(\"Let's build the future of decentralized systems!\");\n}",
       "hints": [
         "Use the println! macro",

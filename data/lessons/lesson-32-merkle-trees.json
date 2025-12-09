@@ -5,13 +5,15 @@
   "content": "# Merkle Trees\n\nA **Merkle tree** (also called a hash tree) is a data structure used in blockchains to efficiently verify large amounts of data.\n\n## Why Merkle Trees?\n\nInstead of hashing all transactions together, we organize them in a tree:\n\n- **Efficient verification**: Verify a single transaction without downloading all data\n- **Compact proofs**: Small proof size even for many transactions\n- **Parallel hashing**: Can hash different branches simultaneously\n\n## Structure\n\n```\n        Root Hash\n       /         \\\n   Hash(0-1)    Hash(2-3)\n   /     \\      /     \\\n Hash0  Hash1 Hash2  Hash3\n  Tx0    Tx1   Tx2    Tx3\n```\n\n## How It Works\n\n1. **Leaf nodes**: Hash of each transaction\n2. **Parent nodes**: Hash of children concatenated\n3. **Root**: Final hash at the top (Merkle root)\n\n## Merkle Root in Blocks\n\n```rust\nstruct Block {\n    index: u64,\n    transactions: Vec<Transaction>,\n    merkle_root: String,  // Root of Merkle tree\n    previous_hash: String,\n    hash: String,\n}\n```\n\n## Benefits for Blockchain\n\n- **Light clients**: Can verify without full blockchain\n- **SPV (Simplified Payment Verification)**: Bitcoin uses this\n- **Efficient storage**: Only need root hash in block header\n- **Fast verification**: O(log n) instead of O(n)\n\n## Implementation\n\n```rust\n// Simplified Merkle tree\nfn merkle_root(transactions: &[String]) -> String {\n    if transactions.is_empty() {\n        return String::from(\"empty\");\n    }\n    if transactions.len() == 1 {\n        return hash(&transactions[0]);\n    }\n    // Recursively hash pairs\n    // ...\n}\n```",
   "difficulty": "intermediate",
   "estimatedTime": 45,
-  "prerequisites": ["lesson-31-hash-functions"],
+  "prerequisites": [
+    "lesson-31-hash-functions"
+  ],
   "codeExamples": [
     {
       "id": "ex-32-1-simple-merkle",
       "title": "Simple Merkle Tree",
       "description": "Basic Merkle tree structure",
-      "code": "// Simplified hash function for demonstration\nfn hash(data: &str) -> String {\n    format!(\"hash_{}\", data)\n}\n\n// Simplified Merkle root calculation\nfn merkle_root(transactions: &[&str]) -> String {\n    if transactions.is_empty() {\n        return String::from(\"empty\");\n    }\n    \n    if transactions.len() == 1 {\n        return hash(transactions[0]);\n    }\n    \n    // For simplicity, hash all transactions together\n    // Real implementation would build a binary tree\n    let combined: String = transactions.join(\"\");\n    hash(&combined)\n}\n\nfn main() {\n    let transactions = vec![\"tx1\", \"tx2\", \"tx3\", \"tx4\"];\n    let root = merkle_root(&transactions);\n    \n    println!(\"Merkle root: {}\", root);\n    println!(\"Number of transactions: {}\", transactions.len());\n}",
+      "code": "fn hash(data: &str) -> String {\n    format!(\"hash_{}\", data)\n}\nfn merkle_root(transactions: &[&str]) -> String {\n    if transactions.is_empty() {\n        return String::from(\"empty\");\n    }\n    if transactions.len() == 1 {\n        return hash(transactions[0]);\n    }\n    let combined: String = transactions.join(\"\");\n    hash(&combined)\n}\nfn main() {\n    let transactions = vec![\"tx1\", \"tx2\", \"tx3\", \"tx4\"];\n    let root = merkle_root(&transactions);\n    println!(\"Merkle root: {}\", root);\n    println!(\"Number of transactions: {}\", transactions.len());\n}",
       "explanation": "This simplified version shows the concept. A real Merkle tree builds a binary tree structure, hashing pairs of nodes until reaching a single root.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-32-2-block-with-merkle",
       "title": "Block with Merkle Root",
       "description": "Using Merkle root in block structure",
-      "code": "struct Transaction {\n    id: String,\n    data: String,\n}\n\nstruct Block {\n    index: u64,\n    transactions: Vec<Transaction>,\n    merkle_root: String,\n    previous_hash: String,\n}\n\nimpl Block {\n    fn calculate_merkle_root(&self) -> String {\n        // Simplified: just concatenate transaction IDs\n        let tx_ids: Vec<String> = self.transactions\n            .iter()\n            .map(|tx| tx.id.clone())\n            .collect();\n        \n        let combined = tx_ids.join(\"\");\n        format!(\"merkle_{}\", combined)\n    }\n}\n\nfn main() {\n    let transactions = vec![\n        Transaction { id: String::from(\"tx1\"), data: String::from(\"data1\") },\n        Transaction { id: String::from(\"tx2\"), data: String::from(\"data2\") },\n    ];\n    \n    let block = Block {\n        index: 1,\n        transactions,\n        merkle_root: String::from(\"\"),\n        previous_hash: String::from(\"prev\"),\n    };\n    \n    let root = block.calculate_merkle_root();\n    println!(\"Merkle root: {}\", root);\n}",
+      "code": "struct Transaction {\n    id: String,\n    data: String,\n}\nstruct Block {\n    index: u64,\n    transactions: Vec<Transaction>,\n    merkle_root: String,\n    previous_hash: String,\n}\nimpl Block {\n    fn calculate_merkle_root(&self) -> String {\n        let tx_ids: Vec<String> = self.transactions\n            .iter()\n            .map(|tx| tx.id.clone())\n            .collect();\n        let combined = tx_ids.join(\"\");\n        format!(\"merkle_{}\", combined)\n    }\n}\nfn main() {\n    let transactions = vec![\n        Transaction { id: String::from(\"tx1\"), data: String::from(\"data1\") },\n        Transaction { id: String::from(\"tx2\"), data: String::from(\"data2\") },\n    ];\n    let block = Block {\n        index: 1,\n        transactions,\n        merkle_root: String::from(\"\"),\n        previous_hash: String::from(\"prev\"),\n    };\n    let root = block.calculate_merkle_root();\n    println!(\"Merkle root: {}\", root);\n}",
       "explanation": "The Merkle root is stored in the block header. It provides a single hash that represents all transactions, enabling efficient verification.",
       "language": "rust"
     }
@@ -29,8 +31,8 @@
       "id": "exercise-32-1",
       "title": "Calculate Merkle Root",
       "description": "Create a function that calculates a Merkle root from transaction IDs!",
-      "starterCode": "// Create a function that takes a vector of transaction ID strings\n// and returns a Merkle root (simplified version)\n// For now, just concatenate all IDs and add \"merkle_\" prefix\n\nfn main() {\n    let tx_ids = vec![\n        String::from(\"tx1\"),\n        String::from(\"tx2\"),\n        String::from(\"tx3\"),\n    ];\n    \n    // Calculate and print the Merkle root\n}",
-      "solution": "fn merkle_root(tx_ids: &[String]) -> String {\n    let combined: String = tx_ids.join(\"\");\n    format!(\"merkle_{}\", combined)\n}\n\nfn main() {\n    let tx_ids = vec![\n        String::from(\"tx1\"),\n        String::from(\"tx2\"),\n        String::from(\"tx3\"),\n    ];\n    \n    let root = merkle_root(&tx_ids);\n    println!(\"Merkle root: {}\", root);\n}",
+      "starterCode": "fn main() {\n    let tx_ids = vec![\n        String::from(\"tx1\"),\n        String::from(\"tx2\"),\n        String::from(\"tx3\"),\n    ];\n}",
+      "solution": "fn merkle_root(tx_ids: &[String]) -> String {\n    let combined: String = tx_ids.join(\"\");\n    format!(\"merkle_{}\", combined)\n}\nfn main() {\n    let tx_ids = vec![\n        String::from(\"tx1\"),\n        String::from(\"tx2\"),\n        String::from(\"tx3\"),\n    ];\n    let root = merkle_root(&tx_ids);\n    println!(\"Merkle root: {}\", root);\n}",
       "hints": [
         "Use join() to concatenate strings",
         "Use format!() to create the final string"
@@ -39,4 +41,3 @@
     }
   ]
 }
-

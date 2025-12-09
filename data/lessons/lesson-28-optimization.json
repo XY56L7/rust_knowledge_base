@@ -5,13 +5,15 @@
   "content": "# Performance Optimization\n\nRust is fast by default, but there are techniques to further improve performance.\n\n## Release Build\n\n```bash\ncargo build --release\n```\n\nThe release build generates optimized code.\n\n## Profiling\n\n```bash\ncargo install flamegraph\ncargo flamegraph\n```\n\n## Memory Optimization\n\n### Box<T>\n\n```rust\nenum Message {\n    Quit,\n    Move { x: i32, y: i32 },\n    Write(String),\n}\n```\n\nFor large enums, use Box:\n\n```rust\nenum Message {\n    Quit,\n    Move { x: i32, y: i32 },\n    Write(Box<String>),  // Reduces stack size\n}\n```\n\n## Iterator Optimization\n\n```rust\n// Slower\nlet mut sum = 0;\nfor i in 0..1000 {\n    sum += i;\n}\n\n// Faster\nlet sum: i32 = (0..1000).sum();\n```\n\n## Zero-Cost Abstractions\n\nRust uses zero-cost abstractions:\n\n```rust\nlet v = vec![1, 2, 3];\nfor i in v.iter() {\n    println!(\"{}\", i);\n}\n```\n\nThis is as fast as manual indexing.\n\n## Inline Assembly\n\n```rust\n#[cfg(target_arch = \"x86_64\")]\nunsafe fn fast_add(a: u64, b: u64) -> u64 {\n    let result: u64;\n    asm!(\n        \"add {0}, {1}\",\n        inout(reg) a => result,\n        in(reg) b,\n    );\n    result\n}\n```\n\n## Cache-Friendly Code\n\n```rust\n// Good: linear memory access\nlet mut sum = 0;\nfor i in 0..n {\n    sum += array[i];\n}\n\n// Bad: random memory access\nlet mut sum = 0;\nfor &index in indices.iter() {\n    sum += array[index];\n}\n```",
   "difficulty": "advanced",
   "estimatedTime": 40,
-  "prerequisites": ["lesson-14-vectors"],
+  "prerequisites": [
+    "lesson-14-vectors"
+  ],
   "codeExamples": [
     {
       "id": "ex-28-1-release-build",
       "title": "Release Build",
       "description": "Creating optimized build",
-      "code": "// Cargo.toml\n[profile.release]\nopt-level = 3\nlto = true\ncodegen-units = 1\n\n// Code is the same, but release build is faster\nfn main() {\n    let mut sum = 0;\n    for i in 0..1_000_000 {\n        sum += i;\n    }\n    println!(\"Sum: {}\", sum);\n}",
+      "code": "[profile.release]\nopt-level = 3\nlto = true\ncodegen-units = 1\nfn main() {\n    let mut sum = 0;\n    for i in 0..1_000_000 {\n        sum += i;\n    }\n    println!(\"Sum: {}\", sum);\n}",
       "explanation": "The cargo build --release command generates optimized code. We can set the optimization level in Cargo.toml. Release build is slower to compile but faster to run.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-28-2-iterator-optimization",
       "title": "Iterator Optimization",
       "description": "Using iterators for optimization",
-      "code": "fn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    \n    // Slower: manual loop\n    let mut sum1 = 0;\n    for num in &numbers {\n        sum1 += num;\n    }\n    \n    // Faster: iterator\n    let sum2: i32 = numbers.iter().sum();\n    \n    println!(\"Sum1: {}, Sum2: {}\", sum1, sum2);\n}",
+      "code": "fn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    let mut sum1 = 0;\n    for num in &numbers {\n        sum1 += num;\n    }\n    let sum2: i32 = numbers.iter().sum();\n    println!(\"Sum1: {}, Sum2: {}\", sum1, sum2);\n}",
       "explanation": "Iterators are often faster because the compiler can optimize them better. They also result in more concise and readable code.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-28-3-box-optimization",
       "title": "Box Optimization",
       "description": "Using Box for large enums",
-      "code": "// Large stack size\nenum Message1 {\n    Quit,\n    Move { x: i32, y: i32 },\n    Write(String),  // String on stack\n}\n\n// Optimized: using Box\nenum Message2 {\n    Quit,\n    Move { x: i32, y: i32 },\n    Write(Box<String>),  // String on heap\n}\n\nfn main() {\n    let msg1 = Message1::Write(String::from(\"hello\"));\n    let msg2 = Message2::Write(Box::new(String::from(\"hello\")));\n    \n    // Message2 has smaller stack size\n}",
+      "code": "enum Message1 {\n    Quit,\n    Move { x: i32, y: i32 },\n    Write(String),\n}\nenum Message2 {\n    Quit,\n    Move { x: i32, y: i32 },\n    Write(Box<String>),\n}\nfn main() {\n    let msg1 = Message1::Write(String::from(\"hello\"));\n    let msg2 = Message2::Write(Box::new(String::from(\"hello\")));\n}",
       "explanation": "Box<T> places data on the heap, reducing stack size. For large enums, this can result in significant memory savings.",
       "language": "rust"
     }
@@ -37,8 +39,8 @@
       "id": "exercise-28-1",
       "title": "Iterator Optimization",
       "description": "Convert a loop to an iterator!",
-      "starterCode": "fn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    \n    // Convert this to an iterator:\n    let mut product = 1;\n    for num in &numbers {\n        product *= num;\n    }\n    println!(\"Product: {}\", product);\n}",
-      "solution": "fn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    \n    let product: i32 = numbers.iter().product();\n    println!(\"Product: {}\", product);\n}",
+      "starterCode": "fn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    let mut product = 1;\n    for num in &numbers {\n        product *= num;\n    }\n    println!(\"Product: {}\", product);\n}",
+      "solution": "fn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    let product: i32 = numbers.iter().product();\n    println!(\"Product: {}\", product);\n}",
       "hints": [
         "Use the iter() method",
         "The product() method multiplies all elements"

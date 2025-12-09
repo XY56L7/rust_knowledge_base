@@ -14,7 +14,6 @@ export async function loadChapter(chapterId: string): Promise<Chapter | null> {
 
 export async function loadLesson(lessonId: string): Promise<Lesson | null> {
   try {
-    // Use fs to read JSON files directly
     const filePath = join(process.cwd(), 'data', 'lessons', `${lessonId}.json`);
     const fileContents = readFileSync(filePath, 'utf8');
     const lessonData = JSON.parse(fileContents) as Lesson;
@@ -47,9 +46,7 @@ export async function getNextLesson(currentLessonId: string): Promise<string | n
   for (const chapter of course.chapters) {
     const index = chapter.lessons.indexOf(currentLessonId);
     if (index !== -1) {
-      // Ha van következő lecke ebben a fejezetben
       if (index < chapter.lessons.length - 1) {
-        // Check if the next lesson exists
         for (let i = index + 1; i < chapter.lessons.length; i++) {
           const lesson = await loadLesson(chapter.lessons[i]);
           if (lesson) {
@@ -57,7 +54,6 @@ export async function getNextLesson(currentLessonId: string): Promise<string | n
           }
         }
       }
-      // Ha nincs, keressük a következő fejezet első leckéjét
       const chapterIndex = course.chapters.indexOf(chapter);
       if (chapterIndex < course.chapters.length - 1) {
         for (let chIdx = chapterIndex + 1; chIdx < course.chapters.length; chIdx++) {
@@ -82,9 +78,7 @@ export async function getPreviousLesson(currentLessonId: string): Promise<string
   for (const chapter of course.chapters) {
     const index = chapter.lessons.indexOf(currentLessonId);
     if (index !== -1) {
-      // Ha van előző lecke ebben a fejezetben
       if (index > 0) {
-        // Check if the previous lesson exists
         for (let i = index - 1; i >= 0; i--) {
           const lesson = await loadLesson(chapter.lessons[i]);
           if (lesson) {
@@ -92,7 +86,6 @@ export async function getPreviousLesson(currentLessonId: string): Promise<string
           }
         }
       }
-      // Ha nincs, keressük az előző fejezet utolsó leckéjét
       const chapterIndex = course.chapters.indexOf(chapter);
       if (chapterIndex > 0) {
         for (let chIdx = chapterIndex - 1; chIdx >= 0; chIdx--) {

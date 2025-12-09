@@ -5,13 +5,15 @@
   "content": "# Variables and Immutability\n\nIn Rust, variables are **immutable** (unchangeable) by default. This means that a variable's value cannot be modified unless we explicitly mark it with the `mut` keyword.\n\n## Basic Syntax\n\n```rust\nlet x = 5;        // immutable variable\nlet mut y = 10;   // mutable (changeable) variable\n```\n\n## Why Immutable by Default?\n\nThis design decision provides several advantages:\n- **Safety**: Reduces the possibility of accidental modifications\n- **Concurrent Programming**: Easier to write safe code\n- **Readability**: Clear which variables can be modified\n\n## Shadowing\n\nRust allows **shadowing**, when we create a new variable with the same name:\n\n```rust\nlet x = 5;\nlet x = x + 1;  // new variable, not modification\n```\n\nThis is different from `mut`, because it creates a completely new variable.",
   "difficulty": "beginner",
   "estimatedTime": 20,
-  "prerequisites": ["lesson-1-introduction"],
+  "prerequisites": [
+    "lesson-1-introduction"
+  ],
   "codeExamples": [
     {
       "id": "ex-2-1-immutable",
       "title": "Immutable Variable",
       "description": "Example of an immutable variable",
-      "code": "fn main() {\n    let x = 5;\n    println!(\"x value: {}\", x);\n    // x = 6;  // This would cause an error!\n}",
+      "code": "fn main() {\n    let x = 5;\n    println!(\"x value: {}\", x);\n}",
       "explanation": "The `x` variable is immutable, so it cannot be modified. If we try to modify it, the compiler will signal an error.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-2-1-blockchain-immutable",
       "title": "Blockchain: Immutable Address",
       "description": "Using immutability for blockchain addresses",
-      "code": "fn main() {\n    // Blockchain addresses should be immutable\n    let wallet_address = \"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb\";\n    println!(\"Wallet address: {}\", wallet_address);\n    // wallet_address = \"0x...\";  // Error! Addresses shouldn't change\n    \n    // This ensures address integrity in blockchain applications\n}",
+      "code": "fn main() {\n    let wallet_address = \"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb\";\n    println!(\"Wallet address: {}\", wallet_address);\n}",
       "explanation": "In blockchain, addresses and other identifiers should be immutable to prevent accidental changes that could lead to security issues.",
       "language": "rust"
     },
@@ -35,7 +37,7 @@
       "id": "ex-2-2-blockchain-balance",
       "title": "Blockchain: Mutable Balance",
       "description": "Using mutability for changing balances",
-      "code": "fn main() {\n    // Account balance needs to be mutable\n    let mut account_balance: u64 = 1000;  // Initial balance\n    println!(\"Initial balance: {} tokens\", account_balance);\n    \n    // Balance changes with transactions\n    account_balance += 500;  // Receive tokens\n    println!(\"After receiving: {} tokens\", account_balance);\n    \n    account_balance -= 200;  // Send tokens\n    println!(\"After sending: {} tokens\", account_balance);\n}",
+      "code": "fn main() {\n    let mut account_balance: u64 = 1000;\n    println!(\"Initial balance: {} tokens\", account_balance);\n    account_balance += 500;\n    println!(\"After receiving: {} tokens\", account_balance);\n    account_balance -= 200;\n    println!(\"After sending: {} tokens\", account_balance);\n}",
       "explanation": "In blockchain, account balances must be mutable because they change with each transaction. The `mut` keyword allows us to update the balance.",
       "language": "rust"
     },
@@ -43,7 +45,7 @@
       "id": "ex-2-3-shadowing",
       "title": "Shadowing Example",
       "description": "How shadowing works",
-      "code": "fn main() {\n    let x = 5;\n    let x = x + 1;\n    let x = x * 2;\n    println!(\"x value: {}\", x);  // 12\n}",
+      "code": "fn main() {\n    let x = 5;\n    let x = x + 1;\n    let x = x * 2;\n    println!(\"x value: {}\", x);\n}",
       "explanation": "Shadowing allows us to create a new variable with the same name. Each `let` creates a new variable that shadows the previous one.",
       "language": "rust"
     }
@@ -53,7 +55,7 @@
       "id": "exercise-2-1",
       "title": "Variable Modification",
       "description": "Create a mutable variable that you modify!",
-      "starterCode": "fn main() {\n    // Create a mutable variable\n    // Modify its value\n    // Print the new value\n}",
+      "starterCode": "fn main() {\n}",
       "solution": "fn main() {\n    let mut number = 10;\n    number = 20;\n    println!(\"The number: {}\", number);\n}",
       "hints": [
         "Use the `mut` keyword",
@@ -65,8 +67,8 @@
       "id": "exercise-2-2",
       "title": "Blockchain: Track Balance",
       "description": "Create a mutable balance variable and simulate transactions!",
-      "starterCode": "fn main() {\n    // Create a mutable balance starting at 1000 tokens\n    // Add 250 tokens (receive)\n    // Subtract 150 tokens (send)\n    // Print the final balance\n}",
-      "solution": "fn main() {\n    let mut balance: u64 = 1000;\n    balance += 250;  // Receive tokens\n    balance -= 150;  // Send tokens\n    println!(\"Final balance: {} tokens\", balance);\n}",
+      "starterCode": "fn main() {\n}",
+      "solution": "fn main() {\n    let mut balance: u64 = 1000;\n    balance += 250;\n    balance -= 150;\n    println!(\"Final balance: {} tokens\", balance);\n}",
       "hints": [
         "Use `mut` for the balance variable",
         "Use += to add and -= to subtract"

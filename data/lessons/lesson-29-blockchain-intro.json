@@ -5,13 +5,15 @@
   "content": "# Blockchain Fundamentals\n\nA **blockchain** is a distributed, immutable ledger that records transactions in a secure and verifiable way.\n\n## Core Concepts\n\n### Decentralization\n\nUnlike traditional databases controlled by a single entity, blockchains are distributed across many nodes (computers). Each node maintains a copy of the entire blockchain.\n\n### Immutability\n\nOnce data is written to a blockchain, it cannot be altered. This is achieved through cryptographic hashing and consensus mechanisms.\n\n### Transparency\n\nAll transactions are visible to all participants, while maintaining privacy through cryptographic techniques.\n\n## Blockchain Structure\n\n```rust\n// A blockchain is a chain of blocks\nstruct Blockchain {\n    blocks: Vec<Block>,\n}\n\n// Each block contains transactions\nstruct Block {\n    index: u64,\n    timestamp: u64,\n    transactions: Vec<Transaction>,\n    previous_hash: String,\n    hash: String,\n}\n```\n\n## Key Properties\n\n1. **Distributed**: No single point of failure\n2. **Immutable**: Historical data cannot be changed\n3. **Transparent**: All transactions are visible\n4. **Secure**: Cryptography ensures integrity\n5. **Consensus**: Agreement on valid transactions\n\n## Use Cases\n\n- **Cryptocurrencies**: Digital money (Bitcoin, Ethereum)\n- **Smart Contracts**: Self-executing contracts\n- **Supply Chain**: Tracking goods from origin to consumer\n- **Identity Management**: Decentralized identity systems\n- **Voting Systems**: Transparent and verifiable elections\n\n## Why Rust?\n\nRust's memory safety and performance make it ideal for:\n- Validating transactions quickly\n- Securing cryptographic operations\n- Handling concurrent consensus mechanisms\n- Building reliable node software",
   "difficulty": "beginner",
   "estimatedTime": 30,
-  "prerequisites": ["lesson-8-structs"],
+  "prerequisites": [
+    "lesson-8-structs"
+  ],
   "codeExamples": [
     {
       "id": "ex-29-1-blockchain-structure",
       "title": "Blockchain Structure",
       "description": "Basic blockchain data structure in Rust",
-      "code": "struct Block {\n    index: u64,\n    timestamp: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,\n}\n\nstruct Blockchain {\n    blocks: Vec<Block>,\n}\n\nimpl Blockchain {\n    fn new() -> Self {\n        Blockchain {\n            blocks: Vec::new(),\n        }\n    }\n    \n    fn add_block(&mut self, block: Block) {\n        self.blocks.push(block);\n    }\n}\n\nfn main() {\n    let mut blockchain = Blockchain::new();\n    \n    let genesis = Block {\n        index: 0,\n        timestamp: 1234567890,\n        data: String::from(\"Genesis Block\"),\n        previous_hash: String::from(\"0\"),\n        hash: String::from(\"genesis_hash\"),\n    };\n    \n    blockchain.add_block(genesis);\n    println!(\"Blockchain created with {} blocks\", blockchain.blocks.len());\n}",
+      "code": "struct Block {\n    index: u64,\n    timestamp: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,\n}\nstruct Blockchain {\n    blocks: Vec<Block>,\n}\nimpl Blockchain {\n    fn new() -> Self {\n        Blockchain {\n            blocks: Vec::new(),\n        }\n    }\n    fn add_block(&mut self, block: Block) {\n        self.blocks.push(block);\n    }\n}\nfn main() {\n    let mut blockchain = Blockchain::new();\n    let genesis = Block {\n        index: 0,\n        timestamp: 1234567890,\n        data: String::from(\"Genesis Block\"),\n        previous_hash: String::from(\"0\"),\n        hash: String::from(\"genesis_hash\"),\n    };\n    blockchain.add_block(genesis);\n    println!(\"Blockchain created with {} blocks\", blockchain.blocks.len());\n}",
       "explanation": "This shows the basic structure of a blockchain. Each block links to the previous one via the previous_hash field. The Blockchain struct maintains a vector of all blocks.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-29-2-block-validation",
       "title": "Block Validation",
       "description": "Checking if a block is valid",
-      "code": "struct Block {\n    index: u64,\n    previous_hash: String,\n    hash: String,\n}\n\nfn is_valid_block(current: &Block, previous: &Block) -> bool {\n    // Check if index is sequential\n    if current.index != previous.index + 1 {\n        return false;\n    }\n    \n    // Check if previous hash matches\n    if current.previous_hash != previous.hash {\n        return false;\n    }\n    \n    true\n}\n\nfn main() {\n    let block1 = Block {\n        index: 0,\n        previous_hash: String::from(\"0\"),\n        hash: String::from(\"hash1\"),\n    };\n    \n    let block2 = Block {\n        index: 1,\n        previous_hash: String::from(\"hash1\"),\n        hash: String::from(\"hash2\"),\n    };\n    \n    println!(\"Block valid: {}\", is_valid_block(&block2, &block1));\n}",
+      "code": "struct Block {\n    index: u64,\n    previous_hash: String,\n    hash: String,\n}\nfn is_valid_block(current: &Block, previous: &Block) -> bool {\n    if current.index != previous.index + 1 {\n        return false;\n    }\n    if current.previous_hash != previous.hash {\n        return false;\n    }\n    true\n}\nfn main() {\n    let block1 = Block {\n        index: 0,\n        previous_hash: String::from(\"0\"),\n        hash: String::from(\"hash1\"),\n    };\n    let block2 = Block {\n        index: 1,\n        previous_hash: String::from(\"hash1\"),\n        hash: String::from(\"hash2\"),\n    };\n    println!(\"Block valid: {}\", is_valid_block(&block2, &block1));\n}",
       "explanation": "Block validation ensures the integrity of the blockchain. We check that blocks are sequential and that each block correctly references the previous block's hash.",
       "language": "rust"
     }
@@ -29,8 +31,8 @@
       "id": "exercise-29-1",
       "title": "Create a Blockchain",
       "description": "Create a blockchain and add two blocks to it!",
-      "starterCode": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,\n}\n\nstruct Blockchain {\n    blocks: Vec<Block>,\n}\n\nfn main() {\n    // Create a new blockchain\n    // Add a genesis block (index 0, previous_hash \"0\")\n    // Add a second block (index 1, previous_hash should match genesis hash)\n    // Print the number of blocks\n}",
-      "solution": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,\n}\n\nstruct Blockchain {\n    blocks: Vec<Block>,\n}\n\nfn main() {\n    let mut blockchain = Blockchain {\n        blocks: Vec::new(),\n    };\n    \n    let genesis = Block {\n        index: 0,\n        data: String::from(\"Genesis\"),\n        previous_hash: String::from(\"0\"),\n        hash: String::from(\"genesis_hash\"),\n    };\n    \n    blockchain.blocks.push(genesis);\n    \n    let block1 = Block {\n        index: 1,\n        data: String::from(\"Block 1\"),\n        previous_hash: String::from(\"genesis_hash\"),\n        hash: String::from(\"block1_hash\"),\n    };\n    \n    blockchain.blocks.push(block1);\n    \n    println!(\"Blockchain has {} blocks\", blockchain.blocks.len());\n}",
+      "starterCode": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,\n}\nstruct Blockchain {\n    blocks: Vec<Block>,\n}\nfn main() {\n}",
+      "solution": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,\n}\nstruct Blockchain {\n    blocks: Vec<Block>,\n}\nfn main() {\n    let mut blockchain = Blockchain {\n        blocks: Vec::new(),\n    };\n    let genesis = Block {\n        index: 0,\n        data: String::from(\"Genesis\"),\n        previous_hash: String::from(\"0\"),\n        hash: String::from(\"genesis_hash\"),\n    };\n    blockchain.blocks.push(genesis);\n    let block1 = Block {\n        index: 1,\n        data: String::from(\"Block 1\"),\n        previous_hash: String::from(\"genesis_hash\"),\n        hash: String::from(\"block1_hash\"),\n    };\n    blockchain.blocks.push(block1);\n    println!(\"Blockchain has {} blocks\", blockchain.blocks.len());\n}",
       "hints": [
         "Create a mutable Blockchain struct",
         "Use push() to add blocks to the vector",
@@ -40,4 +42,3 @@
     }
   ]
 }
-

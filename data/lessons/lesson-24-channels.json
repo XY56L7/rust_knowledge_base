@@ -5,13 +5,15 @@
   "content": "# Channels\n\n**Channels** allow us to send messages between threads.\n\n## Creating a Channel\n\n```rust\nuse std::sync::mpsc;\n\nlet (tx, rx) = mpsc::channel();\n```\n\n`mpsc` stands for multiple producer, single consumer channel.\n\n## Sending Messages\n\n```rust\nthread::spawn(move || {\n    let val = String::from(\"hi\");\n    tx.send(val).unwrap();\n});\n```\n\n## Receiving Messages\n\n```rust\nlet received = rx.recv().unwrap();\nprintln!(\"Got: {}\", received);\n```\n\n## Sending Multiple Messages\n\n```rust\nlet (tx, rx) = mpsc::channel();\n\nthread::spawn(move || {\n    let vals = vec![\n        String::from(\"hi\"),\n        String::from(\"from\"),\n        String::from(\"the\"),\n        String::from(\"thread\"),\n    ];\n    \n    for val in vals {\n        tx.send(val).unwrap();\n        thread::sleep(Duration::from_secs(1));\n    }\n});\n\nfor received in rx {\n    println!(\"Got: {}\", received);\n}\n```\n\n## Multiple Senders\n\n```rust\nlet (tx, rx) = mpsc::channel();\n\nlet tx1 = tx.clone();\nthread::spawn(move || {\n    tx1.send(String::from(\"hi\")).unwrap();\n});\n\nthread::spawn(move || {\n    tx.send(String::from(\"hello\")).unwrap();\n});\n\nfor received in rx {\n    println!(\"Got: {}\", received);\n}\n```",
   "difficulty": "advanced",
   "estimatedTime": 45,
-  "prerequisites": ["lesson-23-threads"],
+  "prerequisites": [
+    "lesson-23-threads"
+  ],
   "codeExamples": [
     {
       "id": "ex-24-1-basic-channel",
       "title": "Basic Channel",
       "description": "Creating and using a channel",
-      "code": "use std::sync::mpsc;\nuse std::thread;\n\nfn main() {\n    let (tx, rx) = mpsc::channel();\n    \n    thread::spawn(move || {\n        let val = String::from(\"hello\");\n        tx.send(val).unwrap();\n    });\n    \n    let received = rx.recv().unwrap();\n    println!(\"Got: {}\", received);\n}",
+      "code": "use std::sync::mpsc;\nuse std::thread;\nfn main() {\n    let (tx, rx) = mpsc::channel();\n    thread::spawn(move || {\n        let val = String::from(\"hello\");\n        tx.send(val).unwrap();\n    });\n    let received = rx.recv().unwrap();\n    println!(\"Got: {}\", received);\n}",
       "explanation": "mpsc::channel() returns a tuple: (sender, receiver). The send() method sends messages, recv() receives. recv() blocks until a message arrives.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-24-2-multiple-messages",
       "title": "Multiple Messages",
       "description": "Sending and receiving multiple messages",
-      "code": "use std::sync::mpsc;\nuse std::thread;\nuse std::time::Duration;\n\nfn main() {\n    let (tx, rx) = mpsc::channel();\n    \n    thread::spawn(move || {\n        let vals = vec![\n            String::from(\"hi\"),\n            String::from(\"from\"),\n            String::from(\"the\"),\n            String::from(\"thread\"),\n        ];\n        \n        for val in vals {\n            tx.send(val).unwrap();\n            thread::sleep(Duration::from_secs(1));\n        }\n    });\n    \n    for received in rx {\n        println!(\"Got: {}\", received);\n    }\n}",
+      "code": "use std::sync::mpsc;\nuse std::thread;\nuse std::time::Duration;\nfn main() {\n    let (tx, rx) = mpsc::channel();\n    thread::spawn(move || {\n        let vals = vec![\n            String::from(\"hi\"),\n            String::from(\"from\"),\n            String::from(\"the\"),\n            String::from(\"thread\"),\n        ];\n        for val in vals {\n            tx.send(val).unwrap();\n            thread::sleep(Duration::from_secs(1));\n        }\n    });\n    for received in rx {\n        println!(\"Got: {}\", received);\n    }\n}",
       "explanation": "The receiver (rx) is iterable. When the sender is dropped, iteration ends. This allows us to receive all messages.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-24-3-multiple-senders",
       "title": "Multiple Senders",
       "description": "Multiple threads sending messages",
-      "code": "use std::sync::mpsc;\nuse std::thread;\n\nfn main() {\n    let (tx, rx) = mpsc::channel();\n    \n    let tx1 = tx.clone();\n    thread::spawn(move || {\n        let vals = vec![\n            String::from(\"hi\"),\n            String::from(\"from\"),\n            String::from(\"thread\"),\n            String::from(\"1\"),\n        ];\n        \n        for val in vals {\n            tx1.send(val).unwrap();\n        }\n    });\n    \n    thread::spawn(move || {\n        let vals = vec![\n            String::from(\"more\"),\n            String::from(\"messages\"),\n            String::from(\"from\"),\n            String::from(\"thread\"),\n            String::from(\"2\"),\n        ];\n        \n        for val in vals {\n            tx.send(val).unwrap();\n        }\n    });\n    \n    for received in rx {\n        println!(\"Got: {}\", received);\n    }\n}",
+      "code": "use std::sync::mpsc;\nuse std::thread;\nfn main() {\n    let (tx, rx) = mpsc::channel();\n    let tx1 = tx.clone();\n    thread::spawn(move || {\n        let vals = vec![\n            String::from(\"hi\"),\n            String::from(\"from\"),\n            String::from(\"thread\"),\n            String::from(\"1\"),\n        ];\n        for val in vals {\n            tx1.send(val).unwrap();\n        }\n    });\n    thread::spawn(move || {\n        let vals = vec![\n            String::from(\"more\"),\n            String::from(\"messages\"),\n            String::from(\"from\"),\n            String::from(\"thread\"),\n            String::from(\"2\"),\n        ];\n        for val in vals {\n            tx.send(val).unwrap();\n        }\n    });\n    for received in rx {\n        println!(\"Got: {}\", received);\n    }\n}",
       "explanation": "We can clone the sender with clone(), allowing multiple threads to send messages to the same channel. This is the multiple producer, single consumer (mpsc) pattern.",
       "language": "rust"
     }
@@ -37,8 +39,8 @@
       "id": "exercise-24-1",
       "title": "Using Channels",
       "description": "Create a channel and send messages from a thread!",
-      "starterCode": "use std::sync::mpsc;\nuse std::thread;\n\nfn main() {\n    // Create a channel\n    // Create a thread that sends 3 messages\n    // Receive the messages and print them\n}",
-      "solution": "use std::sync::mpsc;\nuse std::thread;\n\nfn main() {\n    let (tx, rx) = mpsc::channel();\n    \n    thread::spawn(move || {\n        for i in 1..=3 {\n            tx.send(format!(\"Message {}\", i)).unwrap();\n        }\n    });\n    \n    for received in rx {\n        println!(\"Got: {}\", received);\n    }\n}",
+      "starterCode": "use std::sync::mpsc;\nuse std::thread;\nfn main() {\n}",
+      "solution": "use std::sync::mpsc;\nuse std::thread;\nfn main() {\n    let (tx, rx) = mpsc::channel();\n    thread::spawn(move || {\n        for i in 1..=3 {\n            tx.send(format!(\"Message {}\", i)).unwrap();\n        }\n    });\n    for received in rx {\n        println!(\"Got: {}\", received);\n    }\n}",
       "hints": [
         "Use the mpsc::channel() method",
         "The send() method sends messages",

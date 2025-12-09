@@ -5,7 +5,6 @@ import { Course } from '@/types';
 export default async function Home() {
   const course: Course = await loadCourse();
   
-  // Filter out lessons that don't have corresponding JSON files
   const chaptersWithExistingLessons = await Promise.all(
     course.chapters.map(async (chapter) => {
       const existingLessons = await Promise.all(

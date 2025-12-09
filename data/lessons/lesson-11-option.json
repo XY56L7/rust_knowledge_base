@@ -5,13 +5,15 @@
   "content": "# Option Type\n\nThe **Option<T>** is a built-in enum that allows a value to be something or nothing.\n\n## Option Definition\n\n```rust\nenum Option<T> {\n    Some(T),\n    None,\n}\n```\n\nThis is Rust's way of handling null values - type-safe and explicit.\n\n## Usage\n\n```rust\nlet some_number = Some(5);\nlet some_string = Some(\"a string\");\nlet absent_number: Option<i32> = None;\n```\n\n## Option Methods\n\n### unwrap()\n\n```rust\nlet x = Some(5).unwrap();  // 5\nlet y = None.unwrap();      // PANIC!\n```\n\n### expect()\n\n```rust\nlet x = Some(5).expect(\"Cannot be None\");\n```\n\n### unwrap_or()\n\n```rust\nlet x = Some(5).unwrap_or(0);  // 5\nlet y = None.unwrap_or(0);     // 0\n```\n\n### is_some() / is_none()\n\n```rust\nif some_option.is_some() {\n    // Has value\n}\n```\n\n## Using Match\n\n```rust\nmatch some_option {\n    Some(value) => println!(\"{}\", value),\n    None => println!(\"No value\"),\n}\n```",
   "difficulty": "intermediate",
   "estimatedTime": 30,
-  "prerequisites": ["lesson-10-pattern-matching"],
+  "prerequisites": [
+    "lesson-10-pattern-matching"
+  ],
   "codeExamples": [
     {
       "id": "ex-11-1-basic-option",
       "title": "Basic Option",
       "description": "Creating and using Option",
-      "code": "fn main() {\n    let some_number = Some(5);\n    let some_string = Some(\"a string\");\n    let absent_number: Option<i32> = None;\n    \n    println!(\"some_number: {:?}\", some_number);\n    println!(\"absent_number: {:?}\", absent_number);\n}",
+      "code": "fn main() {\n    let some_number = Some(5);\n    let some_string = Some(\"a string\");\n    let absent_number: Option<i32> = None;\n    println!(\"some_number: {:?}\", some_number);\n    println!(\"absent_number: {:?}\", absent_number);\n}",
       "explanation": "Option<T> can be Some(T) or None. Some contains the value, None indicates no value.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-11-2-unwrap",
       "title": "Unwrap Methods",
       "description": "Extracting Option values",
-      "code": "fn main() {\n    let some_value = Some(42);\n    let none_value: Option<i32> = None;\n    \n    // unwrap_or - provides default value if None\n    let x = some_value.unwrap_or(0);  // 42\n    let y = none_value.unwrap_or(0);  // 0\n    \n    println!(\"x: {}, y: {}\", x, y);\n    \n    // expect - with error message\n    let z = some_value.expect(\"Cannot be None\");  // 42\n    println!(\"z: {}\", z);\n}",
+      "code": "fn main() {\n    let some_value = Some(42);\n    let none_value: Option<i32> = None;\n    let x = some_value.unwrap_or(0);\n    let y = none_value.unwrap_or(0);\n    println!(\"x: {}, y: {}\", x, y);\n    let z = some_value.expect(\"Cannot be None\");\n    println!(\"z: {}\", z);\n}",
       "explanation": "unwrap_or safely returns a value, or the default if None. expect is similar but panics if None.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-11-3-match-option",
       "title": "Matching Option",
       "description": "Handling Option with match expression",
-      "code": "fn divide(numerator: f64, denominator: f64) -> Option<f64> {\n    if denominator != 0.0 {\n        Some(numerator / denominator)\n    } else {\n        None\n    }\n}\n\nfn main() {\n    let result = divide(10.0, 2.0);\n    match result {\n        Some(value) => println!(\"Result: {}\", value),\n        None => println!(\"Division by zero!\"),\n    }\n    \n    let invalid = divide(10.0, 0.0);\n    match invalid {\n        Some(value) => println!(\"Result: {}\", value),\n        None => println!(\"Division by zero!\"),\n    }\n}",
+      "code": "fn divide(numerator: f64, denominator: f64) -> Option<f64> {\n    if denominator != 0.0 {\n        Some(numerator / denominator)\n    } else {\n        None\n    }\n}\nfn main() {\n    let result = divide(10.0, 2.0);\n    match result {\n        Some(value) => println!(\"Result: {}\", value),\n        None => println!(\"Division by zero!\"),\n    }\n    let invalid = divide(10.0, 0.0);\n    match invalid {\n        Some(value) => println!(\"Result: {}\", value),\n        None => println!(\"Division by zero!\"),\n    }\n}",
       "explanation": "The match expression handles Option values in a type-safe way. All cases must be explicitly handled.",
       "language": "rust"
     }
@@ -37,8 +39,8 @@
       "id": "exercise-11-1",
       "title": "Option Function",
       "description": "Write a function that returns an Option<i32>!",
-      "starterCode": "// Write a find_number function that searches for a number in an array\n// If found, return Some(value)\n// If not, return None\n\nfn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    let result = find_number(&numbers, 3);\n    println!(\"{:?}\", result);\n}",
-      "solution": "fn find_number(numbers: &[i32], target: i32) -> Option<i32> {\n    for &num in numbers {\n        if num == target {\n            return Some(num);\n        }\n    }\n    None\n}\n\nfn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    let result = find_number(&numbers, 3);\n    println!(\"{:?}\", result);\n}",
+      "starterCode": "fn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    let result = find_number(&numbers, 3);\n    println!(\"{:?}\", result);\n}",
+      "solution": "fn find_number(numbers: &[i32], target: i32) -> Option<i32> {\n    for &num in numbers {\n        if num == target {\n            return Some(num);\n        }\n    }\n    None\n}\nfn main() {\n    let numbers = vec![1, 2, 3, 4, 5];\n    let result = find_number(&numbers, 3);\n    println!(\"{:?}\", result);\n}",
       "hints": [
         "Use a for loop to iterate through the array",
         "If found, return Some(value)",

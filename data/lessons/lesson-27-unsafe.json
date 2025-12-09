@@ -5,13 +5,15 @@
   "content": "# Unsafe Rust\n\nThe **unsafe** keyword allows us to perform operations that the compiler cannot safely guarantee.\n\n## Unsafe Blocks\n\n```rust\nunsafe {\n    // Unsafe code\n}\n```\n\n## Unsafe Functions\n\n```rust\nunsafe fn dangerous() {\n    // Unsafe operations\n}\n\nunsafe {\n    dangerous();\n}\n```\n\n## Unsafe Operations\n\n1. **Dereferencing raw pointers**\n2. **Calling unsafe functions or methods**\n3. **Accessing or modifying mutable static variables**\n4. **Trait implementations**\n\n## Raw Pointers\n\n```rust\nlet mut num = 5;\n\nlet r1 = &num as *const i32;\nlet r2 = &mut num as *mut i32;\n\nunsafe {\n    println!(\"r1: {}\", *r1);\n    println!(\"r2: {}\", *r2);\n}\n```\n\n## FFI (Foreign Function Interface)\n\n```rust\nextern \"C\" {\n    fn abs(input: i32) -> i32;\n}\n\nunsafe {\n    println!(\"C abs(-3): {}\", abs(-3));\n}\n```\n\n## Mutable Static Variables\n\n```rust\nstatic mut COUNTER: u32 = 0;\n\nfn add_to_count(inc: u32) {\n    unsafe {\n        COUNTER += inc;\n    }\n}\n```\n\n## When to Use?\n\n- Calling C code\n- Operating system APIs\n- Performance-critical code\n- Memory management\n\n**Important**: unsafe doesn't mean the code is bad, only that the developer is responsible for safety!",
   "difficulty": "advanced",
   "estimatedTime": 45,
-  "prerequisites": ["lesson-6-borrowing"],
+  "prerequisites": [
+    "lesson-6-borrowing"
+  ],
   "codeExamples": [
     {
       "id": "ex-27-1-unsafe-block",
       "title": "Unsafe Block",
       "description": "Using unsafe block",
-      "code": "fn main() {\n    let mut num = 5;\n    \n    let r1 = &num as *const i32;\n    let r2 = &mut num as *mut i32;\n    \n    unsafe {\n        println!(\"r1: {}\", *r1);\n        println!(\"r2: {}\", *r2);\n        *r2 = 10;\n        println!(\"r1: {}\", *r1);\n    }\n}",
+      "code": "fn main() {\n    let mut num = 5;\n    let r1 = &num as *const i32;\n    let r2 = &mut num as *mut i32;\n    unsafe {\n        println!(\"r1: {}\", *r1);\n        println!(\"r2: {}\", *r2);\n        *r2 = 10;\n        println!(\"r1: {}\", *r1);\n    }\n}",
       "explanation": "The unsafe block allows dereferencing raw pointers. The *const and *mut types are raw pointers that can only be dereferenced in unsafe blocks.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-27-2-unsafe-function",
       "title": "Unsafe Function",
       "description": "Unsafe function definition",
-      "code": "unsafe fn dangerous() {\n    println!(\"This is an unsafe function\");\n}\n\nfn main() {\n    unsafe {\n        dangerous();\n    }\n}",
+      "code": "unsafe fn dangerous() {\n    println!(\"This is an unsafe function\");\n}\nfn main() {\n    unsafe {\n        dangerous();\n    }\n}",
       "explanation": "Unsafe functions can only be called from unsafe blocks. This ensures the developer consciously decides to use unsafe code.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-27-3-static-mut",
       "title": "Mutable Static Variable",
       "description": "Using mutable static variable",
-      "code": "static mut COUNTER: u32 = 0;\n\nfn add_to_count(inc: u32) {\n    unsafe {\n        COUNTER += inc;\n    }\n}\n\nfn main() {\n    add_to_count(3);\n    \n    unsafe {\n        println!(\"COUNTER: {}\", COUNTER);\n    }\n}",
+      "code": "static mut COUNTER: u32 = 0;\nfn add_to_count(inc: u32) {\n    unsafe {\n        COUNTER += inc;\n    }\n}\nfn main() {\n    add_to_count(3);\n    unsafe {\n        println!(\"COUNTER: {}\", COUNTER);\n    }\n}",
       "explanation": "Mutable static variables represent global state, which can lead to data races. Therefore they can only be accessed in unsafe blocks.",
       "language": "rust"
     }
@@ -37,8 +39,8 @@
       "id": "exercise-27-1",
       "title": "Unsafe Block",
       "description": "Use an unsafe block to dereference a raw pointer!",
-      "starterCode": "fn main() {\n    let num = 42;\n    // Create a *const i32 raw pointer\n    // Dereference and print in unsafe block\n}",
-      "solution": "fn main() {\n    let num = 42;\n    let ptr = &num as *const i32;\n    \n    unsafe {\n        println!(\"Value: {}\", *ptr);\n    }\n}",
+      "starterCode": "fn main() {\n    let num = 42;\n}",
+      "solution": "fn main() {\n    let num = 42;\n    let ptr = &num as *const i32;\n    unsafe {\n        println!(\"Value: {}\", *ptr);\n    }\n}",
       "hints": [
         "Use the as *const i32 cast",
         "Dereference the pointer in the unsafe block"

@@ -5,13 +5,15 @@
   "content": "# Blockchain Libraries and Frameworks\n\nRust has excellent libraries for blockchain development. Let's explore the most important ones.\n\n## Cryptographic Libraries\n\n### sha2 - SHA-256 Hashing\n\n```toml\n[dependencies]\nsha2 = \"0.10\"\n```\n\n```rust\nuse sha2::{Sha256, Digest};\n\nfn hash_data(data: &[u8]) -> String {\n    let mut hasher = Sha256::new();\n    hasher.update(data);\n    format!(\"{:x}\", hasher.finalize())\n}\n```\n\n### secp256k1 - Elliptic Curve Cryptography\n\n```toml\n[dependencies]\nsecp256k1 = \"0.28\"\n```\n\n```rust\nuse secp256k1::{Secp256k1, SecretKey, PublicKey, Message, Signature};\n\n// Generate keypair\nlet secp = Secp256k1::new();\nlet (secret_key, public_key) = secp.generate_keypair(&mut thread_rng());\n```\n\n## Blockchain Frameworks\n\n### Substrate (Polkadot)\n\nSubstrate is a blockchain framework for building custom blockchains:\n\n- **Modular**: Pick and choose components\n- **Rust-based**: Type-safe and performant\n- **Production-ready**: Used by Polkadot, Kusama\n\n### ink! (Smart Contracts)\n\nink! is a Rust-based smart contract language:\n\n```rust\n#[ink::contract]\nmod my_contract {\n    #[ink(storage)]\n    pub struct MyContract {\n        value: u64,\n    }\n    \n    impl MyContract {\n        #[ink(constructor)]\n        pub fn new(init_value: u64) -> Self {\n            Self { value: init_value }\n        }\n    }\n}\n```\n\n## Networking Libraries\n\n### libp2p\n\nPeer-to-peer networking stack:\n\n```toml\n[dependencies]\nlibp2p = \"0.52\"\n```\n\n### tokio\n\nAsync runtime for blockchain nodes:\n\n```toml\n[dependencies]\ntokio = { version = \"1\", features = [\"full\"] }\n```\n\n## Serialization\n\n### serde\n\nSerialize/deserialize blockchain data:\n\n```toml\n[dependencies]\nserde = { version = \"1.0\", features = [\"derive\"] }\nserde_json = \"1.0\"\n```\n\n```rust\nuse serde::{Serialize, Deserialize};\n\n#[derive(Serialize, Deserialize)]\nstruct Block {\n    index: u64,\n    data: String,\n}\n```\n\n## Database\n\n### RocksDB\n\nHigh-performance key-value store:\n\n```toml\n[dependencies]\nrocksdb = \"0.21\"\n```\n\n## Testing\n\n### proptest\n\nProperty-based testing:\n\n```toml\n[dev-dependencies]\nproptest = \"1.4\"\n```\n\n## Recommended Stack\n\nFor a production blockchain:\n\n- **Cryptography**: `sha2`, `secp256k1`, `ed25519-dalek`\n- **Networking**: `tokio`, `libp2p`\n- **Serialization**: `serde`, `bincode`\n- **Database**: `rocksdb`\n- **Testing**: `proptest`, `criterion`\n- **Logging**: `tracing`, `env_logger`",
   "difficulty": "intermediate",
   "estimatedTime": 40,
-  "prerequisites": ["lesson-19-crates"],
+  "prerequisites": [
+    "lesson-19-crates"
+  ],
   "codeExamples": [
     {
       "id": "ex-50-1-crypto-libs",
       "title": "Cryptographic Libraries",
       "description": "Using crypto libraries in blockchain",
-      "code": "// Example of using cryptographic libraries\n// Add to Cargo.toml:\n// [dependencies]\n// sha2 = \"0.10\"\n\n// use sha2::{Sha256, Digest};\n\nfn demonstrate_crypto() {\n    println!(\"Blockchain crypto libraries:\");\n    println!(\"1. sha2 - SHA-256 hashing (Bitcoin standard)\");\n    println!(\"2. secp256k1 - ECDSA signatures\");\n    println!(\"3. ed25519-dalek - Ed25519 signatures\");\n    println!(\"4. blake2 - Fast hashing\");\n    \n    // In production:\n    // let mut hasher = Sha256::new();\n    // hasher.update(b\"blockchain data\");\n    // let hash = hasher.finalize();\n}\n\nfn main() {\n    demonstrate_crypto();\n}",
+      "code": "fn demonstrate_crypto() {\n    println!(\"Blockchain crypto libraries:\");\n    println!(\"1. sha2 - SHA-256 hashing (Bitcoin standard)\");\n    println!(\"2. secp256k1 - ECDSA signatures\");\n    println!(\"3. ed25519-dalek - Ed25519 signatures\");\n    println!(\"4. blake2 - Fast hashing\");\n}\nfn main() {\n    demonstrate_crypto();\n}",
       "explanation": "Cryptographic libraries are essential for blockchain. They provide secure hashing, digital signatures, and key generation. Always use well-audited libraries in production.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-50-2-serde-serialization",
       "title": "Serialization with Serde",
       "description": "Serializing blockchain data",
-      "code": "// Serde for blockchain data serialization\n// Add to Cargo.toml:\n// [dependencies]\n// serde = { version = \"1.0\", features = [\"derive\"] }\n// serde_json = \"1.0\"\n\n// use serde::{Serialize, Deserialize};\n\n// #[derive(Serialize, Deserialize)]\nstruct Block {\n    index: u64,\n    data: String,\n    hash: String,\n}\n\nfn demonstrate_serialization() {\n    println!(\"Blockchain data serialization:\");\n    println!(\"- serde: Generic serialization framework\");\n    println!(\"- serde_json: JSON format (human-readable)\");\n    println!(\"- bincode: Binary format (compact)\");\n    println!(\"- rmp-serde: MessagePack (efficient)\");\n    \n    // In production:\n    // let block = Block { ... };\n    // let json = serde_json::to_string(&block).unwrap();\n    // let binary = bincode::serialize(&block).unwrap();\n}\n\nfn main() {\n    demonstrate_serialization();\n}",
+      "code": "struct Block {\n    index: u64,\n    data: String,\n    hash: String,\n}\nfn demonstrate_serialization() {\n    println!(\"Blockchain data serialization:\");\n    println!(\"- serde: Generic serialization framework\");\n    println!(\"- serde_json: JSON format (human-readable)\");\n    println!(\"- bincode: Binary format (compact)\");\n    println!(\"- rmp-serde: MessagePack (efficient)\");\n}\nfn main() {\n    demonstrate_serialization();\n}",
       "explanation": "Serialization is crucial for blockchain networking. Blocks and transactions must be serialized for network transmission. Serde provides flexible, efficient serialization.",
       "language": "rust"
     }
@@ -29,7 +31,7 @@
       "id": "exercise-50-1",
       "title": "Library Research",
       "description": "Research and list 3 Rust blockchain libraries!",
-      "starterCode": "fn main() {\n    // List 3 Rust libraries useful for blockchain development\n    // Explain what each is used for\n}",
+      "starterCode": "fn main() {\n}",
       "solution": "fn main() {\n    println!(\"1. sha2 - Cryptographic hashing (SHA-256)\");\n    println!(\"2. secp256k1 - Elliptic curve cryptography\");\n    println!(\"3. tokio - Async runtime for networking\");\n}",
       "hints": [
         "Think about cryptography, networking, and serialization",
@@ -39,4 +41,3 @@
     }
   ]
 }
-

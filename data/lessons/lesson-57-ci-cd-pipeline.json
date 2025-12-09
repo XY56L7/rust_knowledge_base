@@ -5,13 +5,15 @@
   "content": "# CI/CD Pipeline\n\n**CI/CD** (Continuous Integration/Continuous Deployment) automates testing, building, and deploying Rust blockchain applications.\n\n## CI/CD Benefits\n\n- **Automated testing**: Run tests on every commit\n- **Consistent builds**: Same process every time\n- **Fast feedback**: Know immediately if code breaks\n- **Automated deployment**: Deploy to production automatically\n- **Rollback capability**: Quick revert if issues\n\n## GitHub Actions\n\n### Basic Workflow\n\n```yaml\nname: CI\n\non:\n  push:\n    branches: [ main ]\n  pull_request:\n    branches: [ main ]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - uses: actions-rs/toolchain@v1\n        with:\n          toolchain: stable\n      - name: Run tests\n        run: cargo test --verbose\n      - name: Run clippy\n        run: cargo clippy -- -D warnings\n      - name: Check format\n        run: cargo fmt -- --check\n\n  build:\n    needs: test\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - uses: actions-rs/toolchain@v1\n      - name: Build release\n        run: cargo build --release\n      - name: Upload artifact\n        uses: actions/upload-artifact@v3\n        with:\n          name: blockchain-node\n          path: target/release/blockchain-node\n```\n\n## GitLab CI\n\n```yaml\nstages:\n  - test\n  - build\n  - deploy\n\ntest:\n  stage: test\n  image: rust:1.75\n  script:\n    - cargo test --verbose\n    - cargo clippy -- -D warnings\n    - cargo fmt -- --check\n\nbuild:\n  stage: build\n  image: rust:1.75\n  script:\n    - cargo build --release\n  artifacts:\n    paths:\n      - target/release/blockchain-node\n\ndeploy:\n  stage: deploy\n  image: docker:latest\n  script:\n    - docker build -t blockchain-node .\n    - docker push registry.gitlab.com/your-project/blockchain-node\n  only:\n    - main\n```\n\n## Deployment Pipeline\n\n### Stages\n\n1. **Test**: Run all tests\n2. **Lint**: Check code quality (clippy, fmt)\n3. **Security**: Audit dependencies\n4. **Build**: Create release binary\n5. **Docker**: Build container image\n6. **Deploy**: Push to registry and deploy\n\n### Example Workflow\n\n```yaml\nname: Deploy\n\non:\n  push:\n    branches: [ main ]\n    tags:\n      - 'v*'\n\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - name: Build Docker image\n        run: docker build -t blockchain-node .\n      - name: Push to registry\n        run: |\n          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin\n          docker push blockchain-node:latest\n      - name: Deploy to production\n        run: |\n          # Deploy to your cloud platform\n          kubectl set image deployment/blockchain-node blockchain-node=blockchain-node:latest\n```\n\n## Testing in CI\n\n```yaml\n- name: Run tests\n  run: cargo test --all-features --verbose\n\n- name: Test with coverage\n  run: cargo test --coverage\n\n- name: Integration tests\n  run: cargo test --test integration\n```\n\n## Security Scanning\n\n```yaml\n- name: Security audit\n  run: cargo audit\n\n- name: Dependency check\n  run: cargo deny check\n```\n\n## Best Practices\n\n- **Fast feedback**: Run quick tests first\n- **Parallel jobs**: Run tests in parallel\n- **Cache dependencies**: Speed up builds\n- **Matrix builds**: Test multiple Rust versions\n- **Conditional deployment**: Only deploy on main branch",
   "difficulty": "advanced",
   "estimatedTime": 50,
-  "prerequisites": ["lesson-42-contract-testing"],
+  "prerequisites": [
+    "lesson-42-contract-testing"
+  ],
   "codeExamples": [
     {
       "id": "ex-57-1-github-actions",
       "title": "GitHub Actions Workflow",
       "description": "Complete CI/CD workflow",
-      "code": "// .github/workflows/ci.yml example\n// name: CI\n// \n// on:\n//   push:\n//     branches: [ main ]\n// \n// jobs:\n//   test:\n//     runs-on: ubuntu-latest\n//     steps:\n//       - uses: actions/checkout@v3\n//       - uses: actions-rs/toolchain@v1\n//       - run: cargo test\n//       - run: cargo clippy -- -D warnings\n// \n//   build:\n//     needs: test\n//     runs-on: ubuntu-latest\n//     steps:\n//       - uses: actions/checkout@v3\n//       - uses: actions-rs/toolchain@v1\n//       - run: cargo build --release\n\nfn main() {\n    println!(\"CI/CD Pipeline stages:\");\n    println!(\"1. Checkout code\");\n    println!(\"2. Install Rust toolchain\");\n    println!(\"3. Run tests\");\n    println!(\"4. Run linter (clippy)\");\n    println!(\"5. Check formatting\");\n    println!(\"6. Build release binary\");\n    println!(\"7. Build Docker image\");\n    println!(\"8. Deploy to production\");\n}",
+      "code": "fn main() {\n    println!(\"CI/CD Pipeline stages:\");\n    println!(\"1. Checkout code\");\n    println!(\"2. Install Rust toolchain\");\n    println!(\"3. Run tests\");\n    println!(\"4. Run linter (clippy)\");\n    println!(\"5. Check formatting\");\n    println!(\"6. Build release binary\");\n    println!(\"7. Build Docker image\");\n    println!(\"8. Deploy to production\");\n}",
       "explanation": "CI/CD pipelines automate the entire development workflow. They ensure code quality, run tests, and deploy automatically when all checks pass.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-57-2-test-automation",
       "title": "Test Automation",
       "description": "Automated testing in CI",
-      "code": "// Tests that run in CI/CD\n\n#[cfg(test)]\nmod tests {\n    use super::*;\n    \n    #[test]\n    fn test_blockchain_validation() {\n        // Unit tests run in CI\n        assert!(true);\n    }\n    \n    #[test]\n    fn test_transaction_processing() {\n        // Integration tests\n        assert!(true);\n    }\n}\n\nfn main() {\n    println!(\"CI/CD runs:\");\n    println!(\"- Unit tests: cargo test\");\n    println!(\"- Integration tests: cargo test --test integration\");\n    println!(\"- Linting: cargo clippy\");\n    println!(\"- Formatting: cargo fmt --check\");\n    println!(\"- Security: cargo audit\");\n}",
+      "code": "#[cfg(test)]\nmod tests {\n    use super::*;\n    #[test]\n    fn test_blockchain_validation() {\n        assert!(true);\n    }\n    #[test]\n    fn test_transaction_processing() {\n        assert!(true);\n    }\n}\nfn main() {\n    println!(\"CI/CD runs:\");\n    println!(\"- Unit tests: cargo test\");\n    println!(\"- Integration tests: cargo test --test integration\");\n    println!(\"- Linting: cargo clippy\");\n    println!(\"- Formatting: cargo fmt --check\");\n    println!(\"- Security: cargo audit\");\n}",
       "explanation": "Automated testing in CI ensures code quality before deployment. All tests must pass before code is merged or deployed to production.",
       "language": "rust"
     }
@@ -30,7 +32,7 @@
       "title": "CI Workflow",
       "description": "Create a basic GitHub Actions workflow!",
       "starterCode": "# .github/workflows/ci.yml\n# Create a workflow that:\n# - Runs on push to main\n# - Checks out code\n# - Installs Rust\n# - Runs cargo test",
-      "solution": "name: CI\n\non:\n  push:\n    branches: [ main ]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - uses: actions-rs/toolchain@v1\n        with:\n          toolchain: stable\n      - run: cargo test",
+      "solution": "name: CI\non:\n  push:\n    branches: [ main ]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - uses: actions-rs/toolchain@v1\n        with:\n          toolchain: stable\n      - run: cargo test",
       "hints": [
         "Use YAML format",
         "Define on: for triggers",
@@ -40,4 +42,3 @@
     }
   ]
 }
-

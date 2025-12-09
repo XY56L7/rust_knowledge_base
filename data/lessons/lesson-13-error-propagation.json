@@ -5,13 +5,15 @@
   "content": "# Error Propagation\n\n**Error propagation** means that when a function receives an error, it forwards it to the calling function instead of handling it locally.\n\n## ? Operator\n\nThe `?` operator in Rust allows automatic error propagation:\n\n```rust\nfn read_file() -> Result<String, io::Error> {\n    let mut f = File::open(\"hello.txt\")?;\n    let mut s = String::new();\n    f.read_to_string(&mut s)?;\n    Ok(s)\n}\n```\n\nThe `?` operator:\n- If `Ok(value)`, unwraps the value\n- If `Err(error)`, immediately returns the Err\n\n## Manual Propagation\n\nBefore the `?` operator, we had to do it manually:\n\n```rust\nfn read_file() -> Result<String, io::Error> {\n    let mut f = match File::open(\"hello.txt\") {\n        Ok(file) => file,\n        Err(e) => return Err(e),  // Manual propagation\n    };\n    // ...\n}\n```\n\n## Handling Multiple Error Types\n\n```rust\nuse std::num::ParseIntError;\n\nfn parse_and_double(s: &str) -> Result<i32, ParseIntError> {\n    let num = s.parse::<i32>()?;\n    Ok(num * 2)\n}\n```\n\n## Custom Error Types\n\n```rust\n#[derive(Debug)]\nenum MyError {\n    ParseError,\n    FileError,\n}\n```",
   "difficulty": "intermediate",
   "estimatedTime": 40,
-  "prerequisites": ["lesson-12-result"],
+  "prerequisites": [
+    "lesson-12-result"
+  ],
   "codeExamples": [
     {
       "id": "ex-13-1-question-mark",
       "title": "Using ? Operator",
       "description": "Propagating errors with the ? operator",
-      "code": "fn divide(a: f64, b: f64) -> Result<f64, String> {\n    if b == 0.0 {\n        return Err(String::from(\"Division by zero\"));\n    }\n    Ok(a / b)\n}\n\nfn calculate(a: f64, b: f64, c: f64) -> Result<f64, String> {\n    let step1 = divide(a, b)?;  // If error, immediately return\n    let step2 = divide(step1, c)?;\n    Ok(step2)\n}\n\nfn main() {\n    match calculate(100.0, 2.0, 5.0) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "code": "fn divide(a: f64, b: f64) -> Result<f64, String> {\n    if b == 0.0 {\n        return Err(String::from(\"Division by zero\"));\n    }\n    Ok(a / b)\n}\nfn calculate(a: f64, b: f64, c: f64) -> Result<f64, String> {\n    let step1 = divide(a, b)?;\n    let step2 = divide(step1, c)?;\n    Ok(step2)\n}\nfn main() {\n    match calculate(100.0, 2.0, 5.0) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
       "explanation": "The ? operator automatically propagates the error. If divide returns Err, the calculate function immediately returns the Err.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-13-2-multiple-errors",
       "title": "Multiple Error Types",
       "description": "Handling different error types",
-      "code": "use std::num::ParseIntError;\n\nfn parse_number(s: &str) -> Result<i32, ParseIntError> {\n    s.parse::<i32>()\n}\n\nfn double_string(s: &str) -> Result<i32, ParseIntError> {\n    let num = parse_number(s)?;  // ? propagates ParseIntError\n    Ok(num * 2)\n}\n\nfn main() {\n    match double_string(\"42\") {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {:?}\", e),\n    }\n}",
+      "code": "use std::num::ParseIntError;\nfn parse_number(s: &str) -> Result<i32, ParseIntError> {\n    s.parse::<i32>()\n}\nfn double_string(s: &str) -> Result<i32, ParseIntError> {\n    let num = parse_number(s)?;\n    Ok(num * 2)\n}\nfn main() {\n    match double_string(\"42\") {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {:?}\", e),\n    }\n}",
       "explanation": "The ? operator only works if the error type is compatible. ParseIntError is automatically propagated.",
       "language": "rust"
     },
@@ -27,7 +29,7 @@
       "id": "ex-13-3-manual-propagation",
       "title": "Manual Propagation",
       "description": "Handling errors with match (before ? operator)",
-      "code": "fn divide(a: f64, b: f64) -> Result<f64, String> {\n    if b == 0.0 {\n        return Err(String::from(\"Division by zero\"));\n    }\n    Ok(a / b)\n}\n\nfn calculate_manual(a: f64, b: f64, c: f64) -> Result<f64, String> {\n    let step1 = match divide(a, b) {\n        Ok(value) => value,\n        Err(e) => return Err(e),  // Manual propagation\n    };\n    \n    let step2 = match divide(step1, c) {\n        Ok(value) => value,\n        Err(e) => return Err(e),\n    };\n    \n    Ok(step2)\n}\n\nfn main() {\n    match calculate_manual(100.0, 2.0, 5.0) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "code": "fn divide(a: f64, b: f64) -> Result<f64, String> {\n    if b == 0.0 {\n        return Err(String::from(\"Division by zero\"));\n    }\n    Ok(a / b)\n}\nfn calculate_manual(a: f64, b: f64, c: f64) -> Result<f64, String> {\n    let step1 = match divide(a, b) {\n        Ok(value) => value,\n        Err(e) => return Err(e),\n    };\n    let step2 = match divide(step1, c) {\n        Ok(value) => value,\n        Err(e) => return Err(e),\n    };\n    Ok(step2)\n}\nfn main() {\n    match calculate_manual(100.0, 2.0, 5.0) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
       "explanation": "Manual propagation with match is longer but does the same as the ? operator. The ? operator compresses this.",
       "language": "rust"
     }
@@ -37,8 +39,8 @@
       "id": "exercise-13-1",
       "title": "Error Propagation",
       "description": "Use the ? operator in a function chain!",
-      "starterCode": "fn step1(x: i32) -> Result<i32, String> {\n    if x < 0 {\n        Err(String::from(\"Negative number\"))\n    } else {\n        Ok(x * 2)\n    }\n}\n\nfn step2(x: i32) -> Result<i32, String> {\n    if x > 100 {\n        Err(String::from(\"Number too large\"))\n    } else {\n        Ok(x + 10)\n    }\n}\n\n// Write the process function that calls step1, then step2\n// Use the ? operator to propagate errors\n\nfn main() {\n    match process(5) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
-      "solution": "fn step1(x: i32) -> Result<i32, String> {\n    if x < 0 {\n        Err(String::from(\"Negative number\"))\n    } else {\n        Ok(x * 2)\n    }\n}\n\nfn step2(x: i32) -> Result<i32, String> {\n    if x > 100 {\n        Err(String::from(\"Number too large\"))\n    } else {\n        Ok(x + 10)\n    }\n}\n\nfn process(x: i32) -> Result<i32, String> {\n    let result1 = step1(x)?;\n    let result2 = step2(result1)?;\n    Ok(result2)\n}\n\nfn main() {\n    match process(5) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "starterCode": "fn step1(x: i32) -> Result<i32, String> {\n    if x < 0 {\n        Err(String::from(\"Negative number\"))\n    } else {\n        Ok(x * 2)\n    }\n}\nfn step2(x: i32) -> Result<i32, String> {\n    if x > 100 {\n        Err(String::from(\"Number too large\"))\n    } else {\n        Ok(x + 10)\n    }\n}\nfn main() {\n    match process(5) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "solution": "fn step1(x: i32) -> Result<i32, String> {\n    if x < 0 {\n        Err(String::from(\"Negative number\"))\n    } else {\n        Ok(x * 2)\n    }\n}\nfn step2(x: i32) -> Result<i32, String> {\n    if x > 100 {\n        Err(String::from(\"Number too large\"))\n    } else {\n        Ok(x + 10)\n    }\n}\nfn process(x: i32) -> Result<i32, String> {\n    let result1 = step1(x)?;\n    let result2 = step2(result1)?;\n    Ok(result2)\n}\nfn main() {\n    match process(5) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
       "hints": [
         "The ? operator automatically propagates the error",
         "If step1 or step2 returns Err, process immediately returns"

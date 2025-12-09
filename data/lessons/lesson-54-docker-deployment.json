@@ -5,13 +5,15 @@
   "content": "# Docker Deployment\n\n**Docker** containerization makes deploying Rust applications consistent and portable across different environments.\n\n## Why Docker for Blockchain?\n\n- **Consistency**: Same environment everywhere\n- **Isolation**: No conflicts with host system\n- **Portability**: Run on any Docker host\n- **Scalability**: Easy to scale containers\n- **Reproducibility**: Same build = same result\n\n## Multi-Stage Dockerfile\n\nRust applications benefit from multi-stage builds:\n\n```dockerfile\n# Stage 1: Builder\nFROM rust:1.75 as builder\n\nWORKDIR /app\nCOPY Cargo.toml Cargo.lock ./\nCOPY src ./src\n\n# Build release binary\nRUN cargo build --release\n\n# Stage 2: Runtime\nFROM debian:bookworm-slim\n\n# Install runtime dependencies\nRUN apt-get update && apt-get install -y \\\n    ca-certificates \\\n    && rm -rf /var/lib/apt/lists/*\n\n# Copy binary from builder\nCOPY --from=builder /app/target/release/blockchain-node /usr/local/bin/\n\n# Run the application\nCMD [\"blockchain-node\"]\n```\n\n## Optimized Dockerfile\n\n```dockerfile\nFROM rust:1.75 as builder\n\n# Cache dependencies\nWORKDIR /app\nCOPY Cargo.toml Cargo.lock ./\nRUN mkdir src && echo \"fn main() {}\" > src/main.rs\nRUN cargo build --release\nRUN rm src/main.rs\n\n# Build application\nCOPY src ./src\nRUN touch src/main.rs\nRUN cargo build --release\n\n# Runtime stage\nFROM debian:bookworm-slim\nRUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*\nCOPY --from=builder /app/target/release/blockchain-node /usr/local/bin/\nCMD [\"blockchain-node\"]\n```\n\n## Docker Compose\n\nFor multi-container setups:\n\n```yaml\nversion: '3.8'\nservices:\n  blockchain-node:\n    build: .\n    ports:\n      - \"8080:8080\"\n    environment:\n      - RUST_LOG=info\n      - DATABASE_URL=postgres://db:5432/blockchain\n    depends_on:\n      - db\n  \n  db:\n    image: postgres:15\n    environment:\n      - POSTGRES_DB=blockchain\n      - POSTGRES_PASSWORD=secret\n```\n\n## Building and Running\n\n```bash\n# Build image\ndocker build -t blockchain-node .\n\n# Run container\ndocker run -p 8080:8080 blockchain-node\n\n# With environment variables\ndocker run -p 8080:8080 -e RUST_LOG=debug blockchain-node\n\n# With volume for data\ndocker run -p 8080:8080 -v ./data:/app/data blockchain-node\n```\n\n## Production Considerations\n\n- **Security**: Run as non-root user\n- **Health checks**: Add HEALTHCHECK directive\n- **Resource limits**: Set memory/CPU limits\n- **Logging**: Configure log drivers\n- **Secrets**: Use Docker secrets or env files",
   "difficulty": "intermediate",
   "estimatedTime": 45,
-  "prerequisites": ["lesson-53-deployment-basics"],
+  "prerequisites": [
+    "lesson-53-deployment-basics"
+  ],
   "codeExamples": [
     {
       "id": "ex-54-1-dockerfile",
       "title": "Dockerfile for Blockchain",
       "description": "Complete Dockerfile for Rust blockchain",
-      "code": "# Dockerfile example\n# FROM rust:1.75 as builder\n# \n# WORKDIR /app\n# COPY . .\n# RUN cargo build --release\n# \n# FROM debian:bookworm-slim\n# COPY --from=builder /app/target/release/blockchain-node /usr/local/bin/\n# CMD [\"blockchain-node\"]\n\nfn main() {\n    println!(\"Dockerfile structure:\");\n    println!(\"1. Builder stage: Compile Rust code\");\n    println!(\"2. Runtime stage: Minimal OS with just the binary\");\n    println!(\"3. Result: Small, secure container\");\n    \n    println!(\"\\nBuild commands:\");\n    println!(\"docker build -t blockchain-node .\");\n    println!(\"docker run -p 8080:8080 blockchain-node\");\n}",
+      "code": "# Dockerfile example\n# FROM rust:1.75 as builder\n#\n# WORKDIR /app\n# COPY . .\n# RUN cargo build --release\n#\n# FROM debian:bookworm-slim\n# COPY --from=builder /app/target/release/blockchain-node /usr/local/bin/\n# CMD [\"blockchain-node\"]\nfn main() {\n    println!(\"Dockerfile structure:\");\n    println!(\"1. Builder stage: Compile Rust code\");\n    println!(\"2. Runtime stage: Minimal OS with just the binary\");\n    println!(\"3. Result: Small, secure container\");\n    println!(\"\\nBuild commands:\");\n    println!(\"docker build -t blockchain-node .\");\n    println!(\"docker run -p 8080:8080 blockchain-node\");\n}",
       "explanation": "Multi-stage Docker builds create small, efficient containers. The builder stage compiles Rust, the runtime stage only contains the binary and minimal dependencies.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-54-2-docker-compose",
       "title": "Docker Compose Setup",
       "description": "Multi-container blockchain deployment",
-      "code": "// docker-compose.yml structure\n// version: '3.8'\n// services:\n//   node:\n//     build: .\n//     ports:\n//       - \"8080:8080\"\n//   db:\n//     image: postgres:15\n\nfn main() {\n    println!(\"Docker Compose services:\");\n    println!(\"1. blockchain-node: Your Rust application\");\n    println!(\"2. database: PostgreSQL for state storage\");\n    println!(\"3. redis: Caching layer (optional)\");\n    println!(\"4. nginx: Reverse proxy (optional)\");\n    \n    println!(\"\\nCommands:\");\n    println!(\"docker-compose up -d    # Start all services\");\n    println!(\"docker-compose logs    # View logs\");\n    println!(\"docker-compose down    # Stop all services\");\n}",
+      "code": "fn main() {\n    println!(\"Docker Compose services:\");\n    println!(\"1. blockchain-node: Your Rust application\");\n    println!(\"2. database: PostgreSQL for state storage\");\n    println!(\"3. redis: Caching layer (optional)\");\n    println!(\"4. nginx: Reverse proxy (optional)\");\n    println!(\"\\nCommands:\");\n    println!(\"docker-compose up -d    # Start all services\");\n    println!(\"docker-compose logs    # View logs\");\n    println!(\"docker-compose down    # Stop all services\");\n}",
       "explanation": "Docker Compose orchestrates multiple containers. A blockchain node typically needs a database, and optionally caching and reverse proxy services.",
       "language": "rust"
     }
@@ -30,7 +32,7 @@
       "title": "Create Dockerfile",
       "description": "Write a basic Dockerfile for a Rust application!",
       "starterCode": "# Dockerfile\n# Use rust:1.75 as builder\n# Set WORKDIR to /app\n# Copy Cargo files\n# Copy source code\n# Build with --release\n# Create runtime stage from debian:bookworm-slim\n# Copy binary to /usr/local/bin\n# Set CMD to run the binary",
-      "solution": "FROM rust:1.75 as builder\n\nWORKDIR /app\nCOPY Cargo.toml Cargo.lock ./\nCOPY src ./src\n\nRUN cargo build --release\n\nFROM debian:bookworm-slim\n\nCOPY --from=builder /app/target/release/my_app /usr/local/bin/\nCMD [\"my_app\"]",
+      "solution": "FROM rust:1.75 as builder\nWORKDIR /app\nCOPY Cargo.toml Cargo.lock ./\nCOPY src ./src\nRUN cargo build --release\nFROM debian:bookworm-slim\nCOPY --from=builder /app/target/release/my_app /usr/local/bin/\nCMD [\"my_app\"]",
       "hints": [
         "Use multi-stage build",
         "Builder stage compiles, runtime stage runs"
@@ -39,4 +41,3 @@
     }
   ]
 }
-

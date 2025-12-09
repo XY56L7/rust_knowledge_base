@@ -5,13 +5,15 @@
   "content": "# Deployment Basics\n\nDeploying Rust applications requires understanding build processes, target platforms, and deployment environments.\n\n## Build Types\n\n### Development Build\n\n```bash\ncargo build\n# Creates: target/debug/your_app\n```\n\n- **Fast compilation**: Minimal optimizations\n- **Debug symbols**: Easier debugging\n- **Larger binaries**: Not optimized\n\n### Release Build\n\n```bash\ncargo build --release\n# Creates: target/release/your_app\n```\n\n- **Optimized**: Maximum performance\n- **Smaller binaries**: Stripped symbols\n- **Slower compilation**: More optimizations\n\n## Cross-Compilation\n\nRust supports cross-compilation for different platforms:\n\n```bash\n# Install target\nrustup target add x86_64-unknown-linux-musl\n\n# Build for Linux from Windows/Mac\ncargo build --release --target x86_64-unknown-linux-musl\n```\n\n## Deployment Targets\n\n### Linux Servers\n\n- **Most common**: Linux VPS, cloud instances\n- **Static linking**: Use `musl` target for portability\n- **Systemd**: Service management\n\n### Docker Containers\n\n- **Portable**: Run anywhere Docker runs\n- **Isolated**: Consistent environment\n- **Scalable**: Easy to scale horizontally\n\n### Cloud Platforms\n\n- **AWS**: EC2, ECS, Lambda\n- **Google Cloud**: Cloud Run, GKE\n- **Azure**: Container Instances, AKS\n- **DigitalOcean**: Droplets, App Platform\n\n## Production Checklist\n\n- [ ] Release build (`--release`)\n- [ ] Stripped binaries (smaller size)\n- [ ] Environment variables configured\n- [ ] Logging configured\n- [ ] Health checks implemented\n- [ ] Monitoring set up\n- [ ] Backup strategy\n- [ ] Security hardening",
   "difficulty": "intermediate",
   "estimatedTime": 40,
-  "prerequisites": ["lesson-18-packages"],
+  "prerequisites": [
+    "lesson-18-packages"
+  ],
   "codeExamples": [
     {
       "id": "ex-53-1-build-optimization",
       "title": "Build Optimization",
       "description": "Optimizing Rust builds for production",
-      "code": "// Cargo.toml optimization settings\n// [profile.release]\n// opt-level = 3          # Maximum optimization\n// lto = true            # Link-time optimization\n// codegen-units = 1     # Better optimization\n// strip = true          # Strip symbols (smaller binary)\n\nfn main() {\n    println!(\"Production build settings:\");\n    println!(\"- opt-level = 3: Maximum performance\");\n    println!(\"- lto = true: Better optimization across crates\");\n    println!(\"- codegen-units = 1: Slower compile, better optimization\");\n    println!(\"- strip = true: Smaller binary size\");\n}",
+      "code": "fn main() {\n    println!(\"Production build settings:\");\n    println!(\"- opt-level = 3: Maximum performance\");\n    println!(\"- lto = true: Better optimization across crates\");\n    println!(\"- codegen-units = 1: Slower compile, better optimization\");\n    println!(\"- strip = true: Smaller binary size\");\n}",
       "explanation": "Release builds with optimization settings produce fast, efficient binaries perfect for production blockchain nodes and backends.",
       "language": "rust"
     },
@@ -19,7 +21,7 @@
       "id": "ex-53-2-environment-config",
       "title": "Environment Configuration",
       "description": "Using environment variables for configuration",
-      "code": "// In production, use environment variables\n// use std::env;\n\nfn get_config() -> (String, u16) {\n    // Read from environment or use defaults\n    // let db_url = env::var(\"DATABASE_URL\")\n    //     .unwrap_or_else(|_| String::from(\"localhost\"));\n    // let port = env::var(\"PORT\")\n    //     .unwrap_or_else(|_| String::from(\"8080\"))\n    //     .parse::<u16>()\n    //     .unwrap();\n    \n    // Simplified for demo\n    let db_url = String::from(\"postgres://localhost\");\n    let port = 8080;\n    \n    (db_url, port)\n}\n\nfn main() {\n    let (db_url, port) = get_config();\n    println!(\"Database: {}\", db_url);\n    println!(\"Port: {}\", port);\n    \n    println!(\"\\nSet environment variables:\");\n    println!(\"export DATABASE_URL=postgres://prod-db\");\n    println!(\"export PORT=3000\");\n}",
+      "code": "fn get_config() -> (String, u16) {\n    let db_url = String::from(\"postgres:\n    let port = 8080;\n    (db_url, port)\n}\nfn main() {\n    let (db_url, port) = get_config();\n    println!(\"Database: {}\", db_url);\n    println!(\"Port: {}\", port);\n    println!(\"\\nSet environment variables:\");\n    println!(\"export DATABASE_URL=postgres:\n    println!(\"export PORT=3000\");\n}",
       "explanation": "Environment variables allow configuration without code changes. This is essential for deploying to different environments (dev, staging, production).",
       "language": "rust"
     }
@@ -29,8 +31,8 @@
       "id": "exercise-53-1",
       "title": "Build Configuration",
       "description": "Create a Cargo.toml with release optimizations!",
-      "starterCode": "# Cargo.toml\n# Add [profile.release] section with:\n# - opt-level = 3\n# - lto = true\n\n[package]\nname = \"my_blockchain\"\nversion = \"0.1.0\"\n\n# Add release profile here",
-      "solution": "[package]\nname = \"my_blockchain\"\nversion = \"0.1.0\"\n\n[profile.release]\nopt-level = 3\nlto = true\ncodegen-units = 1",
+      "starterCode": "# Cargo.toml\n# Add [profile.release] section with:\n# - opt-level = 3\n# - lto = true\n[package]\nname = \"my_blockchain\"\nversion = \"0.1.0\"\n# Add release profile here",
+      "solution": "[package]\nname = \"my_blockchain\"\nversion = \"0.1.0\"\n[profile.release]\nopt-level = 3\nlto = true\ncodegen-units = 1",
       "hints": [
         "Use [profile.release] section",
         "Set opt-level to 3 for maximum optimization"
@@ -39,4 +41,3 @@
     }
   ]
 }
-
