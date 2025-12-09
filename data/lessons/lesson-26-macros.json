@@ -1,0 +1,50 @@
+{
+  "id": "lesson-26-macros",
+  "title": "Macros",
+  "description": "Using and creating macros in Rust.",
+  "content": "# Macros\n\n**Macros** perform code generation at compile time. There are several types of macros in Rust.\n\n## Declarative Macros\n\n```rust\nmacro_rules! vec {\n    ( $( $x:expr ),* ) => {\n        {\n            let mut temp_vec = Vec::new();\n            $(\n                temp_vec.push($x);\n            )*\n            temp_vec\n        }\n    };\n}\n```\n\n## Usage\n\n```rust\nlet v = vec![1, 2, 3];\n```\n\n## Procedural Macros\n\n```rust\nuse proc_macro;\n\n#[derive(Debug, Clone)]\nstruct MyStruct {\n    field: i32,\n}\n```\n\n## Macro Rules\n\n```rust\nmacro_rules! my_macro {\n    () => {\n        println!(\"No arguments\");\n    };\n    ($x:expr) => {\n        println!(\"Expression: {}\", $x);\n    };\n    ($x:expr, $y:expr) => {\n        println!(\"Two expressions: {}, {}\", $x, $y);\n    };\n}\n```\n\n## Common Macros\n\n- `println!` - Printing\n- `format!` - String formatting\n- `vec!` - Vector creation\n- `panic!` - Panic\n- `assert!` - Assertion\n\n## Macro vs Function\n\n- Macros expand at compile time\n- Functions are called at runtime\n- Macros can work with multiple types\n- Macros can be variadic (variable number of arguments)",
+  "difficulty": "advanced",
+  "estimatedTime": 50,
+  "prerequisites": ["lesson-4-functions"],
+  "codeExamples": [
+    {
+      "id": "ex-26-1-basic-macro",
+      "title": "Basic Macro",
+      "description": "Simple macro definition",
+      "code": "macro_rules! say_hello {\n    () => {\n        println!(\"Hello!\");\n    };\n}\n\nfn main() {\n    say_hello!();\n}",
+      "explanation": "The macro_rules! macro defines macros. The () => { ... } syntax indicates no arguments. We use the ! when calling the macro.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-26-2-macro-with-args",
+      "title": "Macro with Arguments",
+      "description": "Macro with variable number of arguments",
+      "code": "macro_rules! create_function {\n    ($func_name:ident) => {\n        fn $func_name() {\n            println!(\"Function {} was called\", stringify!($func_name));\n        }\n    };\n}\n\ncreate_function!(foo);\ncreate_function!(bar);\n\nfn main() {\n    foo();\n    bar();\n}",
+      "explanation": "Macros can accept arguments. $func_name:ident expects an identifier. The stringify! macro converts the identifier to a string.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-26-3-repeat-pattern",
+      "title": "Repeat Pattern",
+      "description": "Macro with repeating patterns",
+      "code": "macro_rules! print_all {\n    ($( $x:expr ),* ) => {\n        $(\n            println!(\"{}\", $x);\n        )*\n    };\n}\n\nfn main() {\n    print_all!(1, 2, 3, 4, 5);\n}",
+      "explanation": "The $( $x:expr ),* pattern expects one or more expressions, separated by commas. The $()* block expands for each match.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-26-1",
+      "title": "Creating a Macro",
+      "description": "Create a macro that prints the received text!",
+      "starterCode": "// Define the print_custom macro\n// Accept a string literal\n// Print: \"Custom: {text}\"\n\nfn main() {\n    print_custom!(\"Rust\");\n}",
+      "solution": "macro_rules! print_custom {\n    ($text:literal) => {\n        println!(\"Custom: {}\", $text);\n    };\n}\n\nfn main() {\n    print_custom!(\"Rust\");\n}",
+      "hints": [
+        "Use the macro_rules! macro",
+        "$text:literal expects a string literal",
+        "You can print with the println! macro"
+      ],
+      "difficulty": "hard"
+    }
+  ]
+}

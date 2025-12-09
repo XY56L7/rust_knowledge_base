@@ -1,0 +1,49 @@
+{
+  "id": "lesson-22-trait-bounds",
+  "title": "Trait Bounds",
+  "description": "Using trait bounds to constrain generic types.",
+  "content": "# Trait Bounds\n\n**Trait bounds** allow us to constrain generic types so that only types implementing certain traits are allowed.\n\n## Basic Trait Bound\n\n```rust\nfn largest<T: PartialOrd>(list: &[T]) -> Option<&T> {\n    // ...\n}\n```\n\n## Multiple Trait Bounds\n\n```rust\nfn some_function<T: Display + Clone, U: Clone + Debug>(t: &T, u: &U) -> i32 {\n    // ...\n}\n```\n\n## where Clause\n\n```rust\nfn some_function<T, U>(t: &T, u: &U) -> i32\nwhere\n    T: Display + Clone,\n    U: Clone + Debug,\n{\n    // ...\n}\n```\n\n## Trait Bounds in Implementations\n\n```rust\nimpl<T: Display> Pair<T> {\n    fn cmp_display(&self) {\n        if self.x >= self.y {\n            println!(\"The largest x = {}\", self.x);\n        }\n    }\n}\n```\n\n## Conditionally Implement Methods\n\n```rust\nimpl<T: Display + PartialOrd> Pair<T> {\n    fn cmp_display(&self) {\n        // ...\n    }\n}\n```\n\n## Blanket Implementations\n\n```rust\nimpl<T: Display> ToString for T {\n    fn to_string(&self) -> String {\n        // ...\n    }\n}\n```",
+  "difficulty": "advanced",
+  "estimatedTime": 45,
+  "prerequisites": ["lesson-21-traits"],
+  "codeExamples": [
+    {
+      "id": "ex-22-1-basic-bound",
+      "title": "Basic Trait Bound",
+      "description": "Using trait bounds",
+      "code": "use std::fmt::Display;\n\nfn print_largest<T: PartialOrd + Display>(list: &[T]) -> Option<&T> {\n    if list.is_empty() {\n        return None;\n    }\n    \n    let mut largest = &list[0];\n    for item in list {\n        if item > largest {\n            largest = item;\n        }\n    }\n    Some(largest)\n}\n\nfn main() {\n    let numbers = vec![34, 50, 25, 100, 65];\n    if let Some(largest) = print_largest(&numbers) {\n        println!(\"The largest number: {}\", largest);\n    }\n}",
+      "explanation": "The T: PartialOrd + Display trait bound ensures that type T is comparable and printable. This allows the use of the > operator and println!.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-22-2-where-clause",
+      "title": "where Clause",
+      "description": "Using where for complex trait bounds",
+      "code": "use std::fmt::Display;\nuse std::fmt::Debug;\n\nfn compare_and_print<T, U>(t: &T, u: &U)\nwhere\n    T: Display + PartialOrd,\n    U: Display + Debug,\n{\n    println!(\"t: {}, u: {:?}\", t, u);\n}\n\nfn main() {\n    compare_and_print(&5, &\"hello\");\n}",
+      "explanation": "The where clause makes complex trait bounds more readable. Especially useful when there are many generic parameters.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-22-3-conditional-impl",
+      "title": "Conditional Implementation",
+      "description": "Implementing methods based on trait bounds",
+      "code": "use std::fmt::Display;\n\nstruct Pair<T> {\n    x: T,\n    y: T,\n}\n\nimpl<T> Pair<T> {\n    fn new(x: T, y: T) -> Pair<T> {\n        Pair { x, y }\n    }\n}\n\nimpl<T: Display + PartialOrd> Pair<T> {\n    fn cmp_display(&self) {\n        if self.x >= self.y {\n            println!(\"The largest x = {}\", self.x);\n        } else {\n            println!(\"The largest y = {}\", self.y);\n        }\n    }\n}\n\nfn main() {\n    let pair = Pair::new(5, 3);\n    pair.cmp_display();\n}",
+      "explanation": "With trait bounds, we can conditionally implement methods. cmp_display() is only available if T implements Display and PartialOrd traits.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-22-1",
+      "title": "Trait Bounds",
+      "description": "Write a function with trait bounds!",
+      "starterCode": "use std::fmt::Display;\n\n// Write a print_if_greater function\n// Accept two T types, where T: Display + PartialOrd\n// If the first is greater than the second, print both\n\nfn main() {\n    print_if_greater(&10, &5);\n}",
+      "solution": "use std::fmt::Display;\n\nfn print_if_greater<T: Display + PartialOrd>(a: &T, b: &T) {\n    if a > b {\n        println!(\"{} > {}\", a, b);\n    }\n}\n\nfn main() {\n    print_if_greater(&10, &5);\n}",
+      "hints": [
+        "Use the T: Trait1 + Trait2 syntax",
+        "The > operator requires PartialOrd trait"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}

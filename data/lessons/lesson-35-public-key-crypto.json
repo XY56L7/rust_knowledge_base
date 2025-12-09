@@ -1,0 +1,42 @@
+{
+  "id": "lesson-35-public-key-crypto",
+  "title": "Public Key Cryptography",
+  "description": "Understanding public-private key pairs and their use in blockchain addresses.",
+  "content": "# Public Key Cryptography\n\n**Public key cryptography** (asymmetric cryptography) uses two keys: a public key (shared) and a private key (secret).\n\n## Key Concepts\n\n- **Private Key**: Secret, never shared, used to sign transactions\n- **Public Key**: Shared publicly, used to verify signatures\n- **Address**: Derived from public key, used to receive funds\n\n## Key Pair Generation\n\n```rust\nstruct KeyPair {\n    private_key: String,\n    public_key: String,\n    address: String,  // Derived from public key\n}\n\nfn generate_keypair() -> KeyPair {\n    // In production: use cryptographic library\n    // let (private, public) = generate_ecdsa_keypair();\n    \n    KeyPair {\n        private_key: String::from(\"private_key_...\"),\n        public_key: String::from(\"public_key_...\"),\n        address: String::from(\"address_...\"),\n    }\n}\n```\n\n## Address Generation\n\nBlockchain addresses are typically derived from public keys:\n\n1. Hash the public key (SHA-256 or similar)\n2. Take a portion of the hash\n3. Encode it (Base58, hex, etc.)\n\n```rust\nfn derive_address(public_key: &str) -> String {\n    // Hash public key\n    // let hash = sha256(public_key);\n    // Take first 20 bytes for Ethereum-style address\n    // Encode as hex\n    format!(\"0x{}\", &public_key[..20])\n}\n```\n\n## Wallet Structure\n\n```rust\nstruct Wallet {\n    keypair: KeyPair,\n    balance: u64,\n}\n\nimpl Wallet {\n    fn new() -> Self {\n        Wallet {\n            keypair: generate_keypair(),\n            balance: 0,\n        }\n    }\n    \n    fn address(&self) -> &str {\n        &self.keypair.address\n    }\n}\n```\n\n## Security Principles\n\n1. **Never share private key**: Anyone with it can spend your funds\n2. **Public key is safe**: Can be shared freely\n3. **Address is public**: Used to receive funds\n4. **Backup private key**: Loss = permanent fund loss\n\n## Use in Blockchain\n\n- **Bitcoin**: Public key → SHA-256 + RIPEMD-160 → Base58 address\n- **Ethereum**: Public key → Keccak-256 → Last 20 bytes → Hex address\n- **Key derivation**: HD wallets use BIP32/BIP44",
+  "difficulty": "intermediate",
+  "estimatedTime": 40,
+  "prerequisites": ["lesson-34-digital-signatures"],
+  "codeExamples": [
+    {
+      "id": "ex-35-1-keypair",
+      "title": "Key Pair Structure",
+      "description": "Creating and using key pairs",
+      "code": "struct KeyPair {\n    private_key: String,\n    public_key: String,\n    address: String,\n}\n\nfn generate_keypair() -> KeyPair {\n    // Simplified key generation\n    // In production: use 'secp256k1' or 'ed25519' crate\n    let private_key = \"private_key_abc123\";\n    let public_key = \"public_key_xyz789\";\n    \n    KeyPair {\n        private_key: String::from(private_key),\n        public_key: String::from(public_key),\n        address: derive_address(public_key),\n    }\n}\n\nfn derive_address(public_key: &str) -> String {\n    // Simplified: take first 20 chars and add 0x prefix\n    format!(\"0x{}\", &public_key[..20.min(public_key.len())])\n}\n\nfn main() {\n    let keypair = generate_keypair();\n    println!(\"Public Key: {}\", keypair.public_key);\n    println!(\"Address: {}\", keypair.address);\n    // Private key should be kept secret!\n}",
+      "explanation": "Key pairs are the foundation of blockchain security. The private key must be kept secret, while the public key and address can be shared.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-35-2-wallet",
+      "title": "Wallet Implementation",
+      "description": "Creating a wallet with key pair",
+      "code": "struct KeyPair {\n    private_key: String,\n    public_key: String,\n    address: String,\n}\n\nstruct Wallet {\n    keypair: KeyPair,\n    balance: u64,\n}\n\nimpl Wallet {\n    fn new() -> Self {\n        let keypair = KeyPair {\n            private_key: String::from(\"secret_key\"),\n            public_key: String::from(\"public_key_12345678901234567890\"),\n            address: String::from(\"0x12345678901234567890\"),\n        };\n        \n        Wallet {\n            keypair,\n            balance: 0,\n        }\n    }\n    \n    fn address(&self) -> &str {\n        &self.keypair.address\n    }\n    \n    fn get_balance(&self) -> u64 {\n        self.balance\n    }\n}\n\nfn main() {\n    let wallet = Wallet::new();\n    println!(\"Wallet address: {}\", wallet.address());\n    println!(\"Balance: {}\", wallet.get_balance());\n}",
+      "explanation": "A wallet contains a key pair and tracks balance. The address is used to receive funds, and the private key is used to authorize spending.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-35-1",
+      "title": "Create Wallet",
+      "description": "Create a wallet with a key pair and display its address!",
+      "starterCode": "struct KeyPair {\n    private_key: String,\n    public_key: String,\n    address: String,\n}\n\nstruct Wallet {\n    keypair: KeyPair,\n}\n\n// Implement Wallet::new() that creates a keypair\n// Implement address() method\n\nfn main() {\n    let wallet = Wallet::new();\n    println!(\"Address: {}\", wallet.address());\n}",
+      "solution": "struct KeyPair {\n    private_key: String,\n    public_key: String,\n    address: String,\n}\n\nstruct Wallet {\n    keypair: KeyPair,\n}\n\nimpl Wallet {\n    fn new() -> Self {\n        let public_key = \"public_key_abcdef1234567890\";\n        Wallet {\n            keypair: KeyPair {\n                private_key: String::from(\"secret\"),\n                public_key: String::from(public_key),\n                address: format!(\"0x{}\", &public_key[..20]),\n            },\n        }\n    }\n    \n    fn address(&self) -> &str {\n        &self.keypair.address\n    }\n}\n\nfn main() {\n    let wallet = Wallet::new();\n    println!(\"Address: {}\", wallet.address());\n}",
+      "hints": [
+        "Create a public key string",
+        "Derive address from public key (first 20 chars with 0x prefix)"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

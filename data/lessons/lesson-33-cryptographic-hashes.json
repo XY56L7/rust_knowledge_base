@@ -1,0 +1,42 @@
+{
+  "id": "lesson-33-cryptographic-hashes",
+  "title": "Cryptographic Hash Functions",
+  "description": "Using cryptographically secure hash functions in Rust for blockchain applications.",
+  "content": "# Cryptographic Hash Functions\n\nCryptographic hash functions are essential for blockchain security. Unlike simple hash functions, they must be cryptographically secure.\n\n## Requirements for Blockchain\n\n1. **Pre-image resistance**: Cannot find input from hash\n2. **Second pre-image resistance**: Cannot find different input with same hash\n3. **Collision resistance**: Hard to find any two inputs with same hash\n4. **Avalanche effect**: Small change = completely different output\n\n## SHA-256 (Bitcoin)\n\nSHA-256 is the most common hash function in blockchain:\n\n```rust\nuse sha2::{Sha256, Digest};\n\nfn hash_data(data: &[u8]) -> String {\n    let mut hasher = Sha256::new();\n    hasher.update(data);\n    format!(\"{:x}\", hasher.finalize())\n}\n```\n\n## Blake2 (Alternative)\n\nBlake2 is faster than SHA-256 while maintaining security:\n\n```rust\nuse blake2::{Blake2b512, Digest};\n\nfn blake2_hash(data: &[u8]) -> String {\n    let mut hasher = Blake2b512::new();\n    hasher.update(data);\n    format!(\"{:x}\", hasher.finalize())\n}\n```\n\n## Using Hashes in Blockchain\n\n- **Block hashing**: Hash of block header\n- **Transaction IDs**: Unique identifier for each transaction\n- **Merkle roots**: Efficient verification of multiple transactions\n- **Address generation**: From public keys\n\n## Hash Chain\n\nEach block's hash includes the previous block's hash, creating an immutable chain:\n\n```rust\nstruct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,  // SHA-256(index + data + previous_hash)\n}\n```",
+  "difficulty": "intermediate",
+  "estimatedTime": 40,
+  "prerequisites": ["lesson-31-hash-functions"],
+  "codeExamples": [
+    {
+      "id": "ex-33-1-sha256-demo",
+      "title": "SHA-256 Hash",
+      "description": "Using SHA-256 for blockchain hashing",
+      "code": "// Note: Add 'sha2 = \"0.10\"' to Cargo.toml dependencies\n// use sha2::{Sha256, Digest};\n\n// Simplified demonstration (without actual crate)\nfn sha256_hash(input: &str) -> String {\n    // In real code: use sha2 crate\n    // let mut hasher = Sha256::new();\n    // hasher.update(input.as_bytes());\n    // format!(\"{:x}\", hasher.finalize())\n    \n    // Simplified version for demonstration\n    format!(\"sha256_{}\", input)\n}\n\nfn main() {\n    let data = \"Blockchain transaction data\";\n    let hash = sha256_hash(data);\n    \n    println!(\"Data: {}\", data);\n    println!(\"Hash: {}\", hash);\n    \n    // Same input = same hash (deterministic)\n    let hash2 = sha256_hash(data);\n    println!(\"Hash again: {}\", hash2);\n    assert_eq!(hash, hash2);\n}",
+      "explanation": "SHA-256 is deterministic - same input always produces same output. This is crucial for blockchain validation. In production, use the 'sha2' crate.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-33-2-block-hashing",
+      "title": "Block Hash with SHA-256",
+      "description": "Creating cryptographically secure block hashes",
+      "code": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n}\n\nimpl Block {\n    fn calculate_hash(&self) -> String {\n        // Combine all block data\n        let combined = format!(\"{}{}{}\", self.index, self.data, self.previous_hash);\n        \n        // In production: use SHA-256\n        // use sha2::{Sha256, Digest};\n        // let mut hasher = Sha256::new();\n        // hasher.update(combined.as_bytes());\n        // format!(\"{:x}\", hasher.finalize())\n        \n        // Simplified for demonstration\n        format!(\"sha256_{}\", combined)\n    }\n}\n\nfn main() {\n    let block = Block {\n        index: 1,\n        data: String::from(\"Transaction data\"),\n        previous_hash: String::from(\"0000abc123\"),\n    };\n    \n    let hash = block.calculate_hash();\n    println!(\"Block hash: {}\", hash);\n}",
+      "explanation": "Block hashes must be cryptographically secure. Any change to block data results in a completely different hash, making tampering detectable.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-33-1",
+      "title": "Hash Function",
+      "description": "Create a function that hashes block data!",
+      "starterCode": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n}\n\n// Create a calculate_hash method that combines all fields\n// Return a hash string (simplified version)\n\nfn main() {\n    let block = Block {\n        index: 5,\n        data: String::from(\"My data\"),\n        previous_hash: String::from(\"prev123\"),\n    };\n    \n    // Calculate and print the hash\n}",
+      "solution": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n}\n\nimpl Block {\n    fn calculate_hash(&self) -> String {\n        let combined = format!(\"{}{}{}\", self.index, self.data, self.previous_hash);\n        format!(\"sha256_{}\", combined)\n    }\n}\n\nfn main() {\n    let block = Block {\n        index: 5,\n        data: String::from(\"My data\"),\n        previous_hash: String::from(\"prev123\"),\n    };\n    \n    let hash = block.calculate_hash();\n    println!(\"Block hash: {}\", hash);\n}",
+      "hints": [
+        "Use format!() to combine all block fields",
+        "Add a prefix like \"sha256_\" to indicate hash type"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

@@ -1,0 +1,43 @@
+{
+  "id": "lesson-37-proof-of-work",
+  "title": "Proof of Work (PoW)",
+  "description": "Understanding and implementing Proof of Work consensus mechanism.",
+  "content": "# Proof of Work (PoW)\n\n**Proof of Work** is a consensus mechanism where miners compete to solve a cryptographic puzzle. The first to solve it gets to create the next block.\n\n## How PoW Works\n\n1. **Mining**: Miners try different nonce values\n2. **Hashing**: Calculate hash of (block data + nonce)\n3. **Difficulty**: Hash must be below target (start with zeros)\n4. **Success**: When hash meets difficulty, block is valid\n5. **Reward**: Miner receives block reward\n\n## Difficulty Target\n\nThe difficulty determines how many leading zeros the hash must have:\n\n```rust\n// Hash must start with N zeros\n// Difficulty 1: hash starts with \"0\"\n// Difficulty 4: hash starts with \"0000\"\n```\n\n## Mining Process\n\n```rust\nstruct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    nonce: u64,  // Number used once\n    hash: String,\n}\n\nfn mine_block(mut block: Block, difficulty: usize) -> Block {\n    let prefix = \"0\".repeat(difficulty);\n    \n    loop {\n        block.nonce += 1;\n        block.hash = calculate_hash(&block);\n        \n        if block.hash.starts_with(&prefix) {\n            return block;  // Found valid hash!\n        }\n    }\n}\n```\n\n## Bitcoin's PoW\n\n- Uses SHA-256 double hashing\n- Difficulty adjusts every 2016 blocks\n- Target: ~10 minutes per block\n- Energy intensive but secure\n\n## Advantages\n\n- **Security**: Expensive to attack (51% attack)\n- **Decentralized**: Anyone can mine\n- **Proven**: Bitcoin has been secure for years\n\n## Disadvantages\n\n- **Energy consumption**: Very high\n- **Centralization**: Mining pools dominate\n- **Slow**: 10 minutes per block (Bitcoin)\n\n## Alternative: Proof of Stake\n\nMany newer blockchains use PoS instead of PoW for better efficiency.",
+  "difficulty": "advanced",
+  "estimatedTime": 50,
+  "prerequisites": ["lesson-33-cryptographic-hashes"],
+  "codeExamples": [
+    {
+      "id": "ex-37-1-mining",
+      "title": "Mining Process",
+      "description": "Simple Proof of Work mining",
+      "code": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    nonce: u64,\n    hash: String,\n}\n\nfn calculate_hash(block: &Block) -> String {\n    let data = format!(\"{}{}{}{}\", \n                      block.index, \n                      block.data, \n                      block.previous_hash, \n                      block.nonce);\n    format!(\"hash_{}\", data)\n}\n\nfn mine_block(mut block: Block, difficulty: usize) -> Block {\n    let prefix = \"0\".repeat(difficulty);\n    \n    println!(\"Mining block... (difficulty: {} zeros)\", difficulty);\n    \n    loop {\n        block.nonce += 1;\n        block.hash = calculate_hash(&block);\n        \n        if block.hash.starts_with(&prefix) {\n            println!(\"Block mined! Nonce: {}, Hash: {}\", block.nonce, block.hash);\n            return block;\n        }\n        \n        // Prevent infinite loop in demo\n        if block.nonce > 10000 {\n            println!(\"Stopping after 10000 attempts\");\n            break;\n        }\n    }\n    \n    block\n}\n\nfn main() {\n    let block = Block {\n        index: 1,\n        data: String::from(\"Transaction data\"),\n        previous_hash: String::from(\"prev_hash\"),\n        nonce: 0,\n        hash: String::from(\"\"),\n    };\n    \n    let mined = mine_block(block, 2);  // Difficulty: 2 leading zeros\n    println!(\"Final hash: {}\", mined.hash);\n}",
+      "explanation": "Mining involves trying different nonce values until the hash meets the difficulty requirement. This requires computational work, hence 'Proof of Work'.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-37-2-difficulty",
+      "title": "Difficulty Adjustment",
+      "description": "Understanding difficulty in PoW",
+      "code": "fn check_difficulty(hash: &str, difficulty: usize) -> bool {\n    let prefix = \"0\".repeat(difficulty);\n    hash.starts_with(&prefix)\n}\n\nfn main() {\n    let hashes = vec![\n        \"0abc123\",      // Difficulty 1: ✓\n        \"00def456\",     // Difficulty 2: ✓\n        \"000ghi789\",    // Difficulty 3: ✓\n        \"abc123\",       // Difficulty 1: ✗\n    ];\n    \n    for hash in hashes {\n        println!(\"Hash: {}\", hash);\n        println!(\"  Difficulty 1: {}\", check_difficulty(hash, 1));\n        println!(\"  Difficulty 2: {}\", check_difficulty(hash, 2));\n        println!(\"  Difficulty 3: {}\", check_difficulty(hash, 3));\n        println!();\n    }\n}",
+      "explanation": "Difficulty determines how many leading zeros the hash must have. Higher difficulty = more zeros = harder to find = more secure but slower.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-37-1",
+      "title": "Mine a Block",
+      "description": "Implement a simple mining function that finds a nonce!",
+      "starterCode": "struct Block {\n    data: String,\n    nonce: u64,\n    hash: String,\n}\n\nfn calculate_hash(data: &str, nonce: u64) -> String {\n    format!(\"hash_{}_{}\", data, nonce)\n}\n\n// Create a mine function that tries nonces until hash starts with \"00\"\n// Return the block with valid nonce\n\nfn main() {\n    let mut block = Block {\n        data: String::from(\"test\"),\n        nonce: 0,\n        hash: String::from(\"\"),\n    };\n    \n    // Mine the block\n    // Print the nonce and hash\n}",
+      "solution": "struct Block {\n    data: String,\n    nonce: u64,\n    hash: String,\n}\n\nfn calculate_hash(data: &str, nonce: u64) -> String {\n    format!(\"hash_{}_{}\", data, nonce)\n}\n\nfn mine(mut block: Block) -> Block {\n    loop {\n        block.nonce += 1;\n        block.hash = calculate_hash(&block.data, block.nonce);\n        \n        if block.hash.starts_with(\"00\") {\n            return block;\n        }\n        \n        if block.nonce > 1000 {\n            break;\n        }\n    }\n    block\n}\n\nfn main() {\n    let mut block = Block {\n        data: String::from(\"test\"),\n        nonce: 0,\n        hash: String::from(\"\"),\n    };\n    \n    block = mine(block);\n    println!(\"Mined! Nonce: {}, Hash: {}\", block.nonce, block.hash);\n}",
+      "hints": [
+        "Use a loop to try different nonces",
+        "Check if hash starts with \"00\"",
+        "Stop after finding valid hash"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

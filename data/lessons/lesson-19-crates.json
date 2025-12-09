@@ -1,0 +1,49 @@
+{
+  "id": "lesson-19-crates",
+  "title": "Crates",
+  "description": "Using and publishing crates.",
+  "content": "# Crates\n\nA **crate** is the smallest compilation unit in Rust. There are two types:\n- **Binary crate**: Executable program\n- **Library crate**: Reusable code\n\n## Crate Types\n\n### Binary Crate\n\n```rust\n// src/main.rs\nfn main() {\n    println!(\"Hello, world!\");\n}\n```\n\n### Library Crate\n\n```rust\n// src/lib.rs\npub fn greet() {\n    println!(\"Hello from library!\");\n}\n```\n\n## Using Crates\n\n```rust\n// In another crate\nuse my_crate::greet;\n\ngreet();\n```\n\n## Public API\n\n```rust\n// src/lib.rs\npub mod utils {\n    pub fn helper() {}\n    fn private_helper() {}  // Not public\n}\n\npub use utils::helper;  // Re-export\n```\n\n## Publishing to crates.io\n\n```toml\n# Cargo.toml\n[package]\nname = \"my_crate\"\nversion = \"0.1.0\"\nedition = \"2021\"\nlicense = \"MIT\"\ndescription = \"A useful crate\"\n\n[dependencies]\n```\n\n```bash\ncargo publish\n```\n\n## Documentation\n\n```rust\n/// This is a function that adds two numbers.\n///\n/// # Example\n///\n/// ```\n/// let result = add(2, 3);\n/// assert_eq!(result, 5);\n/// ```\npub fn add(a: i32, b: i32) -> i32 {\n    a + b\n}\n```",
+  "difficulty": "intermediate",
+  "estimatedTime": 40,
+  "prerequisites": ["lesson-18-packages"],
+  "codeExamples": [
+    {
+      "id": "ex-19-1-library-crate",
+      "title": "Library Crate",
+      "description": "Creating a library crate",
+      "code": "// src/lib.rs\npub mod math {\n    pub fn add(x: i32, y: i32) -> i32 {\n        x + y\n    }\n    \n    pub fn multiply(x: i32, y: i32) -> i32 {\n        x * y\n    }\n}\n\n// src/main.rs\nuse my_crate::math;\n\nfn main() {\n    let sum = math::add(5, 3);\n    println!(\"Sum: {}\", sum);\n}",
+      "explanation": "A library crate (lib.rs) contains reusable code. The pub keyword makes it available to other crates.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-19-2-documentation",
+      "title": "Documentation",
+      "description": "Writing documentation",
+      "code": "// src/lib.rs\n/// Adds two numbers together.\n///\n/// # Example\n///\n/// ```\n/// use my_crate::add;\n/// let result = add(2, 3);\n/// assert_eq!(result, 5);\n/// ```\npub fn add(a: i32, b: i32) -> i32 {\n    a + b\n}\n\n// Generate documentation:\n// cargo doc --open",
+      "explanation": "The /// comments generate documentation. The cargo doc command creates HTML documentation. The ``` code blocks contain examples.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-19-3-re-export",
+      "title": "Re-export",
+      "description": "Re-exporting public API",
+      "code": "// src/lib.rs\nmod internal {\n    pub fn helper() {\n        println!(\"Helper function\");\n    }\n}\n\n// Re-export - helper is now directly accessible\npub use internal::helper;\n\n// src/main.rs or another crate\nuse my_crate::helper;  // Don't need internal::helper\n\nfn main() {\n    helper();\n}",
+      "explanation": "pub use allows us to make an internal module function directly accessible in the crate API. This results in a simpler API.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-19-1",
+      "title": "Library Crate",
+      "description": "Create a library crate with math functions!",
+      "starterCode": "// src/lib.rs\n// Define the math module\n// Add add and subtract functions\n\n// src/main.rs\n// Use the library crate functions",
+      "solution": "// src/lib.rs\npub mod math {\n    pub fn add(x: i32, y: i32) -> i32 {\n        x + y\n    }\n    \n    pub fn subtract(x: i32, y: i32) -> i32 {\n        x - y\n    }\n}\n\n// src/main.rs\nuse my_crate::math;\n\nfn main() {\n    let sum = math::add(10, 5);\n    let diff = math::subtract(10, 5);\n    println!(\"Sum: {}, Difference: {}\", sum, diff);\n}",
+      "hints": [
+        "lib.rs contains the library crate code",
+        "Use the pub keyword for public functions"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}

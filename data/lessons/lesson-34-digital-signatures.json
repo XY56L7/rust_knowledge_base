@@ -1,0 +1,42 @@
+{
+  "id": "lesson-34-digital-signatures",
+  "title": "Digital Signatures",
+  "description": "Implementing digital signatures for transaction authorization in blockchain.",
+  "content": "# Digital Signatures\n\n**Digital signatures** prove that a transaction was authorized by the owner of the private key, without revealing the key itself.\n\n## How Digital Signatures Work\n\n1. **Signing**: Use private key to sign transaction data\n2. **Verification**: Use public key to verify signature is valid\n3. **Non-repudiation**: Signer cannot deny signing\n4. **Integrity**: Any change to data invalidates signature\n\n## Signature Process\n\n```rust\n// Simplified signature structure\nstruct Signature {\n    r: String,  // Signature component 1\n    s: String,  // Signature component 2\n}\n\nstruct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n    signature: Option<Signature>,\n}\n```\n\n## Signing a Transaction\n\n```rust\nfn sign_transaction(tx: &mut Transaction, private_key: &str) {\n    let data = format!(\"{}{}{}\", tx.from, tx.to, tx.amount);\n    // In production: use cryptographic library\n    // let signature = sign_with_private_key(&data, private_key);\n    tx.signature = Some(Signature {\n        r: format!(\"sig_r_{}\", data),\n        s: format!(\"sig_s_{}\", data),\n    });\n}\n```\n\n## Verifying a Signature\n\n```rust\nfn verify_signature(tx: &Transaction, public_key: &str) -> bool {\n    if tx.signature.is_none() {\n        return false;\n    }\n    \n    let data = format!(\"{}{}{}\", tx.from, tx.to, tx.amount);\n    // In production: verify with public key\n    // verify_with_public_key(&data, &tx.signature, public_key)\n    \n    true  // Simplified\n}\n```\n\n## Use Cases in Blockchain\n\n- **Transaction authorization**: Prove you own the funds\n- **Smart contract calls**: Authorize contract execution\n- **Block validation**: Validators sign blocks\n- **Identity verification**: Prove ownership of address\n\n## ECDSA (Elliptic Curve Digital Signature Algorithm)\n\nMost blockchains use ECDSA:\n\n- Bitcoin: secp256k1 curve\n- Ethereum: secp256k1 curve\n- Fast and secure\n- Small signature size",
+  "difficulty": "intermediate",
+  "estimatedTime": 45,
+  "prerequisites": ["lesson-33-cryptographic-hashes"],
+  "codeExamples": [
+    {
+      "id": "ex-34-1-signature-structure",
+      "title": "Signature Structure",
+      "description": "Basic digital signature structure",
+      "code": "struct Signature {\n    r: String,\n    s: String,\n}\n\nstruct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n    signature: Option<Signature>,\n}\n\nimpl Transaction {\n    fn sign(&mut self, private_key: &str) {\n        let data = format!(\"{}{}{}\", self.from, self.to, self.amount);\n        // Simplified signing\n        self.signature = Some(Signature {\n            r: format!(\"r_{}\", data),\n            s: format!(\"s_{}\", data),\n        });\n    }\n    \n    fn is_signed(&self) -> bool {\n        self.signature.is_some()\n    }\n}\n\nfn main() {\n    let mut tx = Transaction {\n        from: String::from(\"Alice\"),\n        to: String::from(\"Bob\"),\n        amount: 100,\n        signature: None,\n    };\n    \n    println!(\"Signed: {}\", tx.is_signed());\n    tx.sign(\"private_key_123\");\n    println!(\"Signed: {}\", tx.is_signed());\n}",
+      "explanation": "Digital signatures prove transaction authorization. The signature is created using the sender's private key and can be verified with their public key.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-34-2-signature-verification",
+      "title": "Signature Verification",
+      "description": "Verifying transaction signatures",
+      "code": "struct Signature {\n    r: String,\n    s: String,\n}\n\nstruct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n    signature: Option<Signature>,\n}\n\nfn verify_transaction(tx: &Transaction, public_key: &str) -> bool {\n    if tx.signature.is_none() {\n        return false;\n    }\n    \n    let data = format!(\"{}{}{}\", tx.from, tx.to, tx.amount);\n    let sig = tx.signature.as_ref().unwrap();\n    \n    // Simplified verification\n    // In production: use cryptographic library to verify\n    // that signature matches data and public key\n    \n    sig.r.starts_with(\"r_\") && sig.s.starts_with(\"s_\")\n}\n\nfn main() {\n    let tx = Transaction {\n        from: String::from(\"Alice\"),\n        to: String::from(\"Bob\"),\n        amount: 100,\n        signature: Some(Signature {\n            r: String::from(\"r_AliceBob100\"),\n            s: String::from(\"s_AliceBob100\"),\n        }),\n    };\n    \n    let valid = verify_transaction(&tx, \"alice_public_key\");\n    println!(\"Transaction valid: {}\", valid);\n}",
+      "explanation": "Signature verification ensures the transaction was signed by the owner of the private key corresponding to the public key. This prevents unauthorized transactions.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-34-1",
+      "title": "Sign and Verify",
+      "description": "Create a transaction, sign it, and verify the signature!",
+      "starterCode": "struct Signature {\n    r: String,\n    s: String,\n}\n\nstruct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n    signature: Option<Signature>,\n}\n\n// Add sign() and verify() methods\n\nfn main() {\n    let mut tx = Transaction {\n        from: String::from(\"Alice\"),\n        to: String::from(\"Bob\"),\n        amount: 50,\n        signature: None,\n    };\n    \n    // Sign the transaction\n    // Verify the signature\n}",
+      "solution": "struct Signature {\n    r: String,\n    s: String,\n}\n\nstruct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n    signature: Option<Signature>,\n}\n\nimpl Transaction {\n    fn sign(&mut self) {\n        let data = format!(\"{}{}{}\", self.from, self.to, self.amount);\n        self.signature = Some(Signature {\n            r: format!(\"r_{}\", data),\n            s: format!(\"s_{}\", data),\n        });\n    }\n    \n    fn verify(&self) -> bool {\n        if let Some(sig) = &self.signature {\n            let data = format!(\"{}{}{}\", self.from, self.to, self.amount);\n            sig.r == format!(\"r_{}\", data) && sig.s == format!(\"s_{}\", data)\n        } else {\n            false\n        }\n    }\n}\n\nfn main() {\n    let mut tx = Transaction {\n        from: String::from(\"Alice\"),\n        to: String::from(\"Bob\"),\n        amount: 50,\n        signature: None,\n    };\n    \n    tx.sign();\n    println!(\"Signature valid: {}\", tx.verify());\n}",
+      "hints": [
+        "Use format!() to create signature components",
+        "Check if signature exists before verifying"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

@@ -1,0 +1,78 @@
+{
+  "id": "lesson-8-structs",
+  "title": "Structs",
+  "description": "How to create custom types with structs.",
+  "content": "# Structs\n\nA **struct** allows us to create custom types that package multiple values together.\n\n## Basic Struct Definition\n\n```rust\nstruct User {\n    username: String,\n    email: String,\n    sign_in_count: u64,\n    active: bool,\n}\n```\n\n## Creating Struct Instances\n\n```rust\nlet user1 = User {\n    email: String::from(\"someone@example.com\"),\n    username: String::from(\"someusername123\"),\n    active: true,\n    sign_in_count: 1,\n};\n```\n\n## Accessing Fields\n\n```rust\nprintln!(\"{}\", user1.email);\nuser1.sign_in_count += 1;\n```\n\n## Mutable Struct\n\n```rust\nlet mut user1 = User { /* ... */ };\nuser1.email = String::from(\"anotheremail@example.com\");\n```\n\n## Field Init Shorthand\n\n```rust\nfn build_user(email: String, username: String) -> User {\n    User {\n        email,      // instead of email: email\n        username,   // instead of username: username\n        active: true,\n        sign_in_count: 1,\n    }\n}\n```\n\n## Tuple Structs\n\n```rust\nstruct Color(i32, i32, i32);\nlet black = Color(0, 0, 0);\n```\n\n## Unit-like Structs\n\n```rust\nstruct AlwaysEqual;\nlet subject = AlwaysEqual;\n```",
+  "difficulty": "beginner",
+  "estimatedTime": 30,
+  "prerequisites": ["lesson-4-functions"],
+  "codeExamples": [
+    {
+      "id": "ex-8-1-basic-struct",
+      "title": "Basic Struct",
+      "description": "Struct definition and usage",
+      "code": "struct User {\n    username: String,\n    email: String,\n    sign_in_count: u64,\n    active: bool,\n}\n\nfn main() {\n    let user1 = User {\n        email: String::from(\"someone@example.com\"),\n        username: String::from(\"someusername123\"),\n        active: true,\n        sign_in_count: 1,\n    };\n    \n    println!(\"User: {}\", user1.username);\n    println!(\"Email: {}\", user1.email);\n}",
+      "explanation": "A struct allows us to package related data together. Fields are accessed with dot notation.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-8-2-mutable-struct",
+      "title": "Mutable Struct",
+      "description": "Modifying a struct",
+      "code": "struct User {\n    username: String,\n    email: String,\n    sign_in_count: u64,\n    active: bool,\n}\n\nfn main() {\n    let mut user1 = User {\n        email: String::from(\"someone@example.com\"),\n        username: String::from(\"someusername123\"),\n        active: true,\n        sign_in_count: 1,\n    };\n    \n    user1.sign_in_count += 1;\n    println!(\"Sign-in count: {}\", user1.sign_in_count);\n}",
+      "explanation": "To modify a struct, the variable must be `mut`. Then any field can be modified.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-8-3-tuple-struct",
+      "title": "Tuple Struct",
+      "description": "Using tuple structs",
+      "code": "struct Color(i32, i32, i32);\nstruct Point(i32, i32, i32);\n\nfn main() {\n    let black = Color(0, 0, 0);\n    let origin = Point(0, 0, 0);\n    \n    println!(\"Color RGB: ({}, {}, {})\", black.0, black.1, black.2);\n}",
+      "explanation": "Tuple structs are useful when we want a distinct type but don't need field names. Elements are accessed by index.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-8-4-blockchain-transaction",
+      "title": "Blockchain: Transaction Struct",
+      "description": "Using structs for blockchain transactions",
+      "code": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n    fee: u64,\n    nonce: u64,\n}\n\nfn main() {\n    let tx = Transaction {\n        from: String::from(\"0xAlice\"),\n        to: String::from(\"0xBob\"),\n        amount: 100,\n        fee: 10,\n        nonce: 1,\n    };\n    \n    println!(\"Transaction:\");\n    println!(\"  From: {}\", tx.from);\n    println!(\"  To: {}\", tx.to);\n    println!(\"  Amount: {} tokens\", tx.amount);\n    println!(\"  Fee: {} tokens\", tx.fee);\n    println!(\"  Total: {} tokens\", tx.amount + tx.fee);\n}",
+      "explanation": "Structs are perfect for representing blockchain transactions. They group related data (sender, receiver, amount, etc.) into a single type.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-8-5-blockchain-account",
+      "title": "Blockchain: Account Struct",
+      "description": "Representing blockchain accounts with structs",
+      "code": "struct Account {\n    address: String,\n    balance: u64,\n    nonce: u64,\n    is_contract: bool,\n}\n\nimpl Account {\n    fn new(address: String) -> Self {\n        Account {\n            address,\n            balance: 0,\n            nonce: 0,\n            is_contract: false,\n        }\n    }\n    \n    fn display(&self) {\n        let account_type = if self.is_contract { \"Contract\" } else { \"Wallet\" };\n        println!(\"{} Account: {}\", account_type, self.address);\n        println!(\"  Balance: {} tokens\", self.balance);\n        println!(\"  Nonce: {}\", self.nonce);\n    }\n}\n\nfn main() {\n    let mut account = Account::new(String::from(\"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb\"));\n    account.balance = 1000;\n    account.display();\n}",
+      "explanation": "Account structs store blockchain account information. Methods can be added to structs using impl blocks for functionality like displaying account info.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-8-1",
+      "title": "Creating a Struct",
+      "description": "Create a Rectangle struct with width and height fields!",
+      "starterCode": "// Define the Rectangle struct\n\nfn main() {\n    // Create a Rectangle instance\n    // Print the width and height\n}",
+      "solution": "struct Rectangle {\n    width: u32,\n    height: u32,\n}\n\nfn main() {\n    let rect = Rectangle {\n        width: 30,\n        height: 50,\n    };\n    println!(\"Width: {}, Height: {}\", rect.width, rect.height);\n}",
+      "hints": [
+        "Use u32 type for dimensions",
+        "Access struct fields with dot notation"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "exercise-8-2",
+      "title": "Blockchain: Create Transaction",
+      "description": "Create a Transaction struct for blockchain!",
+      "starterCode": "// Define a Transaction struct with:\n// - from: String (sender address)\n// - to: String (receiver address)\n// - amount: u64 (token amount)\n\nfn main() {\n    // Create a transaction\n    // Print all fields\n}",
+      "solution": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n}\n\nfn main() {\n    let tx = Transaction {\n        from: String::from(\"0xAlice\"),\n        to: String::from(\"0xBob\"),\n        amount: 500,\n    };\n    \n    println!(\"From: {}\", tx.from);\n    println!(\"To: {}\", tx.to);\n    println!(\"Amount: {}\", tx.amount);\n}",
+      "hints": [
+        "Use String for addresses",
+        "Use u64 for amount (no negative values in blockchain)",
+        "Access fields with dot notation"
+      ],
+      "difficulty": "easy"
+    }
+  ]
+}

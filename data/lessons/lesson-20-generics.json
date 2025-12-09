@@ -1,0 +1,57 @@
+{
+  "id": "lesson-20-generics",
+  "title": "Generic Types",
+  "description": "Using generic types for code reusability.",
+  "content": "# Generic Types\n\n**Generic types** allow us to write code that works with multiple different types.\n\n## Generic Functions\n\n```rust\nfn largest<T>(list: &[T]) -> &T {\n    let mut largest = &list[0];\n    for item in list {\n        if item > largest {  // This won't work yet - trait needed!\n            largest = item;\n        }\n    }\n    largest\n}\n```\n\n## Generic Structs\n\n```rust\nstruct Point<T> {\n    x: T,\n    y: T,\n}\n\nlet integer_point = Point { x: 5, y: 10 };\nlet float_point = Point { x: 1.0, y: 4.0 };\n```\n\n## Multiple Generic Parameters\n\n```rust\nstruct Point<T, U> {\n    x: T,\n    y: U,\n}\n\nlet point = Point { x: 5, y: 4.0 };\n```\n\n## Generic Enums\n\n```rust\nenum Option<T> {\n    Some(T),\n    None,\n}\n\nenum Result<T, E> {\n    Ok(T),\n    Err(E),\n}\n```\n\n## Generic Methods\n\n```rust\nimpl<T> Point<T> {\n    fn x(&self) -> &T {\n        &self.x\n    }\n}\n\nimpl Point<f32> {\n    fn distance_from_origin(&self) -> f32 {\n        (self.x.powi(2) + self.y.powi(2)).sqrt()\n    }\n}\n```\n\n## Performance\n\nGeneric types have **no runtime overhead**! Rust uses monomorphization - generates separate code for each type at compile time.",
+  "difficulty": "intermediate",
+  "estimatedTime": 40,
+  "prerequisites": ["lesson-8-structs"],
+  "codeExamples": [
+    {
+      "id": "ex-20-1-generic-function",
+      "title": "Generic Function",
+      "description": "Generic function definition",
+      "code": "fn largest<T: PartialOrd>(list: &[T]) -> Option<&T> {\n    if list.is_empty() {\n        return None;\n    }\n    \n    let mut largest = &list[0];\n    for item in list {\n        if item > largest {\n            largest = item;\n        }\n    }\n    Some(largest)\n}\n\nfn main() {\n    let number_list = vec![34, 50, 25, 100, 65];\n    let result = largest(&number_list);\n    println!(\"The largest number: {:?}\", result);\n}",
+      "explanation": "The <T> syntax indicates the function is generic. The T: PartialOrd trait bound is needed for comparison. The function works with any comparable type.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-20-2-generic-struct",
+      "title": "Generic Struct",
+      "description": "Generic struct definition",
+      "code": "struct Point<T> {\n    x: T,\n    y: T,\n}\n\nimpl<T> Point<T> {\n    fn new(x: T, y: T) -> Point<T> {\n        Point { x, y }\n    }\n    \n    fn x(&self) -> &T {\n        &self.x\n    }\n}\n\nfn main() {\n    let integer_point = Point::new(5, 10);\n    let float_point = Point::new(1.0, 4.0);\n    \n    println!(\"Integer point x: {}\", integer_point.x());\n    println!(\"Float point x: {}\", float_point.x());\n}",
+      "explanation": "Generic structs allow us to use the same structure with different types. The T type parameter is replaced with the concrete type.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-20-3-multiple-generics",
+      "title": "Multiple Generic Parameters",
+      "description": "Struct with multiple generic types",
+      "code": "struct Point<T, U> {\n    x: T,\n    y: U,\n}\n\nimpl<T, U> Point<T, U> {\n    fn mixup<V, W>(self, other: Point<V, W>) -> Point<T, W> {\n        Point {\n            x: self.x,\n            y: other.y,\n        }\n    }\n}\n\nfn main() {\n    let p1 = Point { x: 5, y: 10.4 };\n    let p2 = Point { x: \"Hello\", y: 'c' };\n    \n    let p3 = p1.mixup(p2);\n    println!(\"p3.x = {}, p3.y = {}\", p3.x, p3.y);\n}",
+      "explanation": "We can use multiple generic parameters. This allows us to combine different types in the same struct.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-20-4-blockchain-generic-storage",
+      "title": "Blockchain: Generic Storage",
+      "description": "Using generics for blockchain data storage",
+      "code": "// Generic storage for different blockchain data types\nstruct Storage<T> {\n    data: Vec<T>,\n}\n\nimpl<T> Storage<T> {\n    fn new() -> Self {\n        Storage { data: Vec::new() }\n    }\n    \n    fn add(&mut self, item: T) {\n        self.data.push(item);\n    }\n    \n    fn get(&self, index: usize) -> Option<&T> {\n        self.data.get(index)\n    }\n    \n    fn len(&self) -> usize {\n        self.data.len()\n    }\n}\n\n// Can store blocks, transactions, or any blockchain data\nstruct Block {\n    hash: String,\n}\n\nstruct Transaction {\n    id: String,\n}\n\nfn main() {\n    // Store blocks\n    let mut block_storage: Storage<Block> = Storage::new();\n    block_storage.add(Block { hash: String::from(\"hash1\") });\n    \n    // Store transactions\n    let mut tx_storage: Storage<Transaction> = Storage::new();\n    tx_storage.add(Transaction { id: String::from(\"tx1\") });\n    \n    println!(\"Blocks: {}, Transactions: {}\", \n            block_storage.len(), tx_storage.len());\n}",
+      "explanation": "Generics allow us to create reusable storage structures for different blockchain data types (blocks, transactions, etc.) without code duplication.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-20-1",
+      "title": "Generic Struct",
+      "description": "Create a generic Pair struct!",
+      "starterCode": "// Define the Pair<T> struct with two T type fields\n// Add a new() method\n// Add a swap() method that swaps the fields\n\nfn main() {\n    let mut pair = Pair::new(1, 2);\n    pair.swap();\n    println!(\"Pair: ({}, {})\", pair.first, pair.second);\n}",
+      "solution": "struct Pair<T> {\n    first: T,\n    second: T,\n}\n\nimpl<T> Pair<T> {\n    fn new(first: T, second: T) -> Pair<T> {\n        Pair { first, second }\n    }\n    \n    fn swap(&mut self) {\n        std::mem::swap(&mut self.first, &mut self.second);\n    }\n}\n\nfn main() {\n    let mut pair = Pair::new(1, 2);\n    pair.swap();\n    println!(\"Pair: ({}, {})\", pair.first, pair.second);\n}",
+      "hints": [
+        "Use the <T> syntax for the generic parameter",
+        "std::mem::swap() helps swap the fields"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}

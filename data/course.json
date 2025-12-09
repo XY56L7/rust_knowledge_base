@@ -1,0 +1,176 @@
+{
+  "id": "rust-blockchain-course",
+  "title": "Blockchain Development with Rust - Complete Course",
+  "description": "Master blockchain development using Rust. Learn Rust fundamentals and apply them to build secure, high-performance blockchain applications, smart contracts, and decentralized systems.",
+  "totalLessons": 0,
+  "estimatedTotalTime": 0,
+  "chapters": [
+    {
+      "id": "chapter-1-rust-basics",
+      "title": "1. Rust Fundamentals for Blockchain",
+      "description": "Essential Rust concepts needed for blockchain development",
+      "order": 1,
+      "lessons": [
+        "lesson-1-introduction",
+        "lesson-2-variables",
+        "lesson-3-data-types",
+        "lesson-4-functions"
+      ]
+    },
+    {
+      "id": "chapter-2-ownership",
+      "title": "2. Memory Safety & Ownership",
+      "description": "Rust's ownership model - critical for secure blockchain code",
+      "order": 2,
+      "lessons": [
+        "lesson-5-ownership",
+        "lesson-6-borrowing",
+        "lesson-7-lifetimes"
+      ]
+    },
+    {
+      "id": "chapter-3-data-structures",
+      "title": "3. Data Structures for Blockchain",
+      "description": "Structs, enums, and pattern matching for blockchain data",
+      "order": 3,
+      "lessons": [
+        "lesson-8-structs",
+        "lesson-9-enums",
+        "lesson-10-pattern-matching"
+      ]
+    },
+    {
+      "id": "chapter-4-error-handling",
+      "title": "4. Error Handling in Blockchain",
+      "description": "Robust error handling for blockchain applications",
+      "order": 4,
+      "lessons": [
+        "lesson-11-option",
+        "lesson-12-result",
+        "lesson-13-error-propagation"
+      ]
+    },
+    {
+      "id": "chapter-5-collections",
+      "title": "5. Collections & Data Management",
+      "description": "Managing blockchain state and transactions",
+      "order": 5,
+      "lessons": [
+        "lesson-14-vectors",
+        "lesson-15-hashmaps",
+        "lesson-16-strings"
+      ]
+    },
+    {
+      "id": "chapter-6-modules",
+      "title": "6. Code Organization",
+      "description": "Structuring blockchain projects with modules and packages",
+      "order": 6,
+      "lessons": [
+        "lesson-17-modules",
+        "lesson-18-packages",
+        "lesson-19-crates"
+      ]
+    },
+    {
+      "id": "chapter-7-blockchain-basics",
+      "title": "7. Blockchain Fundamentals",
+      "description": "Understanding blockchain architecture and core concepts",
+      "order": 7,
+      "lessons": [
+        "lesson-29-blockchain-intro",
+        "lesson-30-blocks-transactions",
+        "lesson-31-hash-functions",
+        "lesson-32-merkle-trees"
+      ]
+    },
+    {
+      "id": "chapter-8-cryptography",
+      "title": "8. Cryptography for Blockchain",
+      "description": "Cryptographic primitives essential for blockchain security",
+      "order": 8,
+      "lessons": [
+        "lesson-33-cryptographic-hashes",
+        "lesson-34-digital-signatures",
+        "lesson-35-public-key-crypto",
+        "lesson-36-elliptic-curves"
+      ]
+    },
+    {
+      "id": "chapter-9-consensus",
+      "title": "9. Consensus Mechanisms",
+      "description": "Implementing consensus algorithms in Rust",
+      "order": 9,
+      "lessons": [
+        "lesson-37-proof-of-work",
+        "lesson-38-proof-of-stake",
+        "lesson-39-consensus-implementation"
+      ]
+    },
+    {
+      "id": "chapter-10-smart-contracts",
+      "title": "10. Smart Contracts & WebAssembly",
+      "description": "Building and deploying smart contracts with Rust",
+      "order": 10,
+      "lessons": [
+        "lesson-40-wasm-basics",
+        "lesson-41-smart-contract-structure",
+        "lesson-42-contract-testing"
+      ]
+    },
+    {
+      "id": "chapter-11-networking",
+      "title": "11. P2P Networking",
+      "description": "Building peer-to-peer networks for blockchain",
+      "order": 11,
+      "lessons": [
+        "lesson-43-p2p-networking",
+        "lesson-44-message-protocols",
+        "lesson-45-network-sync"
+      ]
+    },
+    {
+      "id": "chapter-12-advanced",
+      "title": "12. Advanced Blockchain Topics",
+      "description": "Advanced patterns and optimization for blockchain development",
+      "order": 12,
+      "lessons": [
+        "lesson-46-state-management",
+        "lesson-47-transaction-pool",
+        "lesson-48-blockchain-optimization",
+        "lesson-49-building-blockchain",
+        "lesson-50-blockchain-libraries",
+        "lesson-51-wallet-implementation",
+        "lesson-52-dex-implementation"
+      ]
+    },
+    {
+      "id": "chapter-13-deployment",
+      "title": "13. Deployment & Operations",
+      "description": "Deploying and operating Rust blockchain applications in production",
+      "order": 13,
+      "lessons": [
+        "lesson-53-deployment-basics",
+        "lesson-54-docker-deployment",
+        "lesson-55-cloud-deployment",
+        "lesson-56-production-checklist",
+        "lesson-57-ci-cd-pipeline",
+        "lesson-58-monitoring-observability"
+      ]
+    },
+    {
+      "id": "chapter-14-architecture",
+      "title": "14. Project Architecture & Structure",
+      "description": "Best practices for organizing Rust projects and common architecture patterns",
+      "order": 14,
+      "lessons": [
+        "lesson-59-rust-project-structure",
+        "lesson-60-layered-architecture",
+        "lesson-61-clean-architecture",
+        "lesson-62-api-architecture",
+        "lesson-63-microservices-architecture",
+        "lesson-64-frontend-integration"
+      ]
+    }
+  ]
+}

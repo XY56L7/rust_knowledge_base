@@ -1,0 +1,50 @@
+{
+  "id": "lesson-16-strings",
+  "title": "Strings",
+  "description": "Using String and &str types in Rust.",
+  "content": "# Strings\n\nIn Rust, there are two main string types:\n- **String**: Mutable, owned string (stored on heap)\n- **&str**: Immutable string slice (reference)\n\n## Creating a String\n\n```rust\nlet mut s = String::new();\nlet s = String::from(\"hello\");\nlet s = \"hello\".to_string();\n```\n\n## String Concatenation\n\n```rust\nlet s1 = String::from(\"Hello, \");\nlet s2 = String::from(\"world!\");\nlet s3 = s1 + &s2;  // s1 is moved, s2 is reference\n```\n\n## format! Macro\n\n```rust\nlet s1 = String::from(\"tic\");\nlet s2 = String::from(\"tac\");\nlet s3 = String::from(\"toe\");\n\nlet s = format!(\"{}-{}-{}\", s1, s2, s3);\n```\n\n## String Indexing\n\nIn Rust, you **CANNOT** directly index a string:\n\n```rust\nlet s = String::from(\"hello\");\n// let h = s[0];  // ERROR!\n```\n\nThis is because strings are stored in UTF-8 bytes, and one character can be multiple bytes.\n\n## String Slices\n\n```rust\nlet hello = \"Здравствуй\";\nlet s = &hello[0..4];  // Within UTF-8 character boundaries!\n```\n\n## Iteration\n\n```rust\nfor c in \"नमस्ते\".chars() {\n    println!(\"{}\", c);\n}\n\nfor b in \"नमस्ते\".bytes() {\n    println!(\"{}\", b);\n}\n```",
+  "difficulty": "intermediate",
+  "estimatedTime": 35,
+  "prerequisites": ["lesson-14-vectors"],
+  "codeExamples": [
+    {
+      "id": "ex-16-1-basic-string",
+      "title": "Basic String",
+      "description": "Creating and modifying a String",
+      "code": "fn main() {\n    let mut s = String::new();\n    s.push_str(\"hello\");\n    s.push(' ');\n    s.push_str(\"world\");\n    \n    println!(\"{}\", s);\n    \n    // Another way\n    let s2 = String::from(\"hello\");\n    println!(\"{}\", s2);\n}",
+      "explanation": "String::new() creates an empty string. push_str() adds a string, push() adds a character. String::from() creates a string from a literal.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-16-2-concatenation",
+      "title": "String Concatenation",
+      "description": "Combining strings",
+      "code": "fn main() {\n    let s1 = String::from(\"Hello, \");\n    let s2 = String::from(\"world!\");\n    \n    // + operator (s1 is moved)\n    let s3 = s1 + &s2;\n    println!(\"{}\", s3);\n    // s1 is no longer usable!\n    \n    // format! macro (doesn't move)\n    let s4 = String::from(\"Hello\");\n    let s5 = String::from(\"world\");\n    let s6 = format!(\"{}, {}!\", s4, s5);\n    println!(\"{}\", s6);\n    println!(\"{}\", s4);  // s4 is still usable\n}",
+      "explanation": "The + operator moves the first string and takes the second as a reference. The format! macro doesn't move, both strings remain usable.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-16-3-iteration",
+      "title": "String Iteration",
+      "description": "Iterating through string characters",
+      "code": "fn main() {\n    let s = String::from(\"नमस्ते\");\n    \n    // Iterating characters\n    println!(\"Characters:\");\n    for c in s.chars() {\n        println!(\"{}\", c);\n    }\n    \n    // Iterating bytes\n    println!(\"\\nBytes:\");\n    for b in s.bytes() {\n        println!(\"{}\", b);\n    }\n}",
+      "explanation": "The chars() method returns characters (grapheme clusters), the bytes() method returns bytes. For UTF-8 strings, one character can be multiple bytes.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-16-1",
+      "title": "String Operations",
+      "description": "Create a String, add texts to it, and print it!",
+      "starterCode": "fn main() {\n    // Create an empty String\n    // Add: \"Rust\"\n    // Add: \" is\"\n    // Add: \" a\"\n    // Add: \" fantastic\"\n    // Add: \" language!\"\n    // Print the complete string\n}",
+      "solution": "fn main() {\n    let mut s = String::new();\n    s.push_str(\"Rust\");\n    s.push_str(\" is\");\n    s.push_str(\" a\");\n    s.push_str(\" fantastic\");\n    s.push_str(\" language!\");\n    println!(\"{}\", s);\n}",
+      "hints": [
+        "Use the String::new() method",
+        "The push_str() method adds texts",
+        "Don't forget the mut keyword"
+      ],
+      "difficulty": "easy"
+    }
+  ]
+}

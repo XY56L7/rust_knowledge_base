@@ -1,0 +1,57 @@
+{
+  "id": "lesson-23-threads",
+  "title": "Threads",
+  "description": "Concurrent programming with threads in Rust.",
+  "content": "# Threads\n\n**Threads** allow us to run code concurrently.\n\n## Creating a Thread\n\n```rust\nuse std::thread;\nuse std::time::Duration;\n\nthread::spawn(|| {\n    for i in 1..10 {\n        println!(\"counter: {} from spawn thread\", i);\n        thread::sleep(Duration::from_millis(1));\n    }\n});\n```\n\n## Join Handle\n\n```rust\nlet handle = thread::spawn(|| {\n    // ...\n});\n\nhandle.join().unwrap();\n```\n\n## Move Closure\n\n```rust\nlet v = vec![1, 2, 3];\n\nlet handle = thread::spawn(move || {\n    println!(\"Here's a vector: {:?}\", v);\n});\n\nhandle.join().unwrap();\n```\n\nThe `move` keyword forces the closure to take ownership of the variables it uses.\n\n## Message Passing\n\n```rust\nuse std::sync::mpsc;\n\nlet (tx, rx) = mpsc::channel();\n\nthread::spawn(move || {\n    let val = String::from(\"hi\");\n    tx.send(val).unwrap();\n});\n\nlet received = rx.recv().unwrap();\nprintln!(\"Got: {}\", received);\n```",
+  "difficulty": "advanced",
+  "estimatedTime": 45,
+  "prerequisites": ["lesson-6-borrowing"],
+  "codeExamples": [
+    {
+      "id": "ex-23-1-basic-thread",
+      "title": "Basic Thread",
+      "description": "Creating and running a thread",
+      "code": "use std::thread;\nuse std::time::Duration;\n\nfn main() {\n    thread::spawn(|| {\n        for i in 1..10 {\n            println!(\"counter: {} from spawn thread\", i);\n            thread::sleep(Duration::from_millis(1));\n        }\n    });\n    \n    for i in 1..5 {\n        println!(\"counter: {} from main thread\", i);\n        thread::sleep(Duration::from_millis(1));\n    }\n}",
+      "explanation": "thread::spawn() creates a new thread. The closure runs in the thread. The main thread and spawn thread run concurrently.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-23-2-join-handle",
+      "title": "Join Handle",
+      "description": "Waiting for thread completion",
+      "code": "use std::thread;\nuse std::time::Duration;\n\nfn main() {\n    let handle = thread::spawn(|| {\n        for i in 1..10 {\n            println!(\"counter: {} from spawn thread\", i);\n            thread::sleep(Duration::from_millis(1));\n        }\n    });\n    \n    for i in 1..5 {\n        println!(\"counter: {} from main thread\", i);\n        thread::sleep(Duration::from_millis(1));\n    }\n    \n    handle.join().unwrap();  // Wait for thread to finish\n}",
+      "explanation": "spawn() returns a JoinHandle. The join() method waits until the thread finishes. This ensures the thread completes before the program ends.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-23-3-move-closure",
+      "title": "Move Closure",
+      "description": "Passing data to threads",
+      "code": "use std::thread;\n\nfn main() {\n    let v = vec![1, 2, 3];\n    \n    let handle = thread::spawn(move || {\n        println!(\"Here's a vector: {:?}\", v);\n    });\n    \n    // v is no longer usable here, because it was moved\n    \n    handle.join().unwrap();\n}",
+      "explanation": "The move keyword forces the closure to take ownership of the variables it uses. This is safe because it guarantees the variable is only used in one thread.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-23-4-blockchain-mining",
+      "title": "Blockchain: Parallel Mining",
+      "description": "Using threads for parallel block mining",
+      "code": "use std::thread;\n\nstruct Block {\n    data: String,\n    nonce: u64,\n    hash: String,\n}\n\nfn mine_block(data: String, start_nonce: u64, range: u64) -> Option<Block> {\n    // Simplified mining: find nonce that makes hash start with \"00\"\n    for nonce in start_nonce..start_nonce + range {\n        let hash = format!(\"hash_{}_{}\", data, nonce);\n        if hash.starts_with(\"00\") {\n            return Some(Block { data, nonce, hash });\n        }\n    }\n    None\n}\n\nfn main() {\n    let data = String::from(\"block_data\");\n    \n    // Mine in parallel on multiple threads\n    let handle1 = thread::spawn(move || {\n        mine_block(data.clone(), 0, 1000)\n    });\n    \n    let handle2 = thread::spawn(move || {\n        mine_block(data.clone(), 1000, 1000)\n    });\n    \n    // Wait for first result\n    if let Some(block) = handle1.join().unwrap() {\n        println!(\"Mined block! Nonce: {}, Hash: {}\", block.nonce, block.hash);\n    } else if let Some(block) = handle2.join().unwrap() {\n        println!(\"Mined block! Nonce: {}, Hash: {}\", block.nonce, block.hash);\n    }\n    \n    println!(\"Parallel mining allows faster block discovery!\");\n}",
+      "explanation": "Blockchain mining benefits from parallel processing. Multiple threads can search different nonce ranges simultaneously, significantly speeding up block discovery. This is how real mining pools work.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-23-1",
+      "title": "Creating a Thread",
+      "description": "Create a thread that prints numbers from 1 to 5!",
+      "starterCode": "use std::thread;\n\nfn main() {\n    // Create a thread\n    // The thread should print numbers from 1 to 5\n    // Wait for the thread to finish\n}",
+      "solution": "use std::thread;\n\nfn main() {\n    let handle = thread::spawn(|| {\n        for i in 1..=5 {\n            println!(\"Thread counter: {}\", i);\n        }\n    });\n    \n    handle.join().unwrap();\n}",
+      "hints": [
+        "Use the thread::spawn() method",
+        "Use the join() method to wait for completion"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}

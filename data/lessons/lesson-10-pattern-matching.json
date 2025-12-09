@@ -1,0 +1,49 @@
+{
+  "id": "lesson-10-pattern-matching",
+  "title": "Pattern Matching",
+  "description": "Using the match expression and pattern matching.",
+  "content": "# Pattern Matching\n\n**Pattern matching** is one of Rust's most powerful features, allowing us to compare a value against different patterns.\n\n## Match Expression\n\n```rust\nmatch value {\n    pattern1 => expression1,\n    pattern2 => expression2,\n    _ => default_case,\n}\n```\n\n## Exhaustive Matching\n\nThe match must be **exhaustive** - all possible cases must be covered:\n\n```rust\nmatch coin {\n    Coin::Penny => 1,\n    Coin::Nickel => 5,\n    Coin::Dime => 10,\n    Coin::Quarter => 25,\n    // If we omitted one, we'd get an error!\n}\n```\n\n## Binding to Values\n\n```rust\nmatch value {\n    Some(x) => println!(\"Value: {}\", x),\n    None => println!(\"No value\"),\n}\n```\n\n## If Let\n\nSimplified syntax for handling a single case:\n\n```rust\nif let Some(3) = some_option_value {\n    println!(\"three\");\n}\n```\n\n## While Let\n\n```rust\nwhile let Some(top) = stack.pop() {\n    println!(\"{}\", top);\n}\n```\n\n## Destructuring\n\n```rust\nlet (x, y) = point;\nlet Point { x, y } = point;\n```",
+  "difficulty": "intermediate",
+  "estimatedTime": 40,
+  "prerequisites": ["lesson-9-enums"],
+  "codeExamples": [
+    {
+      "id": "ex-10-1-match",
+      "title": "Match Expression",
+      "description": "Basic match usage",
+      "code": "enum Coin {\n    Penny,\n    Nickel,\n    Dime,\n    Quarter,\n}\n\nfn value_in_cents(coin: Coin) -> u8 {\n    match coin {\n        Coin::Penny => 1,\n        Coin::Nickel => 5,\n        Coin::Dime => 10,\n        Coin::Quarter => 25,\n    }\n}\n\nfn main() {\n    let coin = Coin::Quarter;\n    println!(\"Value: {} cents\", value_in_cents(coin));\n}",
+      "explanation": "The match expression must cover all possible enum variants. The compiler checks that all cases are handled.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-10-2-binding",
+      "title": "Binding to Values",
+      "description": "Extracting data with pattern matching",
+      "code": "enum Option<T> {\n    Some(T),\n    None,\n}\n\nfn main() {\n    let some_number = Some(5);\n    \n    match some_number {\n        Some(x) => println!(\"The value: {}\", x),\n        None => println!(\"No value\"),\n    }\n    \n    let absent_number: Option<i32> = None;\n    match absent_number {\n        Some(x) => println!(\"The value: {}\", x),\n        None => println!(\"No value\"),\n    }\n}",
+      "explanation": "Pattern matching allows us to directly bind data stored in enum variants to variables.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-10-3-if-let",
+      "title": "If Let",
+      "description": "Using if let for simplified matching",
+      "code": "fn main() {\n    let some_value = Some(3);\n    \n    // Long version\n    match some_value {\n        Some(3) => println!(\"three\"),\n        _ => (),\n    }\n    \n    // Short version with if let\n    if let Some(3) = some_value {\n        println!(\"three\");\n    }\n}",
+      "explanation": "The `if let` is a shortened syntax when we only want to handle one case. It does the same as a single match arm, but more concisely.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-10-1",
+      "title": "Match Practice",
+      "description": "Write a function that handles an Option<i32> with match!",
+      "starterCode": "fn handle_option(value: Option<i32>) {\n    // Use match\n    // If Some(x), print: \"Value: {x}\"\n    // If None, print: \"No value\"\n}\n\nfn main() {\n    handle_option(Some(42));\n    handle_option(None);\n}",
+      "solution": "fn handle_option(value: Option<i32>) {\n    match value {\n        Some(x) => println!(\"Value: {}\", x),\n        None => println!(\"No value\"),\n    }\n}\n\nfn main() {\n    handle_option(Some(42));\n    handle_option(None);\n}",
+      "hints": [
+        "Match must cover all cases",
+        "Use the Some(x) pattern to extract the value"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}

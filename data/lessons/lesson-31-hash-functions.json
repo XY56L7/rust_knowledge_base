@@ -1,0 +1,42 @@
+{
+  "id": "lesson-31-hash-functions",
+  "title": "Hash Functions in Blockchain",
+  "description": "Understanding cryptographic hash functions and their role in blockchain security.",
+  "content": "# Hash Functions in Blockchain\n\n**Hash functions** are fundamental to blockchain security. They create a unique fingerprint of data that cannot be reversed.\n\n## Properties of Hash Functions\n\n1. **Deterministic**: Same input always produces same output\n2. **Fast to compute**: Quick to calculate\n3. **One-way**: Cannot reverse to get original input\n4. **Avalanche effect**: Small input change = completely different output\n5. **Collision resistant**: Hard to find two inputs with same hash\n\n## Common Hash Functions\n\n- **SHA-256**: Used by Bitcoin\n- **Blake2**: Fast and secure\n- **Keccak-256**: Used by Ethereum (SHA-3 variant)\n\n## Using Hashes in Rust\n\nRust has excellent cryptographic libraries:\n\n```rust\nuse sha2::{Sha256, Digest};\n\nfn hash_data(data: &str) -> String {\n    let mut hasher = Sha256::new();\n    hasher.update(data.as_bytes());\n    format!(\"{:x}\", hasher.finalize())\n}\n```\n\n## Hash Uses in Blockchain\n\n1. **Block Hashing**: Each block's hash includes all its data\n2. **Transaction IDs**: Each transaction gets a unique hash\n3. **Merkle Trees**: Efficiently hash multiple transactions\n4. **Proof of Work**: Mining requires finding specific hashes\n5. **Chain Integrity**: Previous hash links blocks together\n\n## Block Hash Example\n\n```rust\nstruct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,  // Hash of (index + data + previous_hash)\n}\n```\n\nThe block hash ensures that if any data changes, the hash changes, breaking the chain.",
+  "difficulty": "intermediate",
+  "estimatedTime": 40,
+  "prerequisites": ["lesson-30-blocks-transactions"],
+  "codeExamples": [
+    {
+      "id": "ex-31-1-simple-hash",
+      "title": "Simple Hash Function",
+      "description": "A simplified hash demonstration (not cryptographically secure)",
+      "code": "// Note: This is a simplified example for learning\n// Real blockchains use cryptographically secure hash functions\n\nfn simple_hash(input: &str) -> u64 {\n    let mut hash: u64 = 0;\n    for byte in input.bytes() {\n        hash = hash.wrapping_mul(31).wrapping_add(byte as u64);\n    }\n    hash\n}\n\nfn main() {\n    let data1 = \"Hello, Blockchain!\";\n    let data2 = \"Hello, Blockchain?\";\n    \n    println!(\"Hash of '{}': {}\", data1, simple_hash(data1));\n    println!(\"Hash of '{}': {}\", data2, simple_hash(data2));\n    \n    // Notice: Small change = completely different hash\n}",
+      "explanation": "This demonstrates the avalanche effect - even a tiny change in input produces a completely different hash. Real blockchains use SHA-256 or similar secure hash functions.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-31-2-block-hashing",
+      "title": "Block Hashing",
+      "description": "Creating a hash for a block",
+      "code": "// Simplified block hashing\nfn hash_block(index: u64, data: &str, previous_hash: &str) -> String {\n    let combined = format!(\"{}{}{}\", index, data, previous_hash);\n    // In real implementation, use SHA-256 here\n    format!(\"hash_of_{}\", combined)\n}\n\nstruct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,\n}\n\nimpl Block {\n    fn new(index: u64, data: String, previous_hash: String) -> Self {\n        let hash = hash_block(index, &data, &previous_hash);\n        Block {\n            index,\n            data,\n            previous_hash,\n            hash,\n        }\n    }\n}\n\nfn main() {\n    let block = Block::new(\n        1,\n        String::from(\"Transaction data\"),\n        String::from(\"prev_hash\"),\n    );\n    \n    println!(\"Block hash: {}\", block.hash);\n}",
+      "explanation": "Each block's hash is calculated from all its data. If any part changes, the hash changes, making tampering detectable.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-31-1",
+      "title": "Calculate Block Hash",
+      "description": "Create a function that calculates a block's hash from its components!",
+      "starterCode": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n}\n\n// Create a function to calculate hash\n// Combine index, data, and previous_hash into a string\n// Return a hash string (simplified)\n\nfn main() {\n    let block = Block {\n        index: 1,\n        data: String::from(\"My transaction\"),\n        previous_hash: String::from(\"abc123\"),\n    };\n    \n    // Calculate and print the hash\n}",
+      "solution": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n}\n\nfn calculate_hash(block: &Block) -> String {\n    let combined = format!(\"{}{}{}\", block.index, block.data, block.previous_hash);\n    format!(\"hash_{}\", combined)\n}\n\nfn main() {\n    let block = Block {\n        index: 1,\n        data: String::from(\"My transaction\"),\n        previous_hash: String::from(\"abc123\"),\n    };\n    \n    let hash = calculate_hash(&block);\n    println!(\"Block hash: {}\", hash);\n}",
+      "hints": [
+        "Use format!() to combine strings",
+        "The hash should include all block data"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

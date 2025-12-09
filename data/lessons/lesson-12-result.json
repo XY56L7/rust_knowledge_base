@@ -1,0 +1,49 @@
+{
+  "id": "lesson-12-result",
+  "title": "Result Type",
+  "description": "Using the Result<T, E> enum for error handling.",
+  "content": "# Result Type\n\nThe **Result<T, E>** is an enum used for error handling. It has two variants: `Ok(T)` (success) and `Err(E)` (error).\n\n## Result Definition\n\n```rust\nenum Result<T, E> {\n    Ok(T),\n    Err(E),\n}\n```\n\n## Basic Usage\n\n```rust\nuse std::fs::File;\n\nlet f = File::open(\"hello.txt\");\n\nmatch f {\n    Ok(file) => println!(\"File opened\"),\n    Err(error) => println!(\"Error: {:?}\", error),\n}\n```\n\n## unwrap() and expect()\n\n```rust\nlet f = File::open(\"hello.txt\").unwrap();  // Panic if error\nlet f = File::open(\"hello.txt\").expect(\"Failed to open\");\n```\n\n## unwrap_or_else()\n\n```rust\nlet f = File::open(\"hello.txt\").unwrap_or_else(|error| {\n    panic!(\"File opening error: {:?}\", error);\n});\n```\n\n## Propagating Errors (?) Operator\n\n```rust\nfn read_username_from_file() -> Result<String, io::Error> {\n    let mut f = File::open(\"hello.txt\")?;\n    let mut s = String::new();\n    f.read_to_string(&mut s)?;\n    Ok(s)\n}\n```\n\nThe `?` operator automatically propagates the error if Err, or unwraps the Ok value.",
+  "difficulty": "intermediate",
+  "estimatedTime": 35,
+  "prerequisites": ["lesson-11-option"],
+  "codeExamples": [
+    {
+      "id": "ex-12-1-basic-result",
+      "title": "Basic Result",
+      "description": "Using Result",
+      "code": "fn divide(numerator: f64, denominator: f64) -> Result<f64, String> {\n    if denominator == 0.0 {\n        Err(String::from(\"Division by zero!\"))\n    } else {\n        Ok(numerator / denominator)\n    }\n}\n\nfn main() {\n    match divide(10.0, 2.0) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n    \n    match divide(10.0, 0.0) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "explanation": "Result allows us to explicitly handle errors. Ok contains the successful result, Err contains the error.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-12-2-unwrap",
+      "title": "Unwrap Methods",
+      "description": "Extracting Result values",
+      "code": "fn safe_divide(a: f64, b: f64) -> Result<f64, String> {\n    if b == 0.0 {\n        Err(String::from(\"Division by zero\"))\n    } else {\n        Ok(a / b)\n    }\n}\n\nfn main() {\n    // unwrap_or - default value if error\n    let result1 = safe_divide(10.0, 2.0).unwrap_or(0.0);\n    println!(\"Result: {}\", result1);\n    \n    // expect - with error message\n    let result2 = safe_divide(10.0, 2.0).expect(\"Division failed\");\n    println!(\"Result: {}\", result2);\n}",
+      "explanation": "unwrap_or safely returns a value, or the default if there's an error. expect panics if there's an error.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-12-3-question-mark",
+      "title": "? Operator",
+      "description": "Propagating errors with the ? operator",
+      "code": "fn divide(a: f64, b: f64) -> Result<f64, String> {\n    if b == 0.0 {\n        return Err(String::from(\"Division by zero\"));\n    }\n    Ok(a / b)\n}\n\nfn calculate(a: f64, b: f64, c: f64) -> Result<f64, String> {\n    let result1 = divide(a, b)?;  // ? propagates the error\n    let result2 = divide(result1, c)?;\n    Ok(result2)\n}\n\nfn main() {\n    match calculate(20.0, 2.0, 5.0) {\n        Ok(result) => println!(\"Result: {}\", result),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "explanation": "The ? operator automatically propagates the error if Result::Err, or unwraps the value if Result::Ok. This results in concise code.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-12-1",
+      "title": "Result Function",
+      "description": "Write a function that returns a Result!",
+      "starterCode": "// Write a parse_number function that converts a string to a number\n// If successful, return Ok(i32)\n// If not, return Err(String) with error message\n\nfn main() {\n    match parse_number(\"42\") {\n        Ok(num) => println!(\"Number: {}\", num),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "solution": "fn parse_number(s: &str) -> Result<i32, String> {\n    s.parse::<i32>()\n        .map_err(|_| format!(\"Cannot convert to number: {}\", s))\n}\n\nfn main() {\n    match parse_number(\"42\") {\n        Ok(num) => println!(\"Number: {}\", num),\n        Err(e) => println!(\"Error: {}\", e),\n    }\n}",
+      "hints": [
+        "Use the parse() method",
+        "map_err() helps convert the error"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}

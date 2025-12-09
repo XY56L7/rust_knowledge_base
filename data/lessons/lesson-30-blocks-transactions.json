@@ -1,0 +1,42 @@
+{
+  "id": "lesson-30-blocks-transactions",
+  "title": "Blocks and Transactions",
+  "description": "Understanding how blocks contain transactions and how transactions are structured.",
+  "content": "# Blocks and Transactions\n\nTransactions are the fundamental unit of data in a blockchain. Blocks are containers that hold multiple transactions.\n\n## Transaction Structure\n\nA transaction typically contains:\n\n- **Sender**: Who is sending\n- **Receiver**: Who is receiving\n- **Amount**: How much is being transferred\n- **Signature**: Cryptographic proof of authorization\n- **Timestamp**: When the transaction occurred\n\n## Block Structure\n\nA block contains:\n\n- **Header**: Metadata (index, timestamp, previous hash, merkle root)\n- **Transactions**: List of transactions\n- **Hash**: Cryptographic hash of the block\n\n## Transaction Example\n\n```rust\nstruct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n    signature: String,\n    timestamp: u64,\n}\n```\n\n## Block with Transactions\n\n```rust\nstruct Block {\n    index: u64,\n    timestamp: u64,\n    transactions: Vec<Transaction>,\n    previous_hash: String,\n    hash: String,\n}\n```\n\n## Transaction Validation\n\nBefore adding a transaction to a block, we must validate:\n\n1. **Signature is valid**: The sender authorized this transaction\n2. **Sufficient balance**: Sender has enough funds\n3. **No double spending**: Transaction hasn't been used before\n4. **Format is correct**: All fields are properly formatted",
+  "difficulty": "intermediate",
+  "estimatedTime": 35,
+  "prerequisites": ["lesson-29-blockchain-intro"],
+  "codeExamples": [
+    {
+      "id": "ex-30-1-transaction-structure",
+      "title": "Transaction Structure",
+      "description": "Creating and using transactions",
+      "code": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n    signature: String,\n    timestamp: u64,\n}\n\nimpl Transaction {\n    fn new(from: String, to: String, amount: u64) -> Self {\n        Transaction {\n            from,\n            to,\n            amount,\n            signature: String::from(\"pending\"),\n            timestamp: 1234567890,\n        }\n    }\n    \n    fn display(&self) {\n        println!(\"{} -> {}: {} coins\", self.from, self.to, self.amount);\n    }\n}\n\nfn main() {\n    let tx = Transaction::new(\n        String::from(\"Alice\"),\n        String::from(\"Bob\"),\n        100,\n    );\n    \n    tx.display();\n}",
+      "explanation": "Transactions represent value transfers. The signature field will be populated when the transaction is signed with the sender's private key.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-30-2-block-with-transactions",
+      "title": "Block with Transactions",
+      "description": "Creating blocks that contain transactions",
+      "code": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n}\n\nstruct Block {\n    index: u64,\n    transactions: Vec<Transaction>,\n    previous_hash: String,\n    hash: String,\n}\n\nimpl Block {\n    fn new(index: u64, transactions: Vec<Transaction>, previous_hash: String) -> Self {\n        Block {\n            index,\n            transactions,\n            previous_hash,\n            hash: String::from(\"calculated_hash\"),\n        }\n    }\n    \n    fn transaction_count(&self) -> usize {\n        self.transactions.len()\n    }\n}\n\nfn main() {\n    let transactions = vec![\n        Transaction {\n            from: String::from(\"Alice\"),\n            to: String::from(\"Bob\"),\n            amount: 50,\n        },\n        Transaction {\n            from: String::from(\"Bob\"),\n            to: String::from(\"Charlie\"),\n            amount: 25,\n        },\n    ];\n    \n    let block = Block::new(1, transactions, String::from(\"prev_hash\"));\n    println!(\"Block contains {} transactions\", block.transaction_count());\n}",
+      "explanation": "Blocks can contain multiple transactions. This allows batching multiple operations together, improving efficiency.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-30-1",
+      "title": "Create Transactions",
+      "description": "Create a block with multiple transactions!",
+      "starterCode": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n}\n\nstruct Block {\n    index: u64,\n    transactions: Vec<Transaction>,\n    previous_hash: String,\n}\n\nfn main() {\n    // Create at least 2 transactions\n    // Create a block containing these transactions\n    // Print the number of transactions in the block\n}",
+      "solution": "struct Transaction {\n    from: String,\n    to: String,\n    amount: u64,\n}\n\nstruct Block {\n    index: u64,\n    transactions: Vec<Transaction>,\n    previous_hash: String,\n}\n\nfn main() {\n    let tx1 = Transaction {\n        from: String::from(\"Alice\"),\n        to: String::from(\"Bob\"),\n        amount: 100,\n    };\n    \n    let tx2 = Transaction {\n        from: String::from(\"Bob\"),\n        to: String::from(\"Charlie\"),\n        amount: 50,\n    };\n    \n    let block = Block {\n        index: 1,\n        transactions: vec![tx1, tx2],\n        previous_hash: String::from(\"prev_hash\"),\n    };\n    \n    println!(\"Block has {} transactions\", block.transactions.len());\n}",
+      "hints": [
+        "Use vec![] to create a vector of transactions",
+        "Transactions can be created inline in the vec! macro"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

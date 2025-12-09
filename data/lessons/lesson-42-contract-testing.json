@@ -1,0 +1,43 @@
+{
+  "id": "lesson-42-contract-testing",
+  "title": "Smart Contract Testing",
+  "description": "Writing comprehensive tests for smart contracts.",
+  "content": "# Smart Contract Testing\n\nTesting is critical for smart contracts since bugs can lead to loss of funds. Rust's testing framework is excellent for contract testing.\n\n## Test Structure\n\n```rust\n#[cfg(test)]\nmod tests {\n    use super::*;\n    \n    #[test]\n    fn test_transfer() {\n        // Test transfer functionality\n    }\n}\n```\n\n## Test Categories\n\n1. **Unit Tests**: Test individual functions\n2. **Integration Tests**: Test contract interactions\n3. **Property Tests**: Test invariants\n4. **Fuzz Tests**: Test with random inputs\n\n## Example Test Suite\n\n```rust\n#[cfg(test)]\nmod tests {\n    use super::*;\n    \n    #[test]\n    fn test_initial_balance() {\n        let contract = TokenContract::new(\"Token\".to_string(), \"TKN\".to_string(), 1000);\n        assert_eq!(contract.balance_of(\"deployer\"), 1000);\n    }\n    \n    #[test]\n    fn test_transfer_success() {\n        let mut contract = TokenContract::new(\"Token\".to_string(), \"TKN\".to_string(), 1000);\n        contract.transfer(\"deployer\".to_string(), \"alice\".to_string(), 100).unwrap();\n        assert_eq!(contract.balance_of(\"alice\"), 100);\n        assert_eq!(contract.balance_of(\"deployer\"), 900);\n    }\n    \n    #[test]\n    fn test_transfer_insufficient_balance() {\n        let mut contract = TokenContract::new(\"Token\".to_string(), \"TKN\".to_string(), 100);\n        let result = contract.transfer(\"deployer\".to_string(), \"alice\".to_string(), 200);\n        assert!(result.is_err());\n    }\n}\n```\n\n## Test Best Practices\n\n- **Cover edge cases**: Zero, max values, boundaries\n- **Test failures**: Ensure errors are handled\n- **Test invariants**: Total supply should never change\n- **Test access control**: Unauthorized access should fail\n- **Integration tests**: Test with multiple contracts\n\n## Property-Based Testing\n\n```rust\nuse proptest::prelude::*;\n\nproptest! {\n    #[test]\n    fn test_transfer_invariants(amount in 0..1000u64) {\n        // Test that transfer maintains invariants\n    }\n}\n```\n\n## Gas Testing\n\nIn blockchain, test gas consumption:\n\n- **Optimize storage**: Minimize storage operations\n- **Batch operations**: Combine multiple operations\n- **Cache reads**: Avoid repeated storage reads",
+  "difficulty": "advanced",
+  "estimatedTime": 45,
+  "prerequisites": ["lesson-41-smart-contract-structure"],
+  "codeExamples": [
+    {
+      "id": "ex-42-1-unit-tests",
+      "title": "Unit Tests",
+      "description": "Writing unit tests for contracts",
+      "code": "struct TokenContract {\n    balances: std::collections::HashMap<String, u64>,\n}\n\nimpl TokenContract {\n    fn new() -> Self {\n        let mut balances = std::collections::HashMap::new();\n        balances.insert(String::from(\"deployer\"), 1000);\n        TokenContract { balances }\n    }\n    \n    fn balance_of(&self, address: &str) -> u64 {\n        self.balances.get(address).copied().unwrap_or(0)\n    }\n    \n    fn transfer(&mut self, from: String, to: String, amount: u64) -> Result<(), String> {\n        let balance = self.balance_of(&from);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        *self.balances.entry(from).or_insert(0) -= amount;\n        *self.balances.entry(to).or_insert(0) += amount;\n        Ok(())\n    }\n}\n\n#[cfg(test)]\nmod tests {\n    use super::*;\n    \n    #[test]\n    fn test_initial_balance() {\n        let contract = TokenContract::new();\n        assert_eq!(contract.balance_of(\"deployer\"), 1000);\n    }\n    \n    #[test]\n    fn test_transfer() {\n        let mut contract = TokenContract::new();\n        contract.transfer(\n            String::from(\"deployer\"),\n            String::from(\"alice\"),\n            100,\n        ).unwrap();\n        \n        assert_eq!(contract.balance_of(\"alice\"), 100);\n        assert_eq!(contract.balance_of(\"deployer\"), 900);\n    }\n    \n    #[test]\n    fn test_insufficient_balance() {\n        let mut contract = TokenContract::new();\n        let result = contract.transfer(\n            String::from(\"deployer\"),\n            String::from(\"alice\"),\n            2000,\n        );\n        \n        assert!(result.is_err());\n    }\n}\n\nfn main() {\n    println!(\"Run: cargo test\");\n}",
+      "explanation": "Unit tests verify individual functions work correctly. They should test both success and failure cases to ensure robust contracts.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-42-2-invariants",
+      "title": "Testing Invariants",
+      "description": "Testing that invariants are maintained",
+      "code": "struct TokenContract {\n    total_supply: u64,\n    balances: std::collections::HashMap<String, u64>,\n}\n\nimpl TokenContract {\n    fn new(total_supply: u64) -> Self {\n        let mut balances = std::collections::HashMap::new();\n        balances.insert(String::from(\"deployer\"), total_supply);\n        TokenContract { total_supply, balances }\n    }\n    \n    fn total_balance(&self) -> u64 {\n        self.balances.values().sum()\n    }\n    \n    fn transfer(&mut self, from: String, to: String, amount: u64) -> Result<(), String> {\n        let balance = self.balances.get(&from).copied().unwrap_or(0);\n        if balance < amount {\n            return Err(String::from(\"Insufficient balance\"));\n        }\n        \n        *self.balances.entry(from).or_insert(0) -= amount;\n        *self.balances.entry(to).or_insert(0) += amount;\n        Ok(())\n    }\n}\n\n#[cfg(test)]\nmod tests {\n    use super::*;\n    \n    #[test]\n    fn test_total_supply_invariant() {\n        let mut contract = TokenContract::new(1000);\n        \n        // Invariant: total balance should always equal total supply\n        assert_eq!(contract.total_balance(), contract.total_supply);\n        \n        contract.transfer(\n            String::from(\"deployer\"),\n            String::from(\"alice\"),\n            100,\n        ).unwrap();\n        \n        // Invariant should still hold after transfer\n        assert_eq!(contract.total_balance(), contract.total_supply);\n    }\n}\n\nfn main() {\n    println!(\"Test invariants with: cargo test\");\n}",
+      "explanation": "Invariant testing ensures that important properties (like total supply) are always maintained, even after operations.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-42-1",
+      "title": "Write Tests",
+      "description": "Write tests for a simple contract!",
+      "starterCode": "struct Contract {\n    value: u64,\n}\n\nimpl Contract {\n    fn new() -> Self {\n        Contract { value: 0 }\n    }\n    \n    fn set_value(&mut self, v: u64) {\n        self.value = v;\n    }\n    \n    fn get_value(&self) -> u64 {\n        self.value\n    }\n}\n\n// Write tests:\n// 1. Test initial value is 0\n// 2. Test set_value works\n// 3. Test get_value returns correct value\n\nfn main() {\n    println!(\"Run tests with: cargo test\");\n}",
+      "solution": "struct Contract {\n    value: u64,\n}\n\nimpl Contract {\n    fn new() -> Self {\n        Contract { value: 0 }\n    }\n    \n    fn set_value(&mut self, v: u64) {\n        self.value = v;\n    }\n    \n    fn get_value(&self) -> u64 {\n        self.value\n    }\n}\n\n#[cfg(test)]\nmod tests {\n    use super::*;\n    \n    #[test]\n    fn test_initial_value() {\n        let contract = Contract::new();\n        assert_eq!(contract.get_value(), 0);\n    }\n    \n    #[test]\n    fn test_set_and_get() {\n        let mut contract = Contract::new();\n        contract.set_value(42);\n        assert_eq!(contract.get_value(), 42);\n    }\n}\n\nfn main() {\n    println!(\"Run tests with: cargo test\");\n}",
+      "hints": [
+        "Use #[cfg(test)] for test module",
+        "Use #[test] for test functions",
+        "Use assert_eq! for assertions"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

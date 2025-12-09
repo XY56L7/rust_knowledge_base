@@ -1,0 +1,43 @@
+{
+  "id": "lesson-40-wasm-basics",
+  "title": "WebAssembly (WASM) Basics",
+  "description": "Understanding WebAssembly for smart contract execution.",
+  "content": "# WebAssembly (WASM) Basics\n\n**WebAssembly** is a binary instruction format that allows running code at near-native speed. Many blockchains use WASM for smart contract execution.\n\n## Why WASM for Smart Contracts?\n\n- **Performance**: Near-native execution speed\n- **Security**: Sandboxed execution environment\n- **Portability**: Runs on any platform\n- **Language agnostic**: Write in Rust, C++, etc.\n- **Deterministic**: Same input = same output\n\n## WASM in Blockchain\n\n- **Polkadot/Substrate**: Uses WASM for runtime\n- **NEAR Protocol**: Smart contracts compile to WASM\n- **Ethereum 2.0**: eWASM for contract execution\n- **Cosmos**: Supports WASM contracts\n\n## Compiling Rust to WASM\n\n```bash\n# Install wasm target\nrustup target add wasm32-unknown-unknown\n\n# Compile to WASM\ncargo build --target wasm32-unknown-unknown --release\n```\n\n## WASM Contract Structure\n\n```rust\n// Cargo.toml\n[package]\nname = \"my_contract\"\nversion = \"0.1.0\"\n\n[lib]\ncrate-type = [\"cdylib\"]\n\n[dependencies]\n# Contract framework dependencies\n```\n\n## Contract Entry Points\n\n```rust\n#[no_mangle]\npub extern \"C\" fn init() {\n    // Contract initialization\n}\n\n#[no_mangle]\npub extern \"C\" fn call() {\n    // Contract execution\n}\n```\n\n## WASM Execution\n\n1. **Deploy**: Contract code uploaded to blockchain\n2. **Instantiate**: Create contract instance\n3. **Execute**: Call contract functions\n4. **Query**: Read contract state (no state change)\n\n## Advantages\n\n- **Fast**: Compiled code runs efficiently\n- **Safe**: Sandboxed, can't access host system\n- **Deterministic**: Critical for consensus\n- **Multi-language**: Not limited to one language",
+  "difficulty": "advanced",
+  "estimatedTime": 50,
+  "prerequisites": ["lesson-19-crates"],
+  "codeExamples": [
+    {
+      "id": "ex-40-1-wasm-structure",
+      "title": "WASM Contract Structure",
+      "description": "Basic WASM contract structure",
+      "code": "// Simplified WASM contract structure\n// Real contracts use frameworks like ink! or CosmWasm\n\n// Contract state\nstruct ContractState {\n    owner: String,\n    value: u64,\n}\n\n// Contract initialization\n#[no_mangle]\npub extern \"C\" fn init() -> u32 {\n    // Initialize contract\n    // Return success code\n    0\n}\n\n// Contract execution\n#[no_mangle]\npub extern \"C\" fn execute() -> u32 {\n    // Execute contract logic\n    // Return success code\n    0\n}\n\n// Contract query (read-only)\n#[no_mangle]\npub extern \"C\" fn query() -> u64 {\n    // Return contract state\n    100\n}\n\nfn main() {\n    println!(\"WASM contract structure\");\n    println!(\"Init: {}\", init());\n    println!(\"Execute: {}\", execute());\n    println!(\"Query: {}\", query());\n}",
+      "explanation": "WASM contracts have entry points for initialization, execution, and querying. The #[no_mangle] attribute ensures function names are preserved for the WASM interface.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-40-2-wasm-benefits",
+      "title": "WASM Benefits",
+      "description": "Why WASM is ideal for smart contracts",
+      "code": "// WASM provides several benefits for blockchain:\n\n// 1. Performance: Compiled code runs fast\nfn demonstrate_performance() {\n    println!(\"WASM executes at near-native speed\");\n}\n\n// 2. Security: Sandboxed execution\nfn demonstrate_security() {\n    println!(\"WASM runs in isolated sandbox\");\n    println!(\"Cannot access host system directly\");\n}\n\n// 3. Deterministic: Same input = same output\nfn demonstrate_determinism(input: u64) -> u64 {\n    input * 2  // Always same result for same input\n}\n\n// 4. Portability: Runs anywhere\nfn demonstrate_portability() {\n    println!(\"WASM runs on any platform\");\n    println!(\"No platform-specific code needed\");\n}\n\nfn main() {\n    demonstrate_performance();\n    demonstrate_security();\n    println!(\"Deterministic: {}\", demonstrate_determinism(5));\n    demonstrate_portability();\n}",
+      "explanation": "WASM's performance, security, determinism, and portability make it ideal for smart contract execution in blockchain environments.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-40-1",
+      "title": "WASM Entry Point",
+      "description": "Create a simple WASM contract entry point!",
+      "starterCode": "// Create a simple contract function\n// Use #[no_mangle] and extern \"C\"\n// Function should return a u32\n\nfn main() {\n    // Call the contract function\n}",
+      "solution": "#[no_mangle]\npub extern \"C\" fn contract_function() -> u32 {\n    // Contract logic here\n    0  // Success\n}\n\nfn main() {\n    println!(\"Contract result: {}\", contract_function());\n}",
+      "hints": [
+        "Use #[no_mangle] attribute",
+        "Use extern \"C\" for C-compatible interface",
+        "Return u32 for status code"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

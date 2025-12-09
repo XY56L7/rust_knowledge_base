@@ -1,0 +1,42 @@
+{
+  "id": "lesson-44-message-protocols",
+  "title": "Message Protocols",
+  "description": "Designing and implementing message protocols for blockchain communication.",
+  "content": "# Message Protocols\n\nBlockchain nodes need standardized protocols to communicate. Let's design a message protocol.\n\n## Protocol Design Principles\n\n1. **Versioning**: Support multiple protocol versions\n2. **Extensibility**: Easy to add new message types\n3. **Efficiency**: Minimize message size\n4. **Reliability**: Handle errors gracefully\n5. **Security**: Authenticate messages\n\n## Message Format\n\n```rust\nstruct Message {\n    version: u8,\n    message_type: MessageType,\n    payload: Vec<u8>,\n    signature: Option<Vec<u8>>,\n}\n\nenum MessageType {\n    Handshake = 0,\n    Block = 1,\n    Transaction = 2,\n    GetBlocks = 3,\n    Blocks = 4,\n}\n```\n\n## Serialization\n\nMessages need to be serialized for network transmission:\n\n```rust\n// Using serde for serialization\nuse serde::{Serialize, Deserialize};\n\n#[derive(Serialize, Deserialize)]\nstruct BlockMessage {\n    block: Block,\n    height: u64,\n}\n```\n\n## Protocol Handshake\n\n```rust\nfn perform_handshake(node_id: String, version: u32) -> Message {\n    Message {\n        version: 1,\n        message_type: MessageType::Handshake,\n        payload: serialize_handshake(node_id, version),\n        signature: None,\n    }\n}\n```\n\n## Message Validation\n\n```rust\nfn validate_message(msg: &Message) -> bool {\n    // Check version is supported\n    if msg.version > MAX_VERSION {\n        return false;\n    }\n    \n    // Validate signature if present\n    if let Some(sig) = &msg.signature {\n        if !verify_signature(msg, sig) {\n            return false;\n        }\n    }\n    \n    true\n}\n```\n\n## Common Protocols\n\n- **Bitcoin Protocol**: BIP-based message format\n- **Ethereum Wire Protocol**: DevP2P protocol\n- **LibP2P**: Modular P2P networking stack\n- **Custom**: Many blockchains use custom protocols",
+  "difficulty": "advanced",
+  "estimatedTime": 50,
+  "prerequisites": ["lesson-43-p2p-networking"],
+  "codeExamples": [
+    {
+      "id": "ex-44-1-message-structure",
+      "title": "Message Structure",
+      "description": "Structured message format",
+      "code": "enum MessageType {\n    Handshake,\n    Block,\n    Transaction,\n    GetBlocks,\n}\n\nstruct Message {\n    version: u8,\n    message_type: MessageType,\n    payload: String,\n}\n\nimpl Message {\n    fn new(message_type: MessageType, payload: String) -> Self {\n        Message {\n            version: 1,\n            message_type,\n            payload,\n        }\n    }\n    \n    fn to_string(&self) -> String {\n        let type_str = match self.message_type {\n            MessageType::Handshake => \"Handshake\",\n            MessageType::Block => \"Block\",\n            MessageType::Transaction => \"Transaction\",\n            MessageType::GetBlocks => \"GetBlocks\",\n        };\n        format!(\"v{} {}: {}\", self.version, type_str, self.payload)\n    }\n}\n\nfn main() {\n    let msg = Message::new(\n        MessageType::Block,\n        String::from(\"block_data_123\"),\n    );\n    \n    println!(\"{}\", msg.to_string());\n}",
+      "explanation": "A well-structured message format includes version, type, and payload. This allows nodes to understand and process messages correctly.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-44-2-protocol-handler",
+      "title": "Protocol Handler",
+      "description": "Handling different message types",
+      "code": "enum MessageType {\n    Handshake { node_id: String },\n    Block { block_hash: String },\n    Transaction { tx_id: String },\n}\n\nstruct ProtocolHandler;\n\nimpl ProtocolHandler {\n    fn handle_message(&self, msg: MessageType) {\n        match msg {\n            MessageType::Handshake { node_id } => {\n                println!(\"Handshake from: {}\", node_id);\n                // Establish connection\n            },\n            MessageType::Block { block_hash } => {\n                println!(\"Received block: {}\", block_hash);\n                // Process block\n            },\n            MessageType::Transaction { tx_id } => {\n                println!(\"Received transaction: {}\", tx_id);\n                // Process transaction\n            },\n        }\n    }\n}\n\nfn main() {\n    let handler = ProtocolHandler;\n    \n    handler.handle_message(MessageType::Handshake {\n        node_id: String::from(\"node1\"),\n    });\n    \n    handler.handle_message(MessageType::Block {\n        block_hash: String::from(\"abc123\"),\n    });\n}",
+      "explanation": "A protocol handler processes different message types. Pattern matching in Rust makes this clean and type-safe.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-44-1",
+      "title": "Create Message Protocol",
+      "description": "Create a message structure with different types!",
+      "starterCode": "enum MessageType {\n    Ping,\n    Pong,\n    Data { content: String },\n}\n\nstruct Message {\n    message_type: MessageType,\n}\n\n// Implement a handle() method that processes each message type\n\nfn main() {\n    let msg = Message {\n        message_type: MessageType::Ping,\n    };\n    // Handle the message\n}",
+      "solution": "enum MessageType {\n    Ping,\n    Pong,\n    Data { content: String },\n}\n\nstruct Message {\n    message_type: MessageType,\n}\n\nimpl Message {\n    fn handle(&self) {\n        match &self.message_type {\n            MessageType::Ping => println!(\"Received ping\"),\n            MessageType::Pong => println!(\"Received pong\"),\n            MessageType::Data { content } => println!(\"Data: {}\", content),\n        }\n    }\n}\n\nfn main() {\n    let msg = Message {\n        message_type: MessageType::Ping,\n    };\n    msg.handle();\n}",
+      "hints": [
+        "Use match to handle different message types",
+        "Use &self for immutable reference"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

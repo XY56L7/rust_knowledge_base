@@ -1,0 +1,43 @@
+{
+  "id": "lesson-36-elliptic-curves",
+  "title": "Elliptic Curve Cryptography",
+  "description": "Understanding elliptic curves used in blockchain cryptography.",
+  "content": "# Elliptic Curve Cryptography\n\n**Elliptic Curve Cryptography (ECC)** is the foundation of blockchain security. It provides strong security with smaller key sizes than RSA.\n\n## Why Elliptic Curves?\n\n- **Smaller keys**: 256-bit ECC = 3072-bit RSA security\n- **Faster operations**: More efficient than RSA\n- **Lower resource usage**: Important for blockchain nodes\n- **Industry standard**: Used by Bitcoin, Ethereum, and most blockchains\n\n## secp256k1 Curve\n\nBitcoin and Ethereum use the **secp256k1** curve:\n\n- Named after Standards for Efficient Cryptography\n- 256-bit security level\n- Well-tested and widely used\n\n## Key Operations\n\n1. **Key Generation**: Random point on curve = private key\n2. **Public Key Derivation**: Public key = private_key × generator_point\n3. **Signing**: Create signature using private key\n4. **Verification**: Verify signature using public key\n\n## Using ECC in Rust\n\n```rust\n// Add to Cargo.toml: secp256k1 = \"0.28\"\n// use secp256k1::{Secp256k1, SecretKey, PublicKey, Message, Signature};\n\n// Generate keypair\n// let secp = Secp256k1::new();\n// let (secret_key, public_key) = secp.generate_keypair(&mut thread_rng());\n```\n\n## Curve Properties\n\n- **Discrete Logarithm Problem**: Hard to find private key from public key\n- **Point Addition**: Special addition operation on curve\n- **Scalar Multiplication**: Fast way to compute public key\n\n## Alternative Curves\n\n- **Ed25519**: Used by some newer blockchains (Solana)\n- **P-256**: NIST standard curve\n- **secp256k1**: Most common in blockchain\n\n## Security Considerations\n\n- **Random number generation**: Must be cryptographically secure\n- **Key storage**: Private keys must be encrypted\n- **Side-channel attacks**: Timing attacks can leak keys\n- **Key derivation**: Use proper key derivation functions",
+  "difficulty": "advanced",
+  "estimatedTime": 50,
+  "prerequisites": ["lesson-35-public-key-crypto"],
+  "codeExamples": [
+    {
+      "id": "ex-36-1-ecc-concepts",
+      "title": "ECC Concepts",
+      "description": "Understanding elliptic curve concepts",
+      "code": "// Simplified representation of ECC concepts\n// Real implementation uses secp256k1 crate\n\nstruct Point {\n    x: u64,\n    y: u64,\n}\n\nstruct PrivateKey {\n    value: u64,  // Scalar value\n}\n\nstruct PublicKey {\n    point: Point,  // Point on curve\n}\n\n// Simplified key generation\nfn generate_keypair() -> (PrivateKey, PublicKey) {\n    // In production: use cryptographically secure random\n    let private_key = PrivateKey { value: 12345 };\n    \n    // Public key = private_key × generator_point\n    // Simplified: just create a point\n    let public_key = PublicKey {\n        point: Point { x: 67890, y: 11111 },\n    };\n    \n    (private_key, public_key)\n}\n\nfn main() {\n    let (private_key, public_key) = generate_keypair();\n    println!(\"Private key (secret!): {}\", private_key.value);\n    println!(\"Public key point: ({}, {})\", public_key.point.x, public_key.point.y);\n}",
+      "explanation": "Elliptic curves use points on a curve. The private key is a scalar (number), and the public key is a point derived by multiplying the generator point by the private key.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-36-2-curve-security",
+      "title": "Curve Security",
+      "description": "Why elliptic curves are secure",
+      "code": "// Conceptual explanation of ECC security\n\n// The security of ECC relies on:\n// 1. Discrete Logarithm Problem: Given public key (point),\n//    finding private key (scalar) is computationally infeasible\n// 2. Small key size: 256 bits provides strong security\n// 3. Fast operations: Efficient for blockchain use\n\nstruct ECCKeyPair {\n    private_key: String,  // 256-bit scalar (secret)\n    public_key: String,   // Point on curve (public)\n}\n\nfn demonstrate_security() {\n    // Even if attacker knows:\n    let public_key = \"public_point_on_curve\";\n    \n    // They cannot easily find:\n    let private_key = \"secret_scalar_value\";\n    \n    // Because: public_key = private_key × generator_point\n    // Finding private_key from public_key requires solving\n    // the discrete logarithm problem, which is computationally\n    // infeasible for large numbers\n    \n    println!(\"ECC security: Finding private key from public key is infeasible\");\n}\n\nfn main() {\n    demonstrate_security();\n}",
+      "explanation": "ECC security comes from the mathematical difficulty of the discrete logarithm problem. Even with the public key, finding the private key requires solving a computationally infeasible problem.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-36-1",
+      "title": "Key Pair Structure",
+      "description": "Create a structure representing an ECC key pair!",
+      "starterCode": "// Create structures for PrivateKey and PublicKey\n// PrivateKey should have a scalar value\n// PublicKey should have a point (x, y coordinates)\n\nfn main() {\n    // Create a key pair\n    // Display the public key point\n}",
+      "solution": "struct Point {\n    x: u64,\n    y: u64,\n}\n\nstruct PrivateKey {\n    scalar: u64,\n}\n\nstruct PublicKey {\n    point: Point,\n}\n\nstruct KeyPair {\n    private: PrivateKey,\n    public: PublicKey,\n}\n\nfn main() {\n    let keypair = KeyPair {\n        private: PrivateKey { scalar: 12345 },\n        public: PublicKey {\n            point: Point { x: 67890, y: 11111 },\n        },\n    };\n    \n    println!(\"Public key point: ({}, {})\", \n             keypair.public.point.x, \n             keypair.public.point.y);\n}",
+      "hints": [
+        "Create Point struct with x and y coordinates",
+        "PrivateKey contains the secret scalar",
+        "PublicKey contains the public point"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

@@ -1,0 +1,42 @@
+{
+  "id": "lesson-45-network-sync",
+  "title": "Network Synchronization",
+  "description": "Synchronizing blockchain state across network nodes.",
+  "content": "# Network Synchronization\n\n**Network sync** ensures all nodes have the same blockchain state. New nodes need to download and verify the entire blockchain.\n\n## Sync Process\n\n1. **Initial Handshake**: Connect to peers\n2. **Get Best Block**: Find highest block height\n3. **Request Blocks**: Download blocks in batches\n4. **Validate Blocks**: Verify each block\n5. **Update State**: Apply blocks to local state\n6. **Catch Up**: Continue until synced\n\n## Sync Strategies\n\n### Full Sync\n\nDownload and validate every block:\n\n```rust\nfn full_sync(node: &mut Node, target_height: u64) {\n    let mut current_height = node.blockchain.height();\n    \n    while current_height < target_height {\n        let blocks = request_blocks(current_height, 100);\n        for block in blocks {\n            if validate_block(&block) {\n                node.blockchain.add_block(block);\n                current_height += 1;\n            }\n        }\n    }\n}\n```\n\n### Fast Sync\n\nDownload block headers first, then bodies:\n\n- Faster initial sync\n- Verify headers first\n- Download bodies in parallel\n\n### Light Sync\n\nOnly download block headers:\n\n- For light clients\n- Verify headers only\n- Request full blocks when needed\n\n## State Sync\n\n```rust\nstruct SyncState {\n    current_height: u64,\n    target_height: u64,\n    is_syncing: bool,\n    blocks_downloaded: u64,\n}\n\nimpl SyncState {\n    fn progress(&self) -> f64 {\n        if self.target_height == 0 {\n            return 0.0;\n        }\n        (self.current_height as f64 / self.target_height as f64) * 100.0\n    }\n}\n```\n\n## Fork Resolution During Sync\n\n- **Multiple chains**: Request from multiple peers\n- **Compare**: Find common ancestor\n- **Choose**: Select longest valid chain\n- **Reorganize**: Switch to better chain if found\n\n## Optimization\n\n- **Parallel downloads**: Download from multiple peers\n- **Batch requests**: Request multiple blocks at once\n- **Caching**: Cache verified blocks\n- **Checkpointing**: Trust checkpoints for faster sync",
+  "difficulty": "advanced",
+  "estimatedTime": 55,
+  "prerequisites": ["lesson-44-message-protocols"],
+  "codeExamples": [
+    {
+      "id": "ex-45-1-sync-state",
+      "title": "Sync State",
+      "description": "Tracking synchronization progress",
+      "code": "struct SyncState {\n    current_height: u64,\n    target_height: u64,\n    is_syncing: bool,\n}\n\nimpl SyncState {\n    fn new() -> Self {\n        SyncState {\n            current_height: 0,\n            target_height: 0,\n            is_syncing: false,\n        }\n    }\n    \n    fn start_sync(&mut self, target: u64) {\n        self.target_height = target;\n        self.is_syncing = true;\n        println!(\"Starting sync to height {}\", target);\n    }\n    \n    fn update_progress(&mut self, new_height: u64) {\n        self.current_height = new_height;\n        \n        if self.current_height >= self.target_height {\n            self.is_syncing = false;\n            println!(\"Sync complete!\");\n        } else {\n            let progress = (self.current_height as f64 / self.target_height as f64) * 100.0;\n            println!(\"Sync progress: {:.1}% ({}/{})\", \n                    progress, self.current_height, self.target_height);\n        }\n    }\n    \n    fn is_complete(&self) -> bool {\n        !self.is_syncing && self.current_height >= self.target_height\n    }\n}\n\nfn main() {\n    let mut sync = SyncState::new();\n    sync.start_sync(1000);\n    \n    // Simulate sync progress\n    sync.update_progress(250);\n    sync.update_progress(500);\n    sync.update_progress(750);\n    sync.update_progress(1000);\n    \n    println!(\"Sync complete: {}\", sync.is_complete());\n}",
+      "explanation": "Sync state tracks the synchronization progress. It monitors current height, target height, and calculates progress percentage.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-45-2-block-request",
+      "title": "Block Request",
+      "description": "Requesting blocks from peers",
+      "code": "struct BlockRequest {\n    from_height: u64,\n    count: u64,\n}\n\nstruct SyncManager {\n    current_height: u64,\n    target_height: u64,\n}\n\nimpl SyncManager {\n    fn new() -> Self {\n        SyncManager {\n            current_height: 0,\n            target_height: 0,\n        }\n    }\n    \n    fn request_blocks(&self, batch_size: u64) -> BlockRequest {\n        let remaining = self.target_height - self.current_height;\n        let count = remaining.min(batch_size);\n        \n        BlockRequest {\n            from_height: self.current_height + 1,\n            count,\n        }\n    }\n    \n    fn process_blocks(&mut self, blocks_received: u64) {\n        self.current_height += blocks_received;\n        println!(\"Processed {} blocks. Current height: {}\", \n                blocks_received, self.current_height);\n    }\n}\n\nfn main() {\n    let mut manager = SyncManager {\n        current_height: 100,\n        target_height: 1000,\n    };\n    \n    let request = manager.request_blocks(100);\n    println!(\"Requesting {} blocks from height {}\", \n            request.count, request.from_height);\n    \n    manager.process_blocks(100);\n}",
+      "explanation": "Block requests are made in batches for efficiency. The sync manager tracks what blocks are needed and requests them from peers.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-45-1",
+      "title": "Sync Progress",
+      "description": "Create a sync manager that tracks progress!",
+      "starterCode": "struct SyncManager {\n    current: u64,\n    target: u64,\n}\n\n// Implement new(), update_progress(), and get_progress_percentage()\n\nfn main() {\n    let mut sync = SyncManager::new();\n    sync.target = 1000;\n    sync.update_progress(500);\n    println!(\"Progress: {}%\", sync.get_progress_percentage());\n}",
+      "solution": "struct SyncManager {\n    current: u64,\n    target: u64,\n}\n\nimpl SyncManager {\n    fn new() -> Self {\n        SyncManager { current: 0, target: 0 }\n    }\n    \n    fn update_progress(&mut self, new_current: u64) {\n        self.current = new_current;\n    }\n    \n    fn get_progress_percentage(&self) -> f64 {\n        if self.target == 0 {\n            return 0.0;\n        }\n        (self.current as f64 / self.target as f64) * 100.0\n    }\n}\n\nfn main() {\n    let mut sync = SyncManager::new();\n    sync.target = 1000;\n    sync.update_progress(500);\n    println!(\"Progress: {:.1}%\", sync.get_progress_percentage());\n}",
+      "hints": [
+        "Calculate percentage as (current / target) * 100",
+        "Handle division by zero case"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

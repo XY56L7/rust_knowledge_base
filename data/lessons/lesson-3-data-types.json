@@ -1,0 +1,49 @@
+{
+  "id": "lesson-3-data-types",
+  "title": "Data Types",
+  "description": "Get familiar with Rust's basic and compound data types.",
+  "content": "# Data Types\n\nRust is a strongly typed language, meaning that every value has a specific type. The compiler performs type checking to ensure code correctness.\n\n## Basic Types\n\n### Integers\n\n```rust\nlet x: i32 = 42;        // 32-bit signed integer\nlet y: u64 = 100;       // 64-bit unsigned integer\nlet z: isize = -10;     // architecture-dependent size\n```\n\n### Floating Point Numbers\n\n```rust\nlet x: f32 = 3.14;      // 32-bit floating point\nlet y: f64 = 2.718;     // 64-bit floating point (default)\n```\n\n### Boolean\n\n```rust\nlet is_rust_awesome: bool = true;\nlet is_easy: bool = false;\n```\n\n### Characters\n\n```rust\nlet c: char = 'z';      // Unicode character\nlet emoji: char = '🦀';\n```\n\n## Compound Types\n\n### Tuple\n\n```rust\nlet tup: (i32, f64, bool) = (500, 6.4, true);\nlet (x, y, z) = tup;     // Destructuring\n```\n\n### Array\n\n```rust\nlet arr: [i32; 5] = [1, 2, 3, 4, 5];\nlet first = arr[0];\n```\n\n## Type Inference\n\nRust can often infer the type:\n\n```rust\nlet x = 42;             // i32 (default)\nlet y = 3.14;           // f64 (default)\n```\n\n## Blockchain Data Types\n\nIn blockchain development, we commonly use:\n\n- **u64/u128**: For token amounts and balances (no negative values)\n- **String**: For addresses (e.g., \"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb\")\n- **[u8; 32]**: For 256-bit hashes (32 bytes)\n- **bool**: For validation flags and status\n\n```rust\nlet balance: u64 = 1_000_000_000;  // Token balance (wei, satoshi, etc.)\nlet address: String = String::from(\"0x...\");  // Blockchain address\nlet block_hash: [u8; 32] = [0; 32];  // 256-bit hash\nlet is_valid: bool = true;  // Transaction validity\n```",
+  "difficulty": "beginner",
+  "estimatedTime": 25,
+  "prerequisites": ["lesson-2-variables"],
+  "codeExamples": [
+    {
+      "id": "ex-3-1-integers",
+      "title": "Integers",
+      "description": "Using different integer types",
+      "code": "fn main() {\n    let small: i8 = -128;\n    let medium: i32 = 1_000_000;\n    let large: i64 = 9_223_372_036_854_775_807;\n    \n    println!(\"Small: {}\", small);\n    println!(\"Medium: {}\", medium);\n    println!(\"Large: {}\", large);\n}",
+      "explanation": "Rust offers different sized integer types. `i8` is 8-bit, `i32` is 32-bit, and `i64` is 64-bit signed integer.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-3-2-tuples",
+      "title": "Using Tuples",
+      "description": "Creating and using tuples",
+      "code": "fn main() {\n    let person: (String, i32, bool) = (\n        String::from(\"John\"),\n        25,\n        true\n    );\n    \n    println!(\"Name: {}\", person.0);\n    println!(\"Age: {}\", person.1);\n    println!(\"Active: {}\", person.2);\n    \n    // Destructuring\n    let (name, age, active) = person;\n    println!(\"{} years old, active: {}\", age, active);\n}",
+      "explanation": "A tuple allows us to package different types of values together. We can access elements by index (0, 1, 2...) or by destructuring.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-3-3-blockchain-types",
+      "title": "Blockchain Data Types",
+      "description": "Common data types in blockchain development",
+      "code": "fn main() {\n    // Token amounts use u64 or u128 (no negative balances)\n    let balance: u64 = 1_000_000_000;  // 1 billion tokens (in smallest unit)\n    let fee: u64 = 21_000;  // Transaction fee\n    \n    // Addresses are strings\n    let sender: String = String::from(\"0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb\");\n    let receiver: String = String::from(\"0x8ba1f109551bD432803012645Hac136c22C9e\");\n    \n    // Block numbers and heights use u64\n    let block_height: u64 = 18_500_000;\n    let block_number: u64 = 18_500_001;\n    \n    // Validation flags use bool\n    let is_valid: bool = true;\n    let is_confirmed: bool = false;\n    \n    println!(\"Balance: {} tokens\", balance);\n    println!(\"From: {}\", sender);\n    println!(\"To: {}\", receiver);\n    println!(\"Block height: {}\", block_height);\n    println!(\"Valid: {}, Confirmed: {}\", is_valid, is_confirmed);\n}",
+      "explanation": "Blockchain applications use specific data types: u64/u128 for amounts (no negatives), String for addresses, and bool for validation. This ensures type safety and prevents errors.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-3-1",
+      "title": "Practicing Types",
+      "description": "Create variables of different types and print their values!",
+      "starterCode": "fn main() {\n    // Create an i32 type variable\n    // Create an f64 type variable\n    // Create a bool type variable\n    // Create a char type variable\n    // Print all of them\n}",
+      "solution": "fn main() {\n    let number: i32 = 42;\n    let float: f64 = 3.14;\n    let boolean: bool = true;\n    let character: char = 'R';\n    \n    println!(\"Number: {}\", number);\n    println!(\"Float: {}\", float);\n    println!(\"Boolean: {}\", boolean);\n    println!(\"Character: {}\", character);\n}",
+      "hints": [
+        "Use type annotations",
+        "You can print values with the println! macro"
+      ],
+      "difficulty": "easy"
+    }
+  ]
+}

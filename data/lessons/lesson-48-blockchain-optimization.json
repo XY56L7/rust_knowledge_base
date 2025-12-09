@@ -1,0 +1,42 @@
+{
+  "id": "lesson-48-blockchain-optimization",
+  "title": "Blockchain Optimization",
+  "description": "Advanced optimization techniques for high-performance blockchain systems.",
+  "content": "# Blockchain Optimization\n\nOptimizing blockchain systems requires balancing security, decentralization, and performance. Let's explore key optimization techniques.\n\n## Performance Metrics\n\n- **Throughput**: Transactions per second (TPS)\n- **Latency**: Time to finality\n- **Storage**: Blockchain size growth\n- **Bandwidth**: Network data usage\n\n## Optimization Strategies\n\n### 1. Batch Processing\n\nProcess multiple transactions together:\n\n```rust\nfn process_batch(transactions: Vec<Transaction>) -> Vec<Result<(), String>> {\n    transactions.par_iter()  // Parallel processing\n        .map(|tx| process_transaction(tx))\n        .collect()\n}\n```\n\n### 2. Parallel Validation\n\nValidate blocks/transactions in parallel:\n\n```rust\nuse rayon::prelude::*;\n\nfn validate_parallel(blocks: Vec<Block>) -> Vec<bool> {\n    blocks.par_iter()\n        .map(|block| validate_block(block))\n        .collect()\n}\n```\n\n### 3. State Pruning\n\nRemove old state data:\n\n- **Archive nodes**: Keep all history\n- **Full nodes**: Keep recent state\n- **Light nodes**: Keep minimal state\n\n### 4. Compression\n\nCompress blockchain data:\n\n- **Block compression**: Compress block data\n- **State compression**: Compress state trees\n- **Network compression**: Compress P2P messages\n\n### 5. Caching\n\nCache frequently accessed data:\n\n```rust\nstruct Cache {\n    recent_blocks: LRUCache<u64, Block>,\n    account_cache: HashMap<String, Account>,\n    tx_cache: HashMap<String, Transaction>,\n}\n```\n\n### 6. Database Optimization\n\n- **Indexing**: Index by height, hash, address\n- **Compaction**: Regular database compaction\n- **SSD storage**: Use fast storage for hot data\n\n## Layer 2 Solutions\n\n- **State channels**: Off-chain transactions\n- **Sidechains**: Separate chains with bridges\n- **Rollups**: Batch transactions off-chain\n\n## Sharding\n\nSplit blockchain into shards:\n\n- **Horizontal scaling**: More shards = more capacity\n- **Cross-shard communication**: Coordinate between shards\n- **State sharding**: Distribute state across shards",
+  "difficulty": "advanced",
+  "estimatedTime": 55,
+  "prerequisites": ["lesson-47-transaction-pool"],
+  "codeExamples": [
+    {
+      "id": "ex-48-1-batch-processing",
+      "title": "Batch Processing",
+      "description": "Processing transactions in batches",
+      "code": "struct Transaction {\n    id: String,\n    amount: u64,\n}\n\nfn process_transaction(tx: &Transaction) -> Result<(), String> {\n    // Simulate processing\n    if tx.amount > 0 {\n        Ok(())\n    } else {\n        Err(String::from(\"Invalid amount\"))\n    }\n}\n\nfn process_batch(transactions: Vec<Transaction>) -> usize {\n    let mut success_count = 0;\n    \n    for tx in transactions {\n        if process_transaction(&tx).is_ok() {\n            success_count += 1;\n        }\n    }\n    \n    success_count\n}\n\nfn main() {\n    let txs = vec![\n        Transaction { id: String::from(\"tx1\"), amount: 100 },\n        Transaction { id: String::from(\"tx2\"), amount: 200 },\n        Transaction { id: String::from(\"tx3\"), amount: 0 },\n    ];\n    \n    let successful = process_batch(txs);\n    println!(\"Processed {} successful transactions\", successful);\n}",
+      "explanation": "Batch processing allows handling multiple transactions together, improving throughput. In production, this can be parallelized for even better performance.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-48-2-caching",
+      "title": "Caching Strategy",
+      "description": "Caching for performance",
+      "code": "use std::collections::HashMap;\n\nstruct Block {\n    height: u64,\n    hash: String,\n}\n\nstruct BlockCache {\n    cache: HashMap<u64, Block>,\n    max_size: usize,\n}\n\nimpl BlockCache {\n    fn new(max_size: usize) -> Self {\n        BlockCache {\n            cache: HashMap::new(),\n            max_size,\n        }\n    }\n    \n    fn get(&self, height: u64) -> Option<&Block> {\n        self.cache.get(&height)\n    }\n    \n    fn insert(&mut self, block: Block) {\n        if self.cache.len() >= self.max_size {\n            // Remove oldest (simplified: remove first)\n            if let Some(&oldest_height) = self.cache.keys().next() {\n                self.cache.remove(&oldest_height);\n            }\n        }\n        self.cache.insert(block.height, block);\n    }\n}\n\nfn main() {\n    let mut cache = BlockCache::new(3);\n    \n    cache.insert(Block { height: 1, hash: String::from(\"hash1\") });\n    cache.insert(Block { height: 2, hash: String::from(\"hash2\") });\n    cache.insert(Block { height: 3, hash: String::from(\"hash3\") });\n    \n    if let Some(block) = cache.get(2) {\n        println!(\"Found block at height {}: {}\", block.height, block.hash);\n    }\n}",
+      "explanation": "Caching frequently accessed data (like recent blocks) significantly improves performance by avoiding expensive storage lookups.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-48-1",
+      "title": "Optimize Processing",
+      "description": "Create a batch processor that counts successful transactions!",
+      "starterCode": "struct Transaction {\n    valid: bool,\n}\n\n// Create a process_batch function\n// Count how many transactions are valid\n// Return the count\n\nfn main() {\n    let txs = vec![\n        Transaction { valid: true },\n        Transaction { valid: true },\n        Transaction { valid: false },\n    ];\n    \n    let count = process_batch(txs);\n    println!(\"Valid transactions: {}\", count);\n}",
+      "solution": "struct Transaction {\n    valid: bool,\n}\n\nfn process_batch(transactions: Vec<Transaction>) -> usize {\n    transactions.iter()\n        .filter(|tx| tx.valid)\n        .count()\n}\n\nfn main() {\n    let txs = vec![\n        Transaction { valid: true },\n        Transaction { valid: true },\n        Transaction { valid: false },\n    ];\n    \n    let count = process_batch(txs);\n    println!(\"Valid transactions: {}\", count);\n}",
+      "hints": [
+        "Use filter() to keep only valid transactions",
+        "Use count() to count them"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
+

@@ -1,0 +1,58 @@
+{
+  "id": "lesson-25-async-await",
+  "title": "Async/Await",
+  "description": "Asynchronous programming with async/await syntax.",
+  "content": "# Async/Await\n\n**async/await** allows us to write asynchronous code that uses system resources more efficiently.\n\n## Async Function\n\n```rust\nasync fn hello() -> String {\n    String::from(\"Hello\")\n}\n```\n\n## Using Await\n\n```rust\nasync fn main() {\n    let result = hello().await;\n    println!(\"{}\", result);\n}\n```\n\n## Future Trait\n\nAsync functions return types that implement the `Future` trait.\n\n## Tokio Runtime\n\n```rust\nuse tokio;\n\n#[tokio::main]\nasync fn main() {\n    println!(\"Hello from async!\");\n}\n```\n\n## Multiple Async Operations\n\n```rust\nasync fn fetch_data() -> String {\n    // Simulated network request\n    tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;\n    String::from(\"Data\")\n}\n\n#[tokio::main]\nasync fn main() {\n    let data1 = fetch_data().await;\n    let data2 = fetch_data().await;\n    println!(\"{}, {}\", data1, data2);\n}\n```\n\n## Parallel Execution\n\n```rust\nuse tokio;\n\n#[tokio::main]\nasync fn main() {\n    let handle1 = tokio::spawn(async {\n        fetch_data().await\n    });\n    \n    let handle2 = tokio::spawn(async {\n        fetch_data().await\n    });\n    \n    let (result1, result2) = tokio::join!(handle1, handle2);\n}\n```",
+  "difficulty": "advanced",
+  "estimatedTime": 50,
+  "prerequisites": ["lesson-24-channels"],
+  "codeExamples": [
+    {
+      "id": "ex-25-1-basic-async",
+      "title": "Basic Async",
+      "description": "Using async function",
+      "code": "// Cargo.toml: tokio = { version = \"1\", features = [\"full\"] }\n\nuse tokio;\n\nasync fn hello() -> String {\n    String::from(\"Hello, async!\")\n}\n\n#[tokio::main]\nasync fn main() {\n    let result = hello().await;\n    println!(\"{}\", result);\n}",
+      "explanation": "The async keyword creates an async function. The await keyword waits for the Future to complete. The #[tokio::main] macro creates an async main function.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-25-2-multiple-async",
+      "title": "Multiple Async Operations",
+      "description": "Calling multiple async functions",
+      "code": "use tokio;\nuse tokio::time::{sleep, Duration};\n\nasync fn fetch_data(id: i32) -> String {\n    sleep(Duration::from_secs(1)).await;\n    format!(\"Data {}\", id)\n}\n\n#[tokio::main]\nasync fn main() {\n    let data1 = fetch_data(1).await;\n    let data2 = fetch_data(2).await;\n    \n    println!(\"{}, {}\", data1, data2);\n}",
+      "explanation": "await blocks the current async function until the Future completes. Operations run sequentially.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-25-3-parallel",
+      "title": "Parallel Execution",
+      "description": "Running multiple async operations in parallel",
+      "code": "use tokio;\nuse tokio::time::{sleep, Duration};\n\nasync fn fetch_data(id: i32) -> String {\n    sleep(Duration::from_secs(1)).await;\n    format!(\"Data {}\", id)\n}\n\n#[tokio::main]\nasync fn main() {\n    let handle1 = tokio::spawn(async {\n        fetch_data(1).await\n    });\n    \n    let handle2 = tokio::spawn(async {\n        fetch_data(2).await\n    });\n    \n    let (result1, result2) = tokio::join!(handle1, handle2);\n    \n    println!(\"{}, {}\", result1.unwrap(), result2.unwrap());\n}",
+      "explanation": "tokio::spawn() runs async blocks in parallel. tokio::join!() waits for both operations to complete. This is faster than sequential await.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-25-4-blockchain-node",
+      "title": "Blockchain: Async Node Operations",
+      "description": "Using async/await for blockchain node operations",
+      "code": "// Simplified blockchain node with async operations\n// In production: use tokio for async runtime\n\nstruct BlockchainNode;\n\nimpl BlockchainNode {\n    // Simulate async network request\n    async fn fetch_block_from_peer(peer_id: &str, block_height: u64) -> String {\n        // In production: actual network call\n        // tokio::time::sleep(Duration::from_millis(100)).await;\n        format!(\"Block {} from {}\", block_height, peer_id)\n    }\n    \n    // Process multiple peers in parallel\n    async fn sync_from_peers(peers: Vec<&str>, start_height: u64) -> Vec<String> {\n        let mut handles = Vec::new();\n        \n        for peer in peers {\n            // In production: use tokio::spawn\n            // let handle = tokio::spawn(async move {\n            //     Self::fetch_block_from_peer(peer, start_height).await\n            // });\n            // handles.push(handle);\n        }\n        \n        // Wait for all\n        // let results: Vec<String> = futures::future::join_all(handles).await\n        //     .into_iter()\n        //     .map(|r| r.unwrap())\n        //     .collect();\n        // results\n        \n        vec![String::from(\"block1\"), String::from(\"block2\")]\n    }\n}\n\nfn main() {\n    println!(\"Blockchain nodes use async/await for:\");\n    println!(\"- Parallel block downloads from multiple peers\");\n    println!(\"- Concurrent transaction processing\");\n    println!(\"- Non-blocking network I/O\");\n    println!(\"- Efficient resource usage\");\n}",
+      "explanation": "Blockchain nodes use async/await extensively for network operations. They can fetch blocks from multiple peers in parallel, process transactions concurrently, and handle network I/O without blocking.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-25-1",
+      "title": "Async Function",
+      "description": "Create an async function that returns a value after a delay!",
+      "starterCode": "use tokio;\nuse tokio::time::{sleep, Duration};\n\n// Write an async delay function\n// Wait 2 seconds, then return \"Ready!\" string\n\n#[tokio::main]\nasync fn main() {\n    // Call the delay function\n    // Print the result\n}",
+      "solution": "use tokio;\nuse tokio::time::{sleep, Duration};\n\nasync fn delay() -> String {\n    sleep(Duration::from_secs(2)).await;\n    String::from(\"Ready!\")\n}\n\n#[tokio::main]\nasync fn main() {\n    let result = delay().await;\n    println!(\"{}\", result);\n}",
+      "hints": [
+        "Use the async keyword for the function",
+        "sleep().await delays execution",
+        "The await keyword waits for completion"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "lesson-7-lifetimes",
+  "title": "Lifetimes",
+  "description": "Lifetimes help the compiler understand how long references are valid.",
+  "content": "# Lifetimes\n\n**Lifetimes** are generic parameters that tell the compiler how long references are valid.\n\n## Why Do We Need Lifetimes?\n\n```rust\nfn longest(x: &str, y: &str) -> &str {  // ERROR!\n    if x.len() > y.len() {\n        x\n    } else {\n        y\n    }\n}\n```\n\nThe compiler doesn't know which parameter the return reference points to, so it can't guarantee validity.\n\n## Lifetime Annotations\n\n```rust\nfn longest<'a>(x: &'a str, y: &'a str) -> &'a str {\n    if x.len() > y.len() {\n        x\n    } else {\n        y\n    }\n}\n```\n\nThe `'a` is a lifetime parameter indicating that both parameters and the return value have the same lifetime.\n\n## Lifetime Elision\n\nIn some cases, the compiler can automatically infer lifetimes:\n\n```rust\nfn first_word(s: &str) -> &str {  // Automatic lifetime\n    // ...\n}\n```\n\n## In Structs\n\n```rust\nstruct ImportantExcerpt<'a> {\n    part: &'a str,\n}\n```",
+  "difficulty": "advanced",
+  "estimatedTime": 45,
+  "prerequisites": ["lesson-6-borrowing"],
+  "codeExamples": [
+    {
+      "id": "ex-7-1-basic-lifetime",
+      "title": "Basic Lifetime",
+      "description": "Using lifetime annotations",
+      "code": "fn main() {\n    let string1 = String::from(\"long string is long\");\n    {\n        let string2 = String::from(\"xyz\");\n        let result = longest(string1.as_str(), string2.as_str());\n        println!(\"The longer string: {}\", result);\n    }\n}\n\nfn longest<'a>(x: &'a str, y: &'a str) -> &'a str {\n    if x.len() > y.len() {\n        x\n    } else {\n        y\n    }\n}",
+      "explanation": "The lifetime annotation `'a` indicates that the return reference is valid for at least as long as the shorter-lived parameter.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-7-2-struct-lifetime",
+      "title": "Struct Lifetime",
+      "description": "Using lifetimes in structs",
+      "code": "struct ImportantExcerpt<'a> {\n    part: &'a str,\n}\n\nfn main() {\n    let novel = String::from(\"Call me Ishmael. Some years ago...\");\n    let first_sentence = novel.split('.').next().expect(\"Could not find a '.'\");\n    let i = ImportantExcerpt {\n        part: first_sentence,\n    };\n    println!(\"{}\", i.part);\n}",
+      "explanation": "When a struct contains a reference field, lifetime annotations must be used. This guarantees that the reference is valid for at least as long as the struct instance.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-7-1",
+      "title": "Lifetime Annotation",
+      "description": "Fix this function with lifetime annotations!",
+      "starterCode": "fn longest(x: &str, y: &str) -> &str {\n    if x.len() > y.len() {\n        x\n    } else {\n        y\n    }\n}",
+      "solution": "fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {\n    if x.len() > y.len() {\n        x\n    } else {\n        y\n    }\n}",
+      "hints": [
+        "Add the lifetime parameter after the function name",
+        "Use the same lifetime for both parameters and the return value"
+      ],
+      "difficulty": "hard"
+    }
+  ]
+}

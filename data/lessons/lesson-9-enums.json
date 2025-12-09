@@ -1,0 +1,77 @@
+{
+  "id": "lesson-9-enums",
+  "title": "Enums",
+  "description": "Using enums to define different variants.",
+  "content": "# Enums\n\nAn **enum** allows us to define a type that can have multiple possible variants.\n\n## Basic Enum\n\n```rust\nenum IpAddrKind {\n    V4,\n    V6,\n}\n```\n\n## Using Enums\n\n```rust\nlet four = IpAddrKind::V4;\nlet six = IpAddrKind::V6;\n```\n\n## Enums with Data\n\n```rust\nenum IpAddr {\n    V4(String),\n    V6(String),\n}\n\nlet home = IpAddr::V4(String::from(\"127.0.0.1\"));\n```\n\n## Different Types of Data\n\n```rust\nenum IpAddr {\n    V4(u8, u8, u8, u8),\n    V6(String),\n}\n```\n\n## Option Enum\n\nRust has no `null`! Instead, we use the `Option<T>` enum:\n\n```rust\nenum Option<T> {\n    Some(T),\n    None,\n}\n\nlet some_number = Some(5);\nlet absent_number: Option<i32> = None;\n```\n\n## Match Expression\n\n```rust\nmatch some_value {\n    IpAddr::V4(addr) => println!(\"IPv4: {}\", addr),\n    IpAddr::V6(addr) => println!(\"IPv6: {}\", addr),\n}\n```",
+  "difficulty": "beginner",
+  "estimatedTime": 35,
+  "prerequisites": ["lesson-8-structs"],
+  "codeExamples": [
+    {
+      "id": "ex-9-1-basic-enum",
+      "title": "Basic Enum",
+      "description": "Enum definition and usage",
+      "code": "enum IpAddrKind {\n    V4,\n    V6,\n}\n\nfn main() {\n    let four = IpAddrKind::V4;\n    let six = IpAddrKind::V6;\n    \n    route(four);\n    route(six);\n}\n\nfn route(ip_kind: IpAddrKind) {\n    match ip_kind {\n        IpAddrKind::V4 => println!(\"IPv4 address\"),\n        IpAddrKind::V6 => println!(\"IPv6 address\"),\n    }\n}",
+      "explanation": "An enum allows us to define a type with multiple possible values. We reference enum variants with the `::` syntax.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-9-2-enum-with-data",
+      "title": "Enum with Data",
+      "description": "Enum variants with data",
+      "code": "enum IpAddr {\n    V4(String),\n    V6(String),\n}\n\nenum Message {\n    Quit,\n    Move { x: i32, y: i32 },\n    Write(String),\n    ChangeColor(i32, i32, i32),\n}\n\nfn main() {\n    let home = IpAddr::V4(String::from(\"127.0.0.1\"));\n    let loopback = IpAddr::V6(String::from(\"::1\"));\n    \n    let msg = Message::Move { x: 10, y: 20 };\n}",
+      "explanation": "Enum variants can contain data. This allows us to store different types and amounts of data in each variant.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-9-3-option",
+      "title": "Option Enum",
+      "description": "Using Option instead of null",
+      "code": "fn main() {\n    let some_number = Some(5);\n    let some_string = Some(\"a string\");\n    let absent_number: Option<i32> = None;\n    \n    match some_number {\n        Some(value) => println!(\"Value: {}\", value),\n        None => println!(\"No value\"),\n    }\n}",
+      "explanation": "The Option<T> enum is Rust's way of handling null values. Some(T) contains a value, None indicates no value.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-9-4-blockchain-transaction-type",
+      "title": "Blockchain: Transaction Type Enum",
+      "description": "Using enums for different transaction types",
+      "code": "enum TransactionType {\n    Transfer { from: String, to: String, amount: u64 },\n    ContractCall { contract: String, method: String, args: Vec<String> },\n    Stake { validator: String, amount: u64 },\n    Unstake { validator: String, amount: u64 },\n}\n\nfn process_transaction(tx: TransactionType) {\n    match tx {\n        TransactionType::Transfer { from, to, amount } => {\n            println!(\"Transfer {} tokens from {} to {}\", amount, from, to);\n        },\n        TransactionType::ContractCall { contract, method, args } => {\n            println!(\"Calling {}.{} with {:?}\", contract, method, args);\n        },\n        TransactionType::Stake { validator, amount } => {\n            println!(\"Staking {} tokens to validator {}\", amount, validator);\n        },\n        TransactionType::Unstake { validator, amount } => {\n            println!(\"Unstaking {} tokens from validator {}\", amount, validator);\n        },\n    }\n}\n\nfn main() {\n    let tx1 = TransactionType::Transfer {\n        from: String::from(\"0xAlice\"),\n        to: String::from(\"0xBob\"),\n        amount: 100,\n    };\n    \n    process_transaction(tx1);\n    \n    let tx2 = TransactionType::Stake {\n        validator: String::from(\"0xValidator1\"),\n        amount: 1000,\n    };\n    \n    process_transaction(tx2);\n}",
+      "explanation": "Enums are perfect for representing different transaction types in blockchain. Each variant can hold different data, and pattern matching handles each type safely.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-9-5-blockchain-block-status",
+      "title": "Blockchain: Block Status Enum",
+      "description": "Using enums for block states",
+      "code": "enum BlockStatus {\n    Pending,\n    Confirmed { confirmations: u32 },\n    Orphaned,\n    Finalized,\n}\n\nfn get_status_message(status: BlockStatus) -> String {\n    match status {\n        BlockStatus::Pending => String::from(\"Block is pending confirmation\"),\n        BlockStatus::Confirmed { confirmations } => {\n            format!(\"Block confirmed with {} confirmations\", confirmations)\n        },\n        BlockStatus::Orphaned => String::from(\"Block was orphaned (not in main chain)\"),\n        BlockStatus::Finalized => String::from(\"Block is finalized (cannot be reverted)\"),\n    }\n}\n\nfn main() {\n    let status1 = BlockStatus::Pending;\n    let status2 = BlockStatus::Confirmed { confirmations: 6 };\n    \n    println!(\"{}\", get_status_message(status1));\n    println!(\"{}\", get_status_message(status2));\n}",
+      "explanation": "Block status can be represented as an enum. This makes the state explicit and prevents invalid states. Pattern matching ensures all cases are handled.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-9-1",
+      "title": "Creating an Enum",
+      "description": "Create a Direction enum with North, South, East, West variants!",
+      "starterCode": "// Define the Direction enum\n\nfn main() {\n    // Create a Direction instance\n    // Use match to print it\n}",
+      "solution": "enum Direction {\n    North,\n    South,\n    East,\n    West,\n}\n\nfn main() {\n    let dir = Direction::North;\n    match dir {\n        Direction::North => println!(\"North\"),\n        Direction::South => println!(\"South\"),\n        Direction::East => println!(\"East\"),\n        Direction::West => println!(\"West\"),\n    }\n}",
+      "hints": [
+        "Start enum variants with capital letters",
+        "Use the match expression to handle all variants"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "exercise-9-2",
+      "title": "Blockchain: Transaction Status",
+      "description": "Create a TransactionStatus enum for blockchain!",
+      "starterCode": "// Define TransactionStatus enum with:\n// - Pending\n// - Confirmed\n// - Failed\n\n// Use match to handle each status\n\nfn main() {\n    // Create a status and print it\n}",
+      "solution": "enum TransactionStatus {\n    Pending,\n    Confirmed,\n    Failed,\n}\n\nfn main() {\n    let status = TransactionStatus::Pending;\n    \n    match status {\n        TransactionStatus::Pending => println!(\"Transaction is pending\"),\n        TransactionStatus::Confirmed => println!(\"Transaction confirmed\"),\n        TransactionStatus::Failed => println!(\"Transaction failed\"),\n    }\n}",
+      "hints": [
+        "Define enum variants",
+        "Use match to handle all cases"
+      ],
+      "difficulty": "easy"
+    }
+  ]
+}

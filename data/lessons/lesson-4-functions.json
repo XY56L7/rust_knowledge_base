@@ -1,0 +1,79 @@
+{
+  "id": "lesson-4-functions",
+  "title": "Functions",
+  "description": "Learn how to write and use functions in Rust.",
+  "content": "# Functions\n\nFunctions are the basic building blocks of Rust programs. Every Rust program has at least one function: the `main` function.\n\n## Function Definition\n\n```rust\nfn greet() {\n    println!(\"Hello!\");\n}\n```\n\n## Parameters\n\n```rust\nfn greet(name: &str) {\n    println!(\"Hello, {}!\", name);\n}\n```\n\n## Return Value\n\n```rust\nfn add(x: i32, y: i32) -> i32 {\n    x + y  // No semicolon - this is the return value\n}\n```\n\n## Explicit Return\n\n```rust\nfn subtract(x: i32, y: i32) -> i32 {\n    return x - y;  // Explicit return (less commonly used)\n}\n```\n\n## Expressions vs Statements\n\nIn Rust, there's an important difference between expressions and statements:\n\n- **Statement**: Performs an action, has no return value\n- **Expression**: Evaluates and returns a value\n\n```rust\nlet y = {\n    let x = 3;\n    x + 1  // Expression - no semicolon\n};  // Statement - has semicolon\n```\n\n## Blockchain Functions\n\nIn blockchain development, functions are used for:\n\n- **Transaction validation**: Check if transaction is valid\n- **Balance calculations**: Compute account balances\n- **Hash generation**: Create block and transaction hashes\n- **Signature verification**: Verify transaction signatures\n\n```rust\nfn validate_transaction(tx: &Transaction) -> bool {\n    // Validation logic\n    tx.amount > 0 && tx.fee >= MIN_FEE\n}\n\nfn calculate_new_balance(current: u64, amount: u64) -> u64 {\n    current + amount  // Expression returns value\n}\n```",
+  "difficulty": "beginner",
+  "estimatedTime": 30,
+  "prerequisites": ["lesson-3-data-types"],
+  "codeExamples": [
+    {
+      "id": "ex-4-1-basic-function",
+      "title": "Basic Function",
+      "description": "Simple function with parameters and return value",
+      "code": "fn main() {\n    let result = add(5, 3);\n    println!(\"5 + 3 = {}\", result);\n}\n\nfn add(x: i32, y: i32) -> i32 {\n    x + y\n}",
+      "explanation": "This is a simple function that adds two integers. The return value is the last expression (without semicolon).",
+      "language": "rust"
+    },
+    {
+      "id": "ex-4-2-multiple-params",
+      "title": "Multiple Parameters",
+      "description": "Function with multiple parameters",
+      "code": "fn main() {\n    greet(\"John\", 25);\n}\n\nfn greet(name: &str, age: i32) {\n    println!(\"Hello, {}! You are {} years old.\", name, age);\n}",
+      "explanation": "Functions can accept multiple parameters. Parameter types must be explicitly specified.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-4-3-expression",
+      "title": "Expressions",
+      "description": "The difference between expressions and statements",
+      "code": "fn main() {\n    let x = five();\n    println!(\"x value: {}\", x);\n    \n    let y = {\n        let z = 3;\n        z + 1  // Expression - no semicolon\n    };\n    println!(\"y value: {}\", y);\n}\n\nfn five() -> i32 {\n    5  // Expression - return value\n}",
+      "explanation": "In Rust, expressions (without semicolon) return values. This allows for concise, functional-style code.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-4-4-blockchain-transfer",
+      "title": "Blockchain: Transfer Function",
+      "description": "Function for blockchain token transfers",
+      "code": "fn transfer_tokens(sender_balance: u64, amount: u64, fee: u64) -> Result<u64, String> {\n    let total_needed = amount + fee;\n    \n    if sender_balance < total_needed {\n        return Err(String::from(\"Insufficient balance\"));\n    }\n    \n    let new_balance = sender_balance - total_needed;\n    Ok(new_balance)\n}\n\nfn main() {\n    let balance = 1000;\n    \n    match transfer_tokens(balance, 500, 10) {\n        Ok(new_balance) => println!(\"Transfer successful! New balance: {}\", new_balance),\n        Err(e) => println!(\"Transfer failed: {}\", e),\n    }\n    \n    // Try with insufficient balance\n    match transfer_tokens(balance, 1000, 10) {\n        Ok(new_balance) => println!(\"New balance: {}\", new_balance),\n        Err(e) => println!(\"Transfer failed: {}\", e),\n    }\n}",
+      "explanation": "Blockchain transfer functions validate balances and calculate new balances. They return Result to handle errors like insufficient funds.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-4-5-blockchain-validation",
+      "title": "Blockchain: Validation Function",
+      "description": "Validating blockchain transactions",
+      "code": "const MIN_AMOUNT: u64 = 1;\nconst MIN_FEE: u64 = 10;\n\nfn validate_transaction(amount: u64, fee: u64, sender_balance: u64) -> bool {\n    // Check minimum amounts\n    if amount < MIN_AMOUNT {\n        return false;\n    }\n    \n    if fee < MIN_FEE {\n        return false;\n    }\n    \n    // Check sufficient balance\n    if sender_balance < amount + fee {\n        return false;\n    }\n    \n    true  // All validations passed\n}\n\nfn main() {\n    println!(\"Valid: {}\", validate_transaction(100, 10, 1000));\n    println!(\"Invalid (low fee): {}\", validate_transaction(100, 5, 1000));\n    println!(\"Invalid (insufficient): {}\", validate_transaction(1000, 10, 500));\n}",
+      "explanation": "Validation functions check transaction rules. They return bool to indicate if a transaction is valid. This is critical for blockchain security.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-4-1",
+      "title": "Multiplication Function",
+      "description": "Write a function that multiplies two numbers and returns the result!",
+      "starterCode": "fn main() {\n    let result = multiply(4, 5);\n    println!(\"4 * 5 = {}\", result);\n}\n\n// Write the multiply function\n",
+      "solution": "fn main() {\n    let result = multiply(4, 5);\n    println!(\"4 * 5 = {}\", result);\n}\n\nfn multiply(x: i32, y: i32) -> i32 {\n    x * y\n}",
+      "hints": [
+        "The function accepts two i32 parameters",
+        "The return type is i32",
+        "Use the * operator"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "exercise-4-2",
+      "title": "Text Formatting",
+      "description": "Write a function that returns a formatted message!",
+      "starterCode": "fn main() {\n    let message = create_message(\"Rust\", \"fantastic\");\n    println!(\"{}\", message);\n}\n\n// Write the create_message function\n// Format: \"{subject} is a {adjective} language!\"",
+      "solution": "fn main() {\n    let message = create_message(\"Rust\", \"fantastic\");\n    println!(\"{}\", message);\n}\n\nfn create_message(subject: &str, adjective: &str) -> String {\n    format!(\"{} is a {} language!\", subject, adjective)\n}",
+      "hints": [
+        "Use the format! macro",
+        "The return type is String",
+        "Parameters are of type &str"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}

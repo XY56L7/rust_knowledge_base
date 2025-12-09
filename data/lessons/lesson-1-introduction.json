@@ -1,0 +1,40 @@
+{
+  "id": "lesson-1-introduction",
+  "title": "Introduction to Blockchain Development with Rust",
+  "description": "Learn why Rust is the perfect language for building secure, high-performance blockchain applications.",
+  "content": "# Introduction to Blockchain Development with Rust\n\nWelcome to the complete guide for building blockchain applications with Rust! This course will teach you both Rust fundamentals and how to apply them to create secure, decentralized systems.\n\n## Why Rust for Blockchain?\n\nRust is becoming the language of choice for blockchain development because:\n\n- **Memory Safety**: Critical for financial systems - prevents bugs that could lead to exploits\n- **Performance**: Zero-cost abstractions mean fast execution without sacrificing safety\n- **Concurrency**: Safe parallel processing essential for consensus mechanisms\n- **No Garbage Collector**: Predictable performance for real-time blockchain operations\n- **Type Safety**: Catches errors at compile time, preventing runtime failures\n\n## Real-World Blockchain Projects Using Rust\n\n- **Solana**: High-performance blockchain using Rust for its validator\n- **Polkadot**: Substrate framework built entirely in Rust\n- **NEAR Protocol**: Rust-based smart contract platform\n- **Parity Ethereum**: Ethereum client written in Rust\n\n## What You'll Build\n\nThroughout this course, you'll learn to build:\n\n- **Blockchain Core**: Blocks, transactions, and chain validation\n- **Cryptographic Primitives**: Hashing, digital signatures, and key management\n- **Consensus Mechanisms**: Proof of Work, Proof of Stake implementations\n- **Smart Contracts**: WebAssembly-based contracts\n- **P2P Networks**: Decentralized networking for blockchain nodes\n- **Transaction Pools**: Efficient transaction management\n\n## Course Structure\n\n1. **Rust Fundamentals** (Chapters 1-6): Essential Rust concepts\n2. **Blockchain Basics** (Chapter 7): Understanding blockchain architecture\n3. **Cryptography** (Chapter 8): Security primitives\n4. **Consensus** (Chapter 9): Agreement algorithms\n5. **Smart Contracts** (Chapter 10): Contract development\n6. **Networking** (Chapter 11): P2P communication\n7. **Advanced Topics** (Chapter 12): Optimization and patterns\n\n## Getting Started\n\nInstall Rust using rustup:\n\n```bash\ncurl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh\n```\n\nVerify installation:\n\n```bash\nrustc --version\ncargo --version\n```\n\n## First Blockchain Program\n\nLet's start with a simple program that demonstrates Rust's power for blockchain development:",
+  "difficulty": "beginner",
+  "estimatedTime": 20,
+  "codeExamples": [
+    {
+      "id": "ex-1-hello-blockchain",
+      "title": "Hello, Blockchain!",
+      "description": "Your first Rust program for blockchain development",
+      "code": "fn main() {\n    println!(\"🦀 Welcome to Blockchain Development with Rust!\");\n    println!(\"Building secure, decentralized systems...\");\n}",
+      "explanation": "This simple program introduces you to Rust syntax. The `main` function is the entry point. The `println!` macro prints to the console. We'll use this foundation to build blockchain components.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-1-2-blockchain-structure",
+      "title": "Basic Blockchain Structure",
+      "description": "A simple blockchain data structure",
+      "code": "struct Block {\n    index: u64,\n    data: String,\n    previous_hash: String,\n    hash: String,\n}\n\nfn main() {\n    let genesis_block = Block {\n        index: 0,\n        data: String::from(\"Genesis Block\"),\n        previous_hash: String::from(\"0\"),\n        hash: String::from(\"genesis_hash\"),\n    };\n    \n    println!(\"Block #{}: {}\", genesis_block.index, genesis_block.data);\n}",
+      "explanation": "This preview shows a basic Block structure. In later lessons, you'll learn to create, validate, and chain blocks together. Rust's struct system is perfect for representing blockchain data.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-1-1",
+      "title": "Welcome Message",
+      "description": "Create a program that prints a welcome message for blockchain developers!",
+      "starterCode": "fn main() {\n    // Print a welcome message for blockchain development\n}",
+      "solution": "fn main() {\n    println!(\"Welcome to Blockchain Development with Rust!\");\n    println!(\"Let's build the future of decentralized systems!\");\n}",
+      "hints": [
+        "Use the println! macro",
+        "You can use multiple println! statements"
+      ],
+      "difficulty": "easy"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "id": "lesson-17-modules",
+  "title": "Modules",
+  "description": "Organizing code with modules.",
+  "content": "# Modules\n\n**Modules** help organize code and make it reusable.\n\n## Module Definition\n\n```rust\nmod front_of_house {\n    mod hosting {\n        fn add_to_waitlist() {}\n        fn seat_at_table() {}\n    }\n    \n    mod serving {\n        fn take_order() {}\n        fn serve_order() {}\n    }\n}\n```\n\n## Public Modules\n\n```rust\nmod front_of_house {\n    pub mod hosting {\n        pub fn add_to_waitlist() {}\n    }\n}\n```\n\n## use Keyword\n\n```rust\nmod front_of_house {\n    pub mod hosting {\n        pub fn add_to_waitlist() {}\n    }\n}\n\nuse crate::front_of_house::hosting;\n\npub fn eat_at_restaurant() {\n    hosting::add_to_waitlist();\n}\n```\n\n## Public Structs and Enums\n\n```rust\nmod back_of_house {\n    pub struct Breakfast {\n        pub toast: String,\n        seasonal_fruit: String,\n    }\n    \n    pub enum Appetizer {\n        Soup,\n        Salad,\n    }\n}\n```\n\n## use as Alias\n\n```rust\nuse std::fmt::Result;\nuse std::io::Result as IoResult;\n```",
+  "difficulty": "intermediate",
+  "estimatedTime": 40,
+  "prerequisites": ["lesson-8-structs"],
+  "codeExamples": [
+    {
+      "id": "ex-17-1-basic-module",
+      "title": "Basic Module",
+      "description": "Module definition and usage",
+      "code": "mod math {\n    pub fn add(x: i32, y: i32) -> i32 {\n        x + y\n    }\n    \n    pub fn multiply(x: i32, y: i32) -> i32 {\n        x * y\n    }\n}\n\nfn main() {\n    let sum = math::add(5, 3);\n    let product = math::multiply(5, 3);\n    \n    println!(\"Sum: {}, Product: {}\", sum, product);\n}",
+      "explanation": "The mod keyword defines modules. The pub keyword makes functions public. The :: syntax references modules.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-17-2-use-keyword",
+      "title": "use Keyword",
+      "description": "Using use for shorthand",
+      "code": "mod math {\n    pub fn add(x: i32, y: i32) -> i32 {\n        x + y\n    }\n    \n    pub fn multiply(x: i32, y: i32) -> i32 {\n        x * y\n    }\n}\n\nuse math::{add, multiply};\n\nfn main() {\n    let sum = add(5, 3);\n    let product = multiply(5, 3);\n    \n    println!(\"Sum: {}, Product: {}\", sum, product);\n}",
+      "explanation": "The use keyword allows us to use shortened names. This way we don't have to write the full module path every time.",
+      "language": "rust"
+    },
+    {
+      "id": "ex-17-3-pub-struct",
+      "title": "Public Struct",
+      "description": "Public struct with fields",
+      "code": "mod back_of_house {\n    pub struct Breakfast {\n        pub toast: String,\n        seasonal_fruit: String,  // Private field\n    }\n    \n    impl Breakfast {\n        pub fn summer(toast: String) -> Breakfast {\n            Breakfast {\n                toast,\n                seasonal_fruit: String::from(\"peaches\"),\n            }\n        }\n    }\n}\n\nuse back_of_house::Breakfast;\n\nfn main() {\n    let mut meal = Breakfast::summer(String::from(\"Rye\"));\n    meal.toast = String::from(\"Wheat\");\n    println!(\"Toast: {}\", meal.toast);\n}",
+      "explanation": "A public struct's fields are private by default. The pub keyword makes them public. This provides encapsulation.",
+      "language": "rust"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-17-1",
+      "title": "Creating a Module",
+      "description": "Create a utils module with math functions!",
+      "starterCode": "// Define the utils module\n// Add a subtract function\n// Add a divide function\n\nfn main() {\n    // Use the utils module functions\n}",
+      "solution": "mod utils {\n    pub fn subtract(x: i32, y: i32) -> i32 {\n        x - y\n    }\n    \n    pub fn divide(x: i32, y: i32) -> i32 {\n        x / y\n    }\n}\n\nfn main() {\n    let result1 = utils::subtract(10, 3);\n    let result2 = utils::divide(10, 2);\n    println!(\"Subtraction: {}, Division: {}\", result1, result2);\n}",
+      "hints": [
+        "Use the mod keyword",
+        "Don't forget the pub keyword for functions"
+      ],
+      "difficulty": "medium"
+    }
+  ]
+}
