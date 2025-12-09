@@ -4,6 +4,8 @@ import "./globals.css";
 import ParticleBackground from "@/components/ParticleBackground";
 import ScrollToTop from "@/components/ScrollToTop";
 import ThemeScript from "@/components/ThemeScript";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -28,9 +30,11 @@ export default function RootLayout({
       </head>
       <body className="antialiased font-sans relative">
         <ParticleBackground />
+        <Navbar />
         <div className="relative z-10">
           {children}
         </div>
+        <Footer />
         <ScrollToTop />
       </body>
     </html>

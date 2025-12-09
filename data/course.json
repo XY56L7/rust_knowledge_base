@@ -236,7 +236,8 @@
       "description": "Common interview questions and answers for Rust blockchain developers at junior and medior levels",
       "order": 19,
       "lessons": [
-        "lesson-86-rust-blockchain-interview"
+        "lesson-86-rust-blockchain-interview",
+        "lesson-87-career-guide"
       ]
     }
   ]

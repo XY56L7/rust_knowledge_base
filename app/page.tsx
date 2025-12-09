@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import { loadCourse, loadLesson } from '@/utils/dataLoader';
 import { Course } from '@/types';
-import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
-import Footer from '@/components/Footer';
+import CareerGuide from '@/components/CareerGuide';
 
 export default async function Home() {
   const course: Course = await loadCourse();
@@ -31,10 +30,11 @@ export default async function Home() {
 
   return (
     <>
-      <Navbar />
       <Hero course={course} totalLessons={totalExistingLessons} />
       
       <Features />
+
+      <CareerGuide />
 
       <section id="chapters" className="py-24 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
@@ -119,8 +119,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </>
   );
 }

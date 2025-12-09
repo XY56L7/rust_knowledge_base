@@ -48,6 +48,10 @@ export default function Navbar() {
               Chapters
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-orange-600 group-hover:w-full transition-all duration-300"></span>
             </Link>
+            <Link href="#career" className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 font-semibold transition-colors relative group">
+              Career
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-orange-600 group-hover:w-full transition-all duration-300"></span>
+            </Link>
             <Link href="#about" className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 font-semibold transition-colors relative group">
               About
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-orange-600 group-hover:w-full transition-all duration-300"></span>
@@ -94,6 +98,13 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Chapters
+              </Link>
+              <Link 
+                href="#career" 
+                className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 font-semibold transition-colors px-4 py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Career
               </Link>
               <Link 
                 href="#about" 

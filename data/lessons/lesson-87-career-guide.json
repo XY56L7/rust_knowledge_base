@@ -1,0 +1,115 @@
+{
+  "id": "lesson-87-career-guide",
+  "title": "Landing Your First Rust Blockchain Job",
+  "description": "Complete guide to getting hired as a Rust blockchain developer: portfolio building, deployment, GitHub optimization, and interview preparation.",
+  "content": "# Landing Your First Rust Blockchain Job\n\nThis guide will help you turn your learning into a successful career in Rust blockchain development.\n\n## 🎯 Building Your Portfolio\n\n### 1. Showcase This Course Project\n\n**What to highlight:**\n- Full-stack development (Next.js + TypeScript)\n- Modern UI/UX design\n- Comprehensive curriculum (86+ lessons)\n- JSON-based content management\n- Responsive design with dark mode\n\n**GitHub Repository Setup:**\n```bash\n# Initialize git repository\ngit init\n\n# Create .gitignore\ncat > .gitignore << EOF\nnode_modules/\n.next/\n.env.local\n.env*.local\n*.log\n.DS_Store\nEOF\n\n# Add all files\ngit add .\n\n# Commit\ngit commit -m \"Initial commit: Rust Blockchain Course Platform\"\n\n# Create GitHub repository and push\ngh repo create rust-blockchain-course --public --source=. --push\n```\n\n### 2. Build Additional Portfolio Projects\n\n**Essential Projects to Build:**\n\n#### Project 1: Working Blockchain Implementation\n```rust\n// src/lib.rs\npub mod blockchain;\npub mod block;\npub mod transaction;\npub mod crypto;\n\n// Features:\n// - Full blockchain with PoW consensus\n// - Transaction validation\n// - Merkle tree implementation\n// - CLI interface\n// - Comprehensive tests\n```\n\n**Why it matters:** Shows you can implement core blockchain concepts.\n\n#### Project 2: Smart Contract Framework\n```rust\n// Features:\n// - WASM compilation\n// - Contract deployment system\n// - State management\n// - Event emission\n// - Gas metering\n```\n\n**Why it matters:** Demonstrates smart contract development skills.\n\n#### Project 3: DeFi Protocol (AMM or Lending)\n```rust\n// Features:\n// - Automated Market Maker\n// - Liquidity pools\n// - Token swaps\n// - LP token management\n```\n\n**Why it matters:** Shows real-world DeFi understanding.\n\n#### Project 4: Blockchain Node Client\n```rust\n// Features:\n// - P2P networking\n// - Block synchronization\n// - Transaction pool\n// - RPC API\n```\n\n**Why it matters:** Demonstrates systems programming skills.\n\n## 📦 Deployment Strategies\n\n### Option 1: Vercel (Recommended for Next.js)\n\n**Why Vercel:**\n- Zero-config deployment\n- Automatic HTTPS\n- Global CDN\n- Free tier available\n- Perfect for Next.js\n\n**Steps:**\n```bash\n# Install Vercel CLI\nnpm i -g vercel\n\n# Deploy\nvercel\n\n# Production deployment\nvercel --prod\n```\n\n**Benefits:**\n- Custom domain support\n- Environment variables\n- Analytics included\n- Preview deployments\n\n### Option 2: Netlify\n\n**Steps:**\n```bash\n# Install Netlify CLI\nnpm i -g netlify-cli\n\n# Build\nnpm run build\n\n# Deploy\nnetlify deploy --prod\n```\n\n### Option 3: Self-Hosted (VPS)\n\n**Using DigitalOcean/AWS/Linode:**\n```bash\n# Server setup\nssh root@your-server-ip\n\n# Install Node.js\ncurl -fsSL https://deb.nodesource.com/setup_20.x | bash -\napt-get install -y nodejs\n\n# Install PM2\nnpm install -g pm2\n\n# Clone and build\ngit clone https://github.com/yourusername/rust-blockchain-course.git\ncd rust-blockchain-course\nnpm install\nnpm run build\n\n# Start with PM2\npm2 start npm --name \"blockchain-course\" -- start\npm2 save\npm2 startup\n\n# Setup Nginx reverse proxy\napt install nginx\n# Configure /etc/nginx/sites-available/default\n\n# Setup SSL with Let's Encrypt\napt install certbot python3-certbot-nginx\ncertbot --nginx -d yourdomain.com\n```\n\n### Option 4: Docker Deployment\n\n**Create Dockerfile:**\n```dockerfile\nFROM node:20-alpine AS builder\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\nFROM node:20-alpine AS runner\nWORKDIR /app\nENV NODE_ENV production\nCOPY --from=builder /app/public ./public\nCOPY --from=builder /app/.next/standalone ./\nCOPY --from=builder /app/.next/static ./.next/static\nEXPOSE 3000\nCMD [\"node\", \"server.js\"]\n```\n\n**Deploy to:**\n- Docker Hub\n- AWS ECS\n- Google Cloud Run\n- Azure Container Instances\n\n## 🚀 GitHub Optimization\n\n### 1. Professional README.md\n\n**Must include:**\n- Project description\n- Features list\n- Tech stack\n- Installation instructions\n- Screenshots/GIFs\n- Live demo link\n- Contributing guidelines\n- License\n\n**Example structure:**\n```markdown\n# 🦀 Rust Blockchain Course\n\n[![Deploy](https://vercel.com/button)](https://vercel.com)\n[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)\n\n> Comprehensive blockchain development course using Rust\n\n## ✨ Features\n\n- 86+ interactive lessons\n- Real-world code examples\n- Hands-on projects\n- Interview preparation\n\n## 🛠️ Tech Stack\n\n- Next.js 14\n- TypeScript\n- Tailwind CSS\n- Rust (for examples)\n\n## 🚀 Quick Start\n\n\`\`\`bash\nnpm install\nnpm run dev\n\`\`\`\n\n## 📚 Course Content\n\n[Detailed course structure]\n\n## 🌐 Live Demo\n\n[Your deployed URL]\n\n## 📄 License\n\nMIT\n```\n\n### 2. GitHub Actions CI/CD\n\n**Create `.github/workflows/ci.yml`:**\n```yaml\nname: CI\n\non:\n  push:\n    branches: [ main ]\n  pull_request:\n    branches: [ main ]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - uses: actions/setup-node@v3\n        with:\n          node-version: '20'\n      - run: npm ci\n      - run: npm run lint\n      - run: npm run build\n      - run: npm test\n\n  deploy:\n    needs: test\n    runs-on: ubuntu-latest\n    if: github.ref == 'refs/heads/main'\n    steps:\n      - uses: actions/checkout@v3\n      - uses: amondnet/vercel-action@v20\n        with:\n          vercel-token: ${{ secrets.VERCEL_TOKEN }}\n          vercel-org-id: ${{ secrets.ORG_ID }}\n          vercel-project-id: ${{ secrets.PROJECT_ID }}\n```\n\n### 3. GitHub Profile Optimization\n\n**Profile README.md:**\n```markdown\n# Hi, I'm [Your Name] 👋\n\n## 🦀 Rust Blockchain Developer\n\n- 🔭 Building: [Your projects]\n- 🌱 Learning: Advanced blockchain protocols\n- 💬 Ask me about: Rust, Blockchain, Smart Contracts\n- 📫 Reach me: [your-email]\n- ⚡ Fun fact: [Something interesting]\n\n## 🚀 Featured Projects\n\n### [Rust Blockchain Course](https://your-course-url.com)\nComprehensive learning platform with 86+ lessons\n\n### [Blockchain Implementation](https://github.com/yourusername/blockchain)\nFull blockchain with PoW consensus in Rust\n\n## 📊 GitHub Stats\n\n![Your GitHub stats](https://github-readme-stats.vercel.app/api?username=yourusername)\n```\n\n## 💼 Resume/CV Tips\n\n### Key Sections to Include\n\n1. **Technical Skills**\n```\nLanguages: Rust (Advanced), TypeScript, JavaScript\nBlockchain: Smart Contracts, DeFi, Consensus Mechanisms\nFrameworks: Substrate, CosmWasm, NEAR SDK\nTools: Cargo, Git, Docker, CI/CD\n```\n\n2. **Projects Section**\n```\nRust Blockchain Course Platform (2024)\n- Built comprehensive learning platform with 86+ lessons\n- Technologies: Next.js, TypeScript, Tailwind CSS\n- Features: Interactive code examples, exercises, project ideas\n- GitHub: github.com/yourusername/rust-blockchain-course\n- Live: your-course-url.com\n\nBlockchain Implementation in Rust (2024)\n- Implemented full blockchain with Proof of Work consensus\n- Features: Transaction validation, Merkle trees, P2P networking\n- Technologies: Rust, Tokio, SHA-256\n- GitHub: github.com/yourusername/blockchain-rust\n```\n\n3. **Education/Certifications**\n- List relevant courses\n- Blockchain certifications (if any)\n- Rust certifications\n\n4. **Experience**\n- Even if no blockchain experience, highlight:\n  - Systems programming\n  - Security-focused development\n  - Performance optimization\n  - Open source contributions\n\n## 🎯 Job Search Strategy\n\n### Where to Look\n\n1. **Job Boards**\n   - **Web3.career** - Blockchain-specific jobs\n   - **CryptoJobsList** - Crypto/blockchain positions\n   - **RemoteOK** - Remote blockchain jobs\n   - **AngelList** - Startup blockchain companies\n   - **LinkedIn** - Filter: \"Rust\" + \"Blockchain\"\n\n2. **Company Websites**\n   - **Solana Labs** - solana.com/careers\n   - **Polkadot** - polkadot.network/careers\n   - **NEAR Protocol** - near.org/careers\n   - **Parity Technologies** - parity.io/jobs\n   - **Chainlink** - chain.link/careers\n   - **Acala** - acala.network/careers\n\n3. **Community Platforms**\n   - **Rust Discord** - #jobs channel\n   - **Polkadot Discord** - #jobs channel\n   - **Solana Discord** - #jobs channel\n   - **Twitter/X** - Follow #RustJobs, #BlockchainJobs\n   - **Reddit** - r/rust, r/blockchain, r/ethdev\n\n### Application Strategy\n\n1. **Tailor Each Application**\n   - Read job description carefully\n   - Match your skills to requirements\n   - Highlight relevant projects\n   - Customize cover letter\n\n2. **Portfolio First Approach**\n   - Lead with GitHub link\n   - Include live demos\n   - Show working code\n   - Demonstrate problem-solving\n\n3. **Follow Up**\n   - Send thank-you email after interview\n   - Connect on LinkedIn\n   - Engage with company content\n\n## 📝 Interview Preparation\n\n### Technical Interview Topics\n\n1. **Rust Fundamentals**\n   - Ownership and borrowing\n   - Lifetimes\n   - Error handling\n   - Concurrency (async/await, threads)\n\n2. **Blockchain Concepts**\n   - Consensus mechanisms\n   - Cryptography\n   - Smart contracts\n   - State management\n\n3. **System Design**\n   - Design a blockchain\n   - Design a DEX\n   - Design a lending protocol\n   - Scalability solutions\n\n4. **Coding Challenges**\n   - Implement Merkle tree\n   - Transaction validation\n   - Consensus algorithm\n   - Gas calculation\n\n### Behavioral Questions\n\n- \"Why Rust for blockchain?\"\n- \"Tell me about a challenging bug you fixed\"\n- \"How do you ensure code security?\"\n- \"Describe a project you're proud of\"\n\n## 🌐 Networking\n\n### Online Communities\n\n1. **Discord Servers**\n   - Rust Community\n   - Polkadot/Substrate\n   - Solana\n   - NEAR Protocol\n   - Cosmos\n\n2. **Forums**\n   - Rust Users Forum\n   - Stack Overflow (Rust tag)\n   - Reddit communities\n\n3. **Conferences**\n   - RustConf\n   - Polkadot Decoded\n   - Solana Breakpoint\n   - EthGlobal\n\n### Building Your Network\n\n- Contribute to open source\n- Write technical blog posts\n- Share your projects on Twitter/X\n- Engage in technical discussions\n- Help others in communities\n\n## 📈 Career Growth Path\n\n### Junior → Medior\n\n**Focus Areas:**\n- Master Rust fundamentals\n- Build 3-5 portfolio projects\n- Contribute to open source\n- Get code reviews\n- Write technical content\n\n### Medior → Senior\n\n**Focus Areas:**\n- Lead projects\n- Mentor others\n- Design systems\n- Security expertise\n- Performance optimization\n- Protocol design\n\n## ✅ Pre-Application Checklist\n\n- [ ] GitHub profile optimized\n- [ ] Portfolio projects deployed\n- [ ] README files complete\n- [ ] Code is well-documented\n- [ ] Tests written and passing\n- [ ] CI/CD pipeline set up\n- [ ] Resume/CV updated\n- [ ] LinkedIn profile complete\n- [ ] Personal website/portfolio\n- [ ] Cover letter templates ready\n\n## 🎓 Continuous Learning\n\n1. **Stay Updated**\n   - Follow Rust releases\n   - Monitor blockchain developments\n   - Read whitepapers\n   - Study successful projects\n\n2. **Build in Public**\n   - Share your progress\n   - Document your journey\n   - Get feedback early\n   - Build audience\n\n3. **Contribute**\n   - Open source projects\n   - Documentation\n   - Community help\n   - Technical writing\n\n## 💡 Pro Tips\n\n1. **Quality over Quantity**\n   - Better to have 3 excellent projects than 10 mediocre ones\n   - Focus on projects that solve real problems\n\n2. **Document Everything**\n   - Write clear README files\n   - Comment complex code\n   - Create architecture diagrams\n   - Record video demos\n\n3. **Show Your Process**\n   - Document design decisions\n   - Share challenges and solutions\n   - Show iterations\n   - Explain trade-offs\n\n4. **Be Active**\n   - Daily GitHub commits\n   - Regular blog posts\n   - Community engagement\n   - Open source contributions\n\n5. **Specialize**\n   - Choose a niche (DeFi, NFTs, Infrastructure)\n   - Become expert in one area\n   - Build reputation in that space\n\n## 🚀 Next Steps\n\n1. Deploy this course project\n2. Build 2-3 additional Rust blockchain projects\n3. Optimize your GitHub profile\n4. Create a personal portfolio website\n5. Start applying with your portfolio\n6. Network in blockchain communities\n7. Prepare for technical interviews\n8. Keep learning and building\n\nRemember: **Consistency beats intensity**. Build something every day, even if it's small. Your portfolio will grow, and opportunities will follow.",
+  "difficulty": "intermediate",
+  "estimatedTime": 60,
+  "prerequisites": [
+    "lesson-49-building-blockchain"
+  ],
+  "codeExamples": [
+    {
+      "id": "ex-87-1-github-readme",
+      "title": "Professional README Template",
+      "description": "Template for a professional GitHub README",
+      "code": "# 🦀 Rust Blockchain Course\n\n[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)\n[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)\n\n> Comprehensive blockchain development course using Rust - From beginner to advanced\n\n## ✨ Features\n\n- 📚 **86+ Interactive Lessons** - Complete curriculum\n- 💻 **Code Examples** - Real-world Rust code\n- 🎯 **Hands-on Projects** - Build real applications\n- 🔒 **Security Focus** - Best practices included\n- 📖 **Interview Prep** - Q&A for job interviews\n\n## 🛠️ Tech Stack\n\n- **Frontend**: Next.js 14, TypeScript, Tailwind CSS\n- **Backend**: Next.js API Routes\n- **Content**: JSON-based lesson system\n- **Deployment**: Vercel\n\n## 🚀 Quick Start\n\n```bash\n# Clone repository\ngit clone https://github.com/yourusername/rust-blockchain-course.git\ncd rust-blockchain-course\n\n# Install dependencies\nnpm install\n\n# Run development server\nnpm run dev\n```\n\nOpen [http://localhost:3000](http://localhost:3000)\n\n## 📚 Course Structure\n\n- **19 Chapters** covering Rust and blockchain\n- **86+ Lessons** from basics to advanced\n- **Project Ideas** for every lesson\n- **Interview Questions** for preparation\n\n## 🌐 Live Demo\n\n👉 [View Live Course](https://your-course-url.vercel.app)\n\n## 📸 Screenshots\n\n[Add screenshots here]\n\n## 🤝 Contributing\n\nContributions welcome! Please read CONTRIBUTING.md first.\n\n## 📄 License\n\nMIT License - see LICENSE file\n\n## 👤 Author\n\n**Your Name**\n- GitHub: [@yourusername](https://github.com/yourusername)\n- Twitter: [@yourhandle](https://twitter.com/yourhandle)\n- Portfolio: [yourwebsite.com](https://yourwebsite.com)",
+      "explanation": "A professional README makes your project stand out. Include badges, clear structure, and links to live demos.",
+      "language": "markdown"
+    },
+    {
+      "id": "ex-87-2-dockerfile",
+      "title": "Docker Deployment",
+      "description": "Dockerfile for containerized deployment",
+      "code": "FROM node:20-alpine AS base\n\nFROM base AS deps\nRUN apk add --no-cache libc6-compat\nWORKDIR /app\nCOPY package.json package-lock.json* ./\nRUN npm ci\n\nFROM base AS builder\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build\n\nFROM base AS runner\nWORKDIR /app\nENV NODE_ENV=production\nRUN addgroup --system --gid 1001 nodejs\nRUN adduser --system --uid 1001 nextjs\n\nCOPY --from=builder /app/public ./public\nCOPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./\nCOPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static\n\nUSER nextjs\nEXPOSE 3000\nENV PORT=3000\nCMD [\"node\", \"server.js\"]",
+      "explanation": "Docker allows easy deployment to any platform. This multi-stage build optimizes image size.",
+      "language": "dockerfile"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "exercise-87-1",
+      "title": "Create GitHub README",
+      "description": "Create a professional README for your project!",
+      "starterCode": "# Your Project Name\n\n## Description\n\n## Features\n\n## Installation\n\n## Usage\n",
+      "solution": "# 🦀 Rust Blockchain Course\n\n[![Deploy](https://vercel.com/button)](https://vercel.com)\n\n> Comprehensive blockchain development course\n\n## ✨ Features\n\n- 86+ interactive lessons\n- Real-world code examples\n- Hands-on projects\n\n## 🚀 Quick Start\n\n\`\`\`bash\nnpm install\nnpm run dev\n\`\`\`\n\n## 🌐 Live Demo\n\n[Your URL]\n\n## 📄 License\n\nMIT",
+      "hints": [
+        "Include badges",
+        "Add clear sections",
+        "Link to live demo",
+        "Add screenshots"
+      ],
+      "difficulty": "easy"
+    }
+  ],
+  "projectIdeas": [
+    {
+      "id": "project-87-1",
+      "title": "Personal Portfolio Website",
+      "description": "Build a professional portfolio website showcasing your Rust blockchain projects. Include project demos, blog, and contact form.",
+      "difficulty": "medium",
+      "estimatedTime": 15,
+      "requirements": [
+        "Modern, responsive design",
+        "Project showcase section",
+        "About/Bio section",
+        "Contact form",
+        "Blog section (optional)",
+        "Deploy to Vercel/Netlify",
+        "Custom domain"
+      ],
+      "hints": [
+        "Use Next.js for easy deployment",
+        "Include GitHub links",
+        "Add live demo links",
+        "Showcase your best projects"
+      ],
+      "extensions": [
+        "Add analytics",
+        "SEO optimization",
+        "Dark mode",
+        "Multi-language support",
+        "Resume download"
+      ],
+      "learningOutcomes": [
+        "Build professional portfolio",
+        "Learn deployment",
+        "Practice web development",
+        "Create online presence"
+      ]
+    },
+    {
+      "id": "project-87-2",
+      "title": "GitHub Profile Optimizer",
+      "description": "Create a tool that helps optimize GitHub profiles. Generate profile README, analyze repositories, and suggest improvements.",
+      "difficulty": "medium",
+      "estimatedTime": 10,
+      "requirements": [
+        "GitHub API integration",
+        "Profile README generator",
+        "Repository analysis",
+        "Suggestions engine",
+        "Export functionality"
+      ],
+      "hints": [
+        "Use GitHub API",
+        "Analyze repository stats",
+        "Generate markdown",
+        "Provide actionable tips"
+      ],
+      "extensions": [
+        "Add visualizations",
+        "Compare with top profiles",
+        "Automated updates",
+        "Multiple templates"
+      ],
+      "learningOutcomes": [
+        "Learn GitHub API",
+        "Understand profile optimization",
+        "Practice data analysis",
+        "Build useful tool"
+      ]
+    }
+  ]
+}
+
