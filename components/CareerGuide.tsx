@@ -99,19 +99,19 @@ export default function CareerGuide() {
                   key={index}
                   className="group p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-orange-500 dark:hover:border-orange-500 transition-all duration-300 hover:shadow-lg"
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+                  <div className="flex items-start justify-between mb-3 gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2 break-words">
                         <span>{option.icon}</span>
                         {option.name}
                       </h4>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm">{option.description}</p>
+                      <p className="text-gray-600 dark:text-gray-400 text-sm break-words">{option.description}</p>
                     </div>
                     <a
                       href={option.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-lg transition-colors"
+                      className="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-lg transition-colors flex-shrink-0"
                     >
                       Visit
                     </a>

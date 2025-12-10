@@ -52,11 +52,11 @@ export default async function LessonPage({ params }: LessonPageProps) {
           
           <div className="relative z-10">
             <div className="flex items-start justify-between mb-6">
-              <div className="flex-1">
-                <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 break-words">
                   {lesson.title}
                 </h1>
-                <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
+                <p className="text-xl text-gray-600 dark:text-gray-300 mb-6 break-words">
                   {lesson.description}
                 </p>
               </div>

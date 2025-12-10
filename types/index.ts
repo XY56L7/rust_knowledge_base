@@ -64,6 +64,13 @@ export interface UserProgress {
   completedExercises: string[]; // exercise IDs
   currentLesson?: string;
   lastAccessed: string; // ISO date string
+  gameProgress?: {
+    completedChallenges: string[];
+    currentLevel: number;
+    totalXP: number;
+    achievements: string[];
+    zombiesCreated: number;
+  };
 }
 
 

@@ -31,16 +31,16 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
       <div className="absolute inset-0 bg-gradient-to-br from-orange-500/0 to-orange-500/0 group-hover:from-orange-500/5 group-hover:to-orange-500/0 transition-all duration-500 rounded-2xl"></div>
       
       <div className="relative z-10">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+        <div className="flex items-start justify-between mb-4 gap-4">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors break-words">
               {exercise.title}
             </h3>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-4 break-words">
               {exercise.description}
             </p>
           </div>
-          <span className={`px-4 py-2 rounded-xl text-sm font-bold shadow-md transform transition-transform hover:scale-105 ${difficultyColors[exercise.difficulty]}`}>
+          <span className={`px-4 py-2 rounded-xl text-sm font-bold shadow-md transform transition-transform hover:scale-105 flex-shrink-0 ${difficultyColors[exercise.difficulty]}`}>
             {difficultyLabels[exercise.difficulty]}
           </span>
         </div>
@@ -75,9 +75,9 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
               <div className="mt-3 p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 rounded-xl border border-yellow-200 dark:border-yellow-800 animate-in slide-in-from-top-2">
                 <ul className="list-disc list-inside space-y-2 text-sm font-medium text-gray-800 dark:text-gray-200">
                   {exercise.hints.map((hint, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-yellow-600 dark:text-yellow-400 mt-1">💡</span>
-                      <span>{hint}</span>
+                    <li key={index} className="flex items-start gap-2 break-words">
+                      <span className="text-yellow-600 dark:text-yellow-400 mt-1 flex-shrink-0">💡</span>
+                      <span className="break-words">{hint}</span>
                     </li>
                   ))}
                 </ul>
