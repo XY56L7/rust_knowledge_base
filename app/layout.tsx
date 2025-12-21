@@ -6,6 +6,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import ThemeScript from "@/components/ThemeScript";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Chatbot from "@/components/Chatbot";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -36,6 +37,7 @@ export default function RootLayout({
         </div>
         <Footer />
         <ScrollToTop />
+        <Chatbot />
       </body>
     </html>
   );
