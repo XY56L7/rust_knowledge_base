@@ -45,7 +45,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
           </Link>
         </div>
 
-        <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-6 border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 mb-6 border border-gray-100 dark:border-gray-700 overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500"></div>
           
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-orange-50/50 to-transparent dark:from-orange-900/10 rounded-full blur-3xl -z-0"></div>
@@ -78,20 +78,20 @@ export default async function LessonPage({ params }: LessonPageProps) {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-6 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 mb-6 border border-gray-100 dark:border-gray-700">
           <MarkdownContent content={lesson.content} />
         </div>
 
         {lesson.codeExamples && lesson.codeExamples.length > 0 && (
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
               Code Examples
             </h2>
             <div className="space-y-4">
               {lesson.codeExamples.map((example) => (
                 <div
                   key={example.id}
-                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700"
+                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-3 sm:p-4 md:p-6 border border-gray-100 dark:border-gray-700"
                 >
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                     {example.title}

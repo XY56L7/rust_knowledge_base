@@ -49,7 +49,7 @@ export default function Chatbot() {
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-8 right-8 z-50 w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-full shadow-2xl shadow-orange-500/50 hover:shadow-orange-500/70 flex items-center justify-center transform hover:scale-110 transition-all duration-300 ${
+        className={`fixed bottom-4 right-4 md:bottom-8 md:right-8 z-[60] w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-full shadow-2xl shadow-orange-500/50 hover:shadow-orange-500/70 flex items-center justify-center transform hover:scale-110 transition-all duration-300 ${
           isOpen ? 'rotate-90' : ''
         }`}
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
@@ -77,7 +77,7 @@ export default function Chatbot() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-8 z-50 w-96 h-[600px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden backdrop-blur-xl bg-white/95 dark:bg-gray-900/95 animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed inset-x-4 bottom-24 md:inset-x-auto md:bottom-24 md:right-8 md:w-96 h-[calc(100vh-8rem)] md:h-[600px] max-h-[600px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden backdrop-blur-xl bg-white/95 dark:bg-gray-900/95 z-[55]">
           {/* Header */}
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
