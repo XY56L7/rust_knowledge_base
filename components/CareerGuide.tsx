@@ -2,41 +2,6 @@
 
 import Link from 'next/link';
 
-const deploymentOptions = [
-  {
-    name: 'Vercel',
-    description: 'Best for Next.js - Zero config deployment',
-    pros: ['Free tier', 'Automatic HTTPS', 'Global CDN', 'Preview deployments'],
-    cons: ['Vendor lock-in', 'Limited server options'],
-    link: 'https://vercel.com',
-    icon: '▲',
-  },
-  {
-    name: 'Netlify',
-    description: 'Great for static sites and JAMstack',
-    pros: ['Free tier', 'Easy setup', 'Form handling', 'Edge functions'],
-    cons: ['Build time limits', 'Less flexible'],
-    link: 'https://netlify.com',
-    icon: '●',
-  },
-  {
-    name: 'Railway',
-    description: 'Simple deployment with Docker support',
-    pros: ['Docker support', 'Database included', 'Easy scaling'],
-    cons: ['Pricing can scale', 'Newer platform'],
-    link: 'https://railway.app',
-    icon: '🚂',
-  },
-  {
-    name: 'DigitalOcean',
-    description: 'Full control with VPS',
-    pros: ['Full control', 'Affordable', 'Scalable'],
-    cons: ['Requires setup', 'Manual maintenance'],
-    link: 'https://digitalocean.com',
-    icon: '🌊',
-  },
-];
-
 const jobBoards = [
   { name: 'Web3.career', url: 'https://web3.career', description: 'Blockchain-specific jobs' },
   { name: 'CryptoJobsList', url: 'https://cryptojobslist.com', description: 'Crypto/blockchain positions' },
@@ -52,19 +17,6 @@ const companies = [
   { name: 'Parity Technologies', url: 'https://parity.io/jobs', focus: 'Ethereum & Substrate' },
   { name: 'Chainlink', url: 'https://chain.link/careers', focus: 'Oracle networks' },
   { name: 'Acala', url: 'https://acala.network/careers', focus: 'DeFi on Polkadot' },
-];
-
-const checklist = [
-  'GitHub profile optimized with pinned repositories',
-  'Portfolio projects deployed and live',
-  'Professional README files for all projects',
-  'Code is well-documented with comments',
-  'Tests written and passing (CI/CD)',
-  'Resume/CV updated with projects',
-  'LinkedIn profile complete',
-  'Personal website/portfolio created',
-  'Cover letter templates ready',
-  'Interview questions prepared',
 ];
 
 export default function CareerGuide() {
@@ -87,62 +39,7 @@ export default function CareerGuide() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700">
-            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
-              <span className="text-4xl">🚀</span>
-              Deployment Options
-            </h3>
-            <div className="space-y-4">
-              {deploymentOptions.map((option, index) => (
-                <div
-                  key={index}
-                  className="group p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-orange-500 dark:hover:border-orange-500 transition-all duration-300 hover:shadow-lg"
-                >
-                  <div className="flex items-start justify-between mb-3 gap-4">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2 break-words">
-                        <span>{option.icon}</span>
-                        {option.name}
-                      </h4>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm break-words">{option.description}</p>
-                    </div>
-                    <a
-                      href={option.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-lg transition-colors flex-shrink-0"
-                    >
-                      Visit
-                    </a>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 mt-4">
-                    <div>
-                      <p className="text-sm font-semibold text-green-600 dark:text-green-400 mb-2">Pros:</p>
-                      <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                        {option.pros.map((pro, i) => (
-                          <li key={i} className="flex items-center gap-1">
-                            <span>✓</span> {pro}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-red-600 dark:text-red-400 mb-2">Cons:</p>
-                      <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                        {option.cons.map((con, i) => (
-                          <li key={i} className="flex items-center gap-1">
-                            <span>✗</span> {con}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-16">
           <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700">
             <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
               <span className="text-4xl">💼</span>
@@ -205,30 +102,7 @@ export default function CareerGuide() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700">
-            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
-              <span className="text-4xl">✅</span>
-              Pre-Application Checklist
-            </h3>
-            <div className="space-y-3">
-              {checklist.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-start gap-3 p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-xl border border-gray-200 dark:border-gray-600"
-                >
-                  <input
-                    type="checkbox"
-                    className="mt-1 w-5 h-5 text-orange-600 rounded focus:ring-orange-500"
-                  />
-                  <label className="text-gray-700 dark:text-gray-300 font-medium flex-1">
-                    {item}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-16">
           <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700">
             <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
               <span className="text-4xl">💡</span>
